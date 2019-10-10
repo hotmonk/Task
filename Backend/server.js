@@ -23,6 +23,30 @@ connection. once('open',function(){
   console.log("Mongoose database connected");
 })
 
+app.post('/SignUpSeller', function(req, res) {
+  let seller = new Seller(req.body);
+  console.log(seller);
+  seller.save()
+      .then(seller => {
+          res.status(200).json({seller: 'seller added successfully'});
+      })
+      .catch(err => {
+          res.status(400).send('adding new seller failed');
+      });
+});  
+
+app.post('/SignUpVendor', function(req, res) {
+  let vendor = new Vendor(req.body);
+  console.log(vendor);
+  vendor.save()
+      .then(vendor => {
+          res.status(200).json({vendor: 'seller added successfully'});
+      })
+      .catch(err => {
+          res.status(400).send('adding new vendor failed');
+      });
+});  
+
 // app.get('/Seller', function(req,res){
 //     Seller.find(function(err,todos){
 //       if(err){
@@ -36,5 +60,5 @@ connection. once('open',function(){
 
 
 app.listen(PORT, function(){
-  console.log("Server is running on PORT:"+ PORT);
+  console.log("Server is running on PORT: "+ PORT);
 });
