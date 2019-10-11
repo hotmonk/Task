@@ -7,6 +7,7 @@ import Profile from '../Containers/sellerprofile.js';
 import Add from '../Containers/addItems.js';
 import SignUpVendor from '../Components/SignUpVendor.js';
 import SignUpSeller from '../Components/SignUpSeller.js';
+import RequestVendor from '../Components/requestVendor.js';
 
 const Routes =(props)=> {
         return(
@@ -19,6 +20,7 @@ const Routes =(props)=> {
                     <Route path='/add' exact component={Add}/>
                     <Route path='/SignUpVendor' exact component={SignUpVendor}/>
                     <Route path='/SignUpSeller' exact component={SignUpSeller}/>
+                    <Route path='/requestVendor' exact component={RequestVendor}/>
                 </Switch>
         )
 

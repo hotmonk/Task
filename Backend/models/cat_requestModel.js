@@ -5,7 +5,6 @@ var Cat_request = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Vendor"
         },
-    new_cat: Boolean,
     cat_name: String,
     sub_cat_name: String,
     quantity_type: String,

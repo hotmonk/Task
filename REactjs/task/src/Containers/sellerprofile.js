@@ -7,9 +7,9 @@ class Profile extends Component{
   render(){
     return (
       <div className="profile">
-        <h1>Name:</h1>
-        <h1>Address:</h1>
-        <h1>Contact Number:</h1>
+        <h1>Name: ABCD</h1>
+        <h1>Address: yuewfb gdshbc kcbhdvc</h1>
+        <h1>Contact Number: 73868847296</h1>
       </div>
     );
   }
@@ -22,6 +22,4 @@ const mapStateToProps =state=>{
   };
 };
 
-
-export default connect(mapStateToProps)(SignUpSeller);
 export default Profile;

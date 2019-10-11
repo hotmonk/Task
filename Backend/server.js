@@ -23,6 +23,40 @@ connection. once('open',function(){
   console.log("Mongoose database connected");
 })
 
+app.get("/categories",function(req,res){
+  Cat.find({}, function(err, allCategories){
+    if(err){
+        console.log(err);
+    } else {
+      var filtered=allCategories.map(category=>{
+        return {
+          name:category.name,
+          id:category._id
+        }
+      })
+      console.log(allCategories);
+      res.json(filtered);
+    }
+ });
+})
+
+app.get("/categories/:id/subcat",function(req,res){
+    Cat.findById(req.params.id).populate("sub_cats").exec(function(err, result){
+        if(err||!result){
+          console.log(err);
+        }else{
+          var sub_cat=result.sub_cats;
+          var final_res=sub_cat.map(subcat=>{
+            return {
+              name:subcat.name,
+              quantity_type:subcat.quantity_type
+            }
+          });
+          res.json(final_res);
+        }
+    });
+})
+
 app.post('/SignUpSeller', function(req, res) {
   let seller = new Seller(req.body);
   console.log(seller);
@@ -40,12 +74,72 @@ app.post('/SignUpVendor', function(req, res) {
   console.log(vendor);
   vendor.save()
       .then(vendor => {
-          res.status(200).json({vendor: 'seller added successfully'});
+          res.status(200).json({vendor: 'vendor added successfully'});
       })
       .catch(err => {
           res.status(400).send('adding new vendor failed');
       });
 });  
+
+app.post('/NewWasteType',function(req, res){
+  let request = new Cat_request(req.body);
+  Cat.findOne({name:req.body.cat_name},function(err,category){
+      if(err)
+      {
+        console.log(err);
+      }
+      else
+      {
+        let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type});
+        if(category)
+        {
+          newSubCat.save()
+            .then(newSubCat => {
+              category.sub_cats.push(newSubCat);
+              category.save();
+              request.save()
+                .then(request => {
+                    res.status(200).json({request: 'request and sub-category added successfully'});
+                })
+                .catch(err => {
+                    res.status(400).send('adding new request failed');
+                });
+             // res.status(200).json({sub_cat: 'sub-category added successfully'});
+          })
+          .catch(err => {
+              res.status(400).send('adding new sub-category failed');
+          });
+        }
+        else
+        {
+          let newCat = new Cat({name: req.body.cat_name});
+          newCat.save()
+            .then(newCat => {
+              newSubCat.save()
+                  .then(newSubCat => {
+                    newCat.sub_cats.push(newSubCat);
+                    newCat.save();
+                    request.save()
+                      .then(request => {
+                          res.status(200).json({request: 'request, category and sub-category added successfully'});
+                      })
+                      .catch(err => {
+                          res.status(400).send('adding new request failed');
+                      });
+                   // res.status(200).json({sub_cat: 'sub-category and category added successfully'});
+                })
+                .catch(err => {
+                    res.status(400).send('adding new sub-category failed');
+                });
+                //res.status(200).json({newCat: 'seller added successfully'});
+            });
+            // .catch(err => {
+            //     res.status(400).send('adding new Category failed');
+            // });
+        }
+      }
+  });
+});
 
 app.get("/seller/:id",function(req,res){
 	Seller.findById(req.params.id).populate("items").exec(function(err,foundSeller){
