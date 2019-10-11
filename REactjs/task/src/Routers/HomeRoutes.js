@@ -15,7 +15,7 @@ const Routes =(props)=> {
                     {/* <Route path='/home' exact component={SignUp} /> */}
                     <Route path='/options' exact component={Options} />
                     <Route path='/transaction' exact component={Transactions}/>
-                    <Route path='/profile' exact component={Profile}/>
+                    {/* <Route path='/profile' exact component={Profile}/> */}
                     <Route path='/add' exact component={Add}/>
                     <Route path='/SignUpVendor' exact component={SignUpVendor}/>
                     <Route path='/SignUpSeller' exact component={SignUpSeller}/>

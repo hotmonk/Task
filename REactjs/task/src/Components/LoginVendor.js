@@ -31,9 +31,9 @@ constructor (props) {
  render () {
    return (
      <div>
-     <h2>Sign Up Seller</h2>
-       <Link to='/signUp2'>SignUp</Link>
-       <h2>Sign In Seller</h2>
+       <h2>Sign Up Vendor</h2>
+         <Link to='/SignUpVendor'>SignUp</Link>
+       <h2>Sign In Buyer</h2>
        <div>
          <label >Email address</label>
          <input type='email'

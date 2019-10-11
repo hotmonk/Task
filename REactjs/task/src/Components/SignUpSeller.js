@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import {connect} from 'react-redux'
 
-export default class SignUpSeller extends Component {
+class SignUpSeller extends Component {
 
     constructor(props) {
         super(props);
@@ -118,3 +119,18 @@ export default class SignUpSeller extends Component {
         )
     }
 }
+
+const mapStateToProps =state=>{
+    return {
+      id:state.id
+    };
+  };
+  
+const mapDispatchToProps=dispatch=>{
+    return {
+        onLogin:(id)=> dispatch({type:'LOGIN',id:id})
+    }
+};
+  
+  
+export default connect(mapStateToProps,mapDispatchToProps)(SignUpSeller);

@@ -47,6 +47,20 @@ app.post('/SignUpVendor', function(req, res) {
       });
 });  
 
+app.get("/seller/:id",function(req,res){
+	Seller.findById(req.params.id).populate("items").exec(function(err,foundSeller){
+		if(err)
+		{
+			console.log(err);
+		}
+		else
+		{
+			console.log(foundSeller);
+			res.json(foundSeller);
+		}
+	});
+});
+
 // app.get('/Seller', function(req,res){
 //     Seller.find(function(err,todos){
 //       if(err){

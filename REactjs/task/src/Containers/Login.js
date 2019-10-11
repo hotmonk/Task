@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import LOgin1 from '../Components/Login1.js';
-import LOgin2 from '../Components/Login2.js';
+import LoginVendor from '../Components/LoginVendor.js';
+import LoginSeller from '../Components/LoginSeller.js';
 
 class Login extends Component {
 constructor (props) {
@@ -16,15 +16,15 @@ constructor (props) {
     this.setState({user:'seller'});
   }
  handleChangeP(event) {
-    this.setState({user:'buyer'});
+    this.setState({user:'vendor'});
   }
 
  render () {
    return (
      <div>
        <input type='submit' value='Seller' onClick={this.handleChangeE}></input>
-       <input type='submit' value='Buyer' onClick={this.handleChangeP}></input>
-       {this.state.user==='buyer'?<LOgin1/>:<LOgin2/>}
+       <input type='submit' value='Vendor' onClick={this.handleChangeP}></input>
+       {this.state.user==='vendor'?<LoginVendor/>:<LoginSeller/>}
      </div>
    )
  }
