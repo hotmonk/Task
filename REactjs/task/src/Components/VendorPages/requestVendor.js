@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {connect} from 'react-redux'
 
 class SignUpSeller extends Component {
 
@@ -52,7 +51,7 @@ class SignUpSeller extends Component {
             status: "Approved"
         }
 
-        axios.post('http://localhost:4000/NewWasteType', newTypeWaste)
+        axios.post('http://localhost:4000/vendor/newWasteType', newTypeWaste)
             .then(res => console.log("hii"));
 
         this.setState({
@@ -67,40 +66,34 @@ class SignUpSeller extends Component {
             <div>
                 <h3>Request for a new Category of Waste!</h3>
                 <form onSubmit={this.onSubmit}>
+                    <div>
                       <label>Category Name: </label>
                       <input  type="text"
                               value={this.state.name}
                               onChange={this.onChangecat_name}
                               />
+                    </div>
+                    <div>
                       <label>Sub-Category Name: </label>
                       <input  type="text"
                               value={this.state.email}
                               onChange={this.onChangesub_cat_name}
                               />
+                    </div>
+                    <div>
                       <label>Quantity-type: </label>
                       <input  type="text"
                               value={this.state.contact}
                               onChange={this.onChangequantity_type}
                               />
+                    </div>
 
-                      <input type="submit" value="Add a new type of waste" />
+                    <input type="submit" value="Add a new type of waste" />
                 </form>
             </div>
         )
     }
 }
-
-const mapStateToProps =state=>{
-    return {
-      id:state.id
-    };
-  };
-  
-const mapDispatchToProps=dispatch=>{
-    return {
-        onLogin:(id)=> dispatch({type:'LOGIN',id:id})
-    }
-};
   
   
-export default connect(mapStateToProps,mapDispatchToProps)(SignUpSeller);
+export default SignUpSeller;

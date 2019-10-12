@@ -1,27 +1,19 @@
 import React from 'react';
 import { Switch,Route } from 'react-router-dom';
-import Login from '../Containers/Login.js';
-import Options from '../Containers/selleroptions.js';
-import Transactions from '../Containers/transactions.js';
-import Profile from '../Containers/sellerprofile.js';
-import Add from '../Containers/addItems.js';
-import SignUpVendor from '../Components/SignUpVendor.js';
-import SignUpSeller from '../Components/SignUpSeller.js';
-import RequestVendor from '../Components/requestVendor.js';
 
-const Routes =(props)=> {
+import LoginSeller from '../Components/SellerPages/LoginSeller';
+import LoginVendor from '../Components/VendorPages/LoginVendor';
+import SignUpSeller from '../Components/SellerPages/SignUpSeller';
+import SignUpVendor from '../Components/VendorPages/SignUpVendor';
+
+const Routes = (props) => {
         return(
-                <Switch>
-                    <Route path='/' exact component={Login} />
-                    {/* <Route path='/home' exact component={SignUp} /> */}
-                    <Route path='/options' exact component={Options} />
-                    <Route path='/transaction' exact component={Transactions}/>
-                    {/* <Route path='/profile' exact component={Profile}/> */}
-                    <Route path='/add' exact component={Add}/>
-                    <Route path='/SignUpVendor' exact component={SignUpVendor}/>
-                    <Route path='/SignUpSeller' exact component={SignUpSeller}/>
-                    <Route path='/requestVendor' exact component={RequestVendor}/>
-                </Switch>
+             <Switch>
+                <Route path='/vendor/signUp' exact component={SignUpVendor}/>
+                <Route path='/seller/signUp' exact component={SignUpSeller}/>
+                <Route path='/vendor/login' exact component={LoginVendor}/>
+                <Route path='/seller/login' exact component={LoginSeller}/>
+             </Switch>
         )
 
 }

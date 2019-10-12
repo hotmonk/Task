@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 
-export default class SignUpVendor extends Component {
+class SignUpVendor extends Component {
 
     constructor(props) {
         super(props);
@@ -69,8 +69,8 @@ export default class SignUpVendor extends Component {
             password: this.state.password
         }
 
-        axios.post('http://localhost:4000/SignUpVendor', newVendor)
-            .then(res => console.log("hii"));
+        axios.post('http://localhost:4000/vendor/signUp', newVendor)
+            .then(res => console.log("Signing Up Vendor"));
 
         this.setState({
             name: '',
@@ -86,35 +86,47 @@ export default class SignUpVendor extends Component {
             <div>
                 <h3>Register Yourself as Vendor!</h3>
                 <form onSubmit={this.onSubmit}>
+                    <div>
                       <label>Name: </label>
                       <input  type="text"
                               value={this.state.name}
                               onChange={this.onChangename}
                               />
+                    </div>
+                    <div>
                       <label>Email: </label>
                       <input  type="email"
                               value={this.state.email}
                               onChange={this.onChangeemail}
                               />
+                    </div>
+                    <div>
                       <label>Contact </label>
                       <input  type="number"
                               value={this.state.contact}
                               onChange={this.onChangecontact}
                               />
+                    </div>
+                    <div>
                       <label>Address: </label>
                       <input  type="text"
                               value={this.state.address}
                               onChange={this.onChangeaddress}
                               />
+                    </div>
+                    <div>
                       <label>Password: </label>
                       <input  type="password"
                               value={this.state.password}
                               onChange={this.onChangepassword}
                               />
+                    </div>
 
-                      <input type="submit" value="Register Vendor" />
+                    <input type="submit" value="Register Vendor" />
                 </form>
             </div>
         )
     }
 }
+
+export default SignUpVendor;

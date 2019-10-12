@@ -18,12 +18,12 @@ var Sub_cat = require('./models/sub_catModel.js');
 var Cat_request = require('./models/cat_requestModel.js');
 const sellerAuth = require('./middleware/sellerAuth.js');
 const vendorAuth = require('./middleware/vendorAuth.js');
-app.use(bodyParser.json());
-app.use('/seller/login', require('./routes/sellerAuth.js'));
-app.use('/vendor/login', require('./routes/vendorAuth.js'));
 
+app.use(bodyParser.json());
 app.use(cors());
 
+app.use('/seller/login', require('./routes/sellerAuth.js'));
+app.use('/vendor/login', require('./routes/vendorAuth.js'));
 
 mongoose.connect('mongodb://127.0.0.1:27017/WasteManagement',{useNewUrlParser: true,  useUnifiedTopology: true, useCreateIndex: true});
 const connection=mongoose.connection;

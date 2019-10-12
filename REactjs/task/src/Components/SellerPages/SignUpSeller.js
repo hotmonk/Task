@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {connect} from 'react-redux'
 
 class SignUpSeller extends Component {
 
@@ -70,8 +69,8 @@ class SignUpSeller extends Component {
             password: this.state.password
         }
 
-        axios.post('http://localhost:4000/SignUpSeller', newSeller)
-            .then(res => console.log("hii"));
+        axios.post('http://localhost:4000/seller/signUp', newSeller)
+            .then(res => console.log("Signing Up Seller"));
 
         this.setState({
             name: '',
@@ -87,50 +86,47 @@ class SignUpSeller extends Component {
             <div>
                 <h3>Register Yourself as Seller!</h3>
                 <form onSubmit={this.onSubmit}>
+                    <div>
                       <label>Name: </label>
                       <input  type="text"
                               value={this.state.name}
                               onChange={this.onChangename}
                               />
+                    </div>
+                    <div>
                       <label>Email: </label>
                       <input  type="email"
                               value={this.state.email}
                               onChange={this.onChangeemail}
                               />
+                    </div>
+                    <div>
                       <label>Contact </label>
                       <input  type="number"
                               value={this.state.contact}
                               onChange={this.onChangecontact}
                               />
+                    </div>
+                    <div>
                       <label>Address: </label>
                       <input  type="text"
                               value={this.state.address}
                               onChange={this.onChangeaddress}
                               />
+                    </div>
+                    <div>
                       <label>Password: </label>
                       <input  type="password"
                               value={this.state.password}
                               onChange={this.onChangepassword}
                               />
+                    </div>
 
-                      <input type="submit" value="Register Seller" />
+                    <input type="submit" value="Register Seller" />
                 </form>
             </div>
         )
     }
 }
-
-const mapStateToProps =state=>{
-    return {
-      id:state.id
-    };
-  };
   
-const mapDispatchToProps=dispatch=>{
-    return {
-        onLogin:(id)=> dispatch({type:'LOGIN',id:id})
-    }
-};
-  
-  
-export default connect(mapStateToProps,mapDispatchToProps)(SignUpSeller);
+export default SignUpSeller;
