@@ -1,10 +1,7 @@
 var mongoose = require('mongoose');
 
 var Cat_request = new mongoose.Schema({
-    vendor: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Vendor"
-        },
+    vendor_id: String,
     cat_name: String,
     sub_cat_name: String,
     quantity_type: String,
