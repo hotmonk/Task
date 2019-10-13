@@ -5,6 +5,7 @@ import LoginSeller from '../Components/SellerPages/LoginSeller';
 import LoginVendor from '../Components/VendorPages/LoginVendor';
 import SignUpSeller from '../Components/SellerPages/SignUpSeller';
 import SignUpVendor from '../Components/VendorPages/SignUpVendor';
+import ItemForm from '../Components/SellerPages/AddNewItem';
 
 const Routes = (props) => {
         return(
@@ -13,6 +14,7 @@ const Routes = (props) => {
                 <Route path='/seller/signUp' exact component={SignUpSeller}/>
                 <Route path='/vendor/login' exact component={LoginVendor}/>
                 <Route path='/seller/login' exact component={LoginSeller}/>
+                <Route path='/seller/:id/items' component={ItemForm}/>
              </Switch>
         )
 

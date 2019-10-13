@@ -46,6 +46,8 @@ app.get("/categories",function(req,res){
           key: category._id
         }
       })
+      console.log(allCategories);
+      console.log(filtered);
       res.json(filtered);
     }
  });
@@ -69,7 +71,7 @@ app.get("/categories/:id/subcat",function(req,res){
           res.json(final_res);
         }
     });
-})
+});
 
 
 /// SELLER ROUTES
@@ -151,8 +153,7 @@ app.get('/seller/:id/items', sellerAuth, function(req, res){
           res.json(foundSeller.items);
         }
     });
-})
-
+});
 
 app.post('/seller/:id/items', sellerAuth, function(req, res){
   let newItem = new Item(req.body);
@@ -263,9 +264,9 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
 
 
 ///new category request
-app.post('/vendor/newWasteType',vendorAuth, function(req, res){
+app.post('/vendor/newWasteType', function(req, res){
   let request = new Cat_request(req.body);
-  request.vendor_id =req.vendor.id;
+ // request.vendor_id =req.vendor.id;
   Cat.findOne({name:req.body.cat_name},function(err,category){
       if(err)
       {
