@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 
-class SignUpSeller extends Component {
+class vendorRequest extends Component {
 
     constructor(props) {
         super(props);
@@ -96,4 +96,4 @@ class SignUpSeller extends Component {
 }
   
   
-export default SignUpSeller;
+export default vendorRequest;

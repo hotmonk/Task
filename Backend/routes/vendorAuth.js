@@ -43,8 +43,8 @@ router.post('/', (req, res) => {
                     address: vendor.address
                 }
               });
-            }
-          )
+            });
+            console.log(vendor.id);
         })
     })
 });

@@ -46,8 +46,8 @@ app.get("/categories",function(req,res){
           key: category._id
         }
       })
-      console.log(allCategories);
-      console.log(filtered);
+     // console.log(allCategories);
+      //console.log(filtered);
       res.json(filtered);
     }
  });
@@ -264,9 +264,9 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
 
 
 ///new category request
-app.post('/vendor/newWasteType', function(req, res){
+app.post('/vendor/newWasteType', vendorAuth, function(req, res){
   let request = new Cat_request(req.body);
- // request.vendor_id =req.vendor.id;
+  request.vendor_id =req.vendor.id;
   Cat.findOne({name:req.body.cat_name},function(err,category){
       if(err)
       {
