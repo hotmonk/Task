@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { signupVendor } from '../../actions/vendorAuthActions';
+import { clearErrors } from '../../actions/errorActions';
 
 class SignUpVendor extends Component {
 
@@ -16,11 +19,31 @@ class SignUpVendor extends Component {
         this.state = {
             name: '',
             email: '',
-            contact: 0,
+            contact: '',
             address: '',
-            password: ''
+            password: '',
+            msg: null
         }
     }
+
+    static propTypes = {
+        isAuthenticated: PropTypes.bool,
+        error: PropTypes.object.isRequired,
+        signupVendor: PropTypes.func.isRequired,
+        clearErrors: PropTypes.func.isRequired
+      };
+    
+      componentDidUpdate(prevProps) {
+        const { error, isAuthenticated } = this.props;
+        if (error !== prevProps.error) {
+          // Check for register error
+          if (error.id === 'VENDOR_REGISTER_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+      }
 
     onChangename(e) {
         this.setState({
@@ -61,30 +84,27 @@ class SignUpVendor extends Component {
         console.log(`Contact: ${this.state.contact}`);
         console.log(`Address: ${this.state.address}`);
 
+        const { name, email, contact, address, password } = this.state;
+
+        // Create user object
         const newVendor = {
-            name: this.state.name,
-            email: this.state.email,
-            contact: this.state.contact,
-            address: this.state.address,
-            password: this.state.password
-        }
+        name,
+        email,
+        contact,
+        address,
+        password
+        };
 
-        axios.post('http://localhost:4000/vendor/signUp', newVendor)
-            .then(res => console.log("Signing Up Vendor"));
-
-        this.setState({
-            name: '',
-            email: '',
-            contact: '',
-            address: '',
-            password: '',
-        })
+        this.props.signupVendor(newVendor);
     }
 
     render() {
         return (
             <div>
                 <h3>Register Yourself as Vendor!</h3>
+                {this.state.msg ? (
+                console.log(this.state.msg)
+                ) : null}
                 <form onSubmit={this.onSubmit}>
                     <div>
                       <label>Name: </label>
@@ -129,4 +149,12 @@ class SignUpVendor extends Component {
     }
 }
 
-export default SignUpVendor;
+const mapStateToProps = state => ({
+    isAuthenticated: state.vendorAuth.isAuthenticated,
+    error: state.error
+  });
+  
+  export default connect(
+    mapStateToProps,
+    { signupVendor, clearErrors }
+  )(SignUpVendor);

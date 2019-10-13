@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 function vendorAuth(req, res, next) 
 {
-  const token = localStorage.getItem('token');
+  const token = req.header('x-auth-vendor-token');;
 
   // Check for token
   if (!token)

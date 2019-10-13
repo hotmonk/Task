@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 function sellerAuth(req, res, next) 
 {
-  const token = localStorage.getItem('token');
+  const token = req.header('x-auth-seller-token');
 
   // Check for token
   if (!token)

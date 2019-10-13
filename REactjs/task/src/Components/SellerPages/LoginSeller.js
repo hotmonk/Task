@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { sellerLogin } from '../../actions/sellerAuthActions';
+import { clearErrors } from '../../actions/errorActions';
 
 class LoginSeller extends Component {
 
@@ -12,9 +15,28 @@ class LoginSeller extends Component {
 
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            msg: null
         }
     }
+
+    static propTypes = {
+        isAuthenticated: PropTypes.bool,
+        error: PropTypes.object.isRequired,
+        sellerLogin: PropTypes.func.isRequired,
+        clearErrors: PropTypes.func.isRequired
+      };
+
+      componentDidUpdate(prevProps) {
+        const { error, isAuthenticated } = this.props;
+        if (error !== prevProps.error) {
+          if (error.id === 'SELLER_LOGIN_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+      }
 
     onChangeemail(e) {
         this.setState({
@@ -31,21 +53,15 @@ class LoginSeller extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
-        console.log(`Email: ${this.state.email}`);
+        const { email, password } = this.state;
 
-        const loginSeller = {
-            email: this.state.email,
-            password: this.state.password
-        }
+        const seller = {
+            email,
+            password
+        };
 
-        axios.post('http://localhost:4000/seller/login', loginSeller)
-            .then(res => console.log("Seller Logging In"));
-
-        this.setState({
-            email: '',
-            password: ''
-        });
+        // Attempt to login
+        this.props.sellerLogin(seller);
     }
 
     render() {
@@ -53,6 +69,9 @@ class LoginSeller extends Component {
             <div>
                 <h3>Login as Seller!</h3>
                 <form onSubmit={this.onSubmit}>
+                {this.state.msg ? (
+                    console.log(this.state.msg)
+                    ) : null}
                     <div>
                       <label>Email: </label>
                       <input  type="email"
@@ -75,4 +94,12 @@ class LoginSeller extends Component {
     }
 }
   
-export default LoginSeller;
+const mapStateToProps = state => ({
+    isAuthenticated: state.sellerAuth.isAuthenticated,
+    error: state.error
+  });
+  
+  export default connect(
+    mapStateToProps,
+    { sellerLogin, clearErrors }
+  )(LoginSeller);

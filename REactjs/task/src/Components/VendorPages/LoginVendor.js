@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { vendorLogin } from '../../actions/vendorAuthActions';
+import { clearErrors } from '../../actions/errorActions';
 
 class LoginVendor extends Component {
 
@@ -12,9 +15,28 @@ class LoginVendor extends Component {
 
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            msg: null
         }
     }
+
+    static propTypes = {
+        isAuthenticated: PropTypes.bool,
+        error: PropTypes.object.isRequired,
+        vendorLogin: PropTypes.func.isRequired,
+        clearErrors: PropTypes.func.isRequired
+      };
+
+      componentDidUpdate(prevProps) {
+        const { error, isAuthenticated } = this.props;
+        if (error !== prevProps.error) {
+          if (error.id === 'VENDOR_LOGIN_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+      }
 
     onChangeemail(e) {
         this.setState({
@@ -31,21 +53,15 @@ class LoginVendor extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
-        console.log(`Email: ${this.state.email}`);
+        const { email, password } = this.state;
 
-        const loginVendor = {
-            email: this.state.email,
-            password: this.state.password
-        }
+        const vendor = {
+            email,
+            password
+        };
 
-        axios.post('http://localhost:4000/vendor/login', loginVendor)
-            .then(res => console.log("Vendor Logging In"));
-
-        this.setState({
-            email: '',
-            password: ''
-        })
+        // Attempt to login
+        this.props.vendorLogin(vendor);
     }
 
     render() {
@@ -75,4 +91,12 @@ class LoginVendor extends Component {
     }
 }
 
-export default LoginVendor;
+const mapStateToProps = state => ({
+    isAuthenticated: state.vendorAuth.isAuthenticated,
+    error: state.error
+  });
+  
+  export default connect(
+    mapStateToProps,
+    { vendorLogin, clearErrors }
+  )(LoginVendor);

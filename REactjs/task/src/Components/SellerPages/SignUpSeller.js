@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { signupSeller } from '../../actions/sellerAuthActions';
+import { clearErrors } from '../../actions/errorActions';
 
 class SignUpSeller extends Component {
 
@@ -16,11 +19,31 @@ class SignUpSeller extends Component {
         this.state = {
             name: '',
             email: '',
-            contact: 0,
+            contact: '',
             address: '',
-            password: ''
+            password: '',
+            msg: null
         }
     }
+
+    static propTypes = {
+        isAuthenticated: PropTypes.bool,
+        error: PropTypes.object.isRequired,
+        signupSeller: PropTypes.func.isRequired,
+        clearErrors: PropTypes.func.isRequired
+      };
+    
+      componentDidUpdate(prevProps) {
+        const { error, isAuthenticated } = this.props;
+        if (error !== prevProps.error) {
+          // Check for register error
+          if (error.id === 'SELLER_REGISTER_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+      }
 
     onChangename(e) {
         this.setState({
@@ -61,30 +84,27 @@ class SignUpSeller extends Component {
         console.log(`Contact: ${this.state.contact}`);
         console.log(`Address: ${this.state.address}`);
 
+        const { name, email, contact, address, password } = this.state;
+
+        // Create user object
         const newSeller = {
-            name: this.state.name,
-            email: this.state.email,
-            contact: this.state.contact,
-            address: this.state.address,
-            password: this.state.password
-        }
+        name,
+        email,
+        contact,
+        address,
+        password
+        };
 
-        axios.post('http://localhost:4000/seller/signUp', newSeller)
-            .then(res => console.log("Signing Up Seller"));
-
-        this.setState({
-            name: '',
-            email: '',
-            contact: '',
-            address: '',
-            password: '',
-        })
+        this.props.signupSeller(newSeller);
     }
 
     render() {
         return (
             <div>
                 <h3>Register Yourself as Seller!</h3>
+                {this.state.msg ? (
+                console.log(this.state.msg)
+                ) : null}
                 <form onSubmit={this.onSubmit}>
                     <div>
                       <label>Name: </label>
@@ -129,4 +149,12 @@ class SignUpSeller extends Component {
     }
 }
   
-export default SignUpSeller;
+const mapStateToProps = state => ({
+    isAuthenticated: state.sellerAuth.isAuthenticated,
+    error: state.error
+  });
+  
+  export default connect(
+    mapStateToProps,
+    { signupSeller, clearErrors }
+  )(SignUpSeller);
