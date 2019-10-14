@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
+import {Redirect} from 'react-router-dom';
 
 class SignUpSeller extends Component {
 
@@ -15,6 +16,7 @@ class SignUpSeller extends Component {
         this.onChangeaddress = this.onChangeaddress.bind(this);
         this.onChangepassword = this.onChangepassword.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.redirectit = this.redirectit.bind(this);
 
         this.state = {
             name: '',
@@ -44,6 +46,16 @@ class SignUpSeller extends Component {
           }
         }
       }
+
+      redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
 
     onChangename(e) {
         this.setState({
@@ -101,6 +113,7 @@ class SignUpSeller extends Component {
     render() {
         return (
             <div>
+                {this.redirectit()}
                 <h3>Register Yourself as Seller!</h3>
                 {this.state.msg ? (
                 console.log(this.state.msg)

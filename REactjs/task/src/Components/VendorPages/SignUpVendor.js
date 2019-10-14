@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signupVendor } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
+import {Redirect} from 'react-router-dom';
 
 class SignUpVendor extends Component {
 
@@ -15,6 +16,7 @@ class SignUpVendor extends Component {
         this.onChangeaddress = this.onChangeaddress.bind(this);
         this.onChangepassword = this.onChangepassword.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.redirectit = this.redirectit.bind(this);
 
         this.state = {
             name: '',
@@ -32,6 +34,16 @@ class SignUpVendor extends Component {
         signupVendor: PropTypes.func.isRequired,
         clearErrors: PropTypes.func.isRequired
       };
+
+      redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
     
       componentDidUpdate(prevProps) {
         const { error, isAuthenticated } = this.props;
@@ -101,6 +113,7 @@ class SignUpVendor extends Component {
     render() {
         return (
             <div>
+                {this.redirectit()}
                 <h3>Register Yourself as Vendor!</h3>
                 {this.state.msg ? (
                 console.log(this.state.msg)

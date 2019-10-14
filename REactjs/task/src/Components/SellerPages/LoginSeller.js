@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { sellerLogin } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
+import {Redirect} from 'react-router-dom';
 
 class LoginSeller extends Component {
 
@@ -12,6 +13,7 @@ class LoginSeller extends Component {
         this.onChangeemail = this.onChangeemail.bind(this);
         this.onChangepassword = this.onChangepassword.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.redirectit = this.redirectit.bind(this);
 
         this.state = {
             email: '',
@@ -50,6 +52,16 @@ class LoginSeller extends Component {
         });
     }
 
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
+
     onSubmit(e) {
         e.preventDefault();
 
@@ -64,9 +76,12 @@ class LoginSeller extends Component {
         this.props.sellerLogin(seller);
     }
 
+    
+
     render() {
         return (
             <div>
+                {this.redirectit()}
                 <h3>Login as Seller!</h3>
                 <form onSubmit={this.onSubmit}>
                 {this.state.msg ? (

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { vendorLogin } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
+import {Redirect} from 'react-router-dom';
 
 class LoginVendor extends Component {
 
@@ -12,7 +13,7 @@ class LoginVendor extends Component {
         this.onChangeemail = this.onChangeemail.bind(this);
         this.onChangepassword = this.onChangepassword.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-
+        this.redirectit = this.redirectit.bind(this);
         this.state = {
             email: '',
             password: '',
@@ -44,6 +45,16 @@ class LoginVendor extends Component {
         });
     }
 
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
+
     onChangepassword(e) {
         this.setState({
             password: e.target.value
@@ -67,6 +78,7 @@ class LoginVendor extends Component {
     render() {
         return (
             <div>
+                {this.redirectit()}
                 <h3>Login as Vendor!</h3>
                 <form onSubmit={this.onSubmit}>
                     <div>

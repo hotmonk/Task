@@ -7,6 +7,9 @@ import SignUpSeller from '../Components/SellerPages/SignUpSeller';
 import SignUpVendor from '../Components/VendorPages/SignUpVendor';
 import ItemForm from '../Components/SellerPages/AddNewItem';
 import vendorRequest from '../Components/VendorPages/requestVendor';
+import vendorProfile from '../Components/VendorPages/ProfileVendor';
+import sellerProfile from '../Components/SellerPages/ProfileSeller';
+
 
 const Routes = (props) => {
         return(
@@ -17,6 +20,8 @@ const Routes = (props) => {
                 <Route path='/seller/login' exact component={LoginSeller}/>
                 <Route path='/vendor/newWasteType' exact component={vendorRequest} />
                 <Route path='/seller/:id/items' component={ItemForm}/>
+                <Route path='/seller/profile' component={sellerProfile}/>
+                <Route path='/vendor/profile' component={vendorProfile}/>
              </Switch>
         )
 

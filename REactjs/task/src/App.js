@@ -11,6 +11,7 @@ import { loadVendor } from './actions/vendorAuthActions';
 class App extends Component {
   componentDidMount() {
     store.dispatch(loadSeller());
+    store.dispatch(loadVendor());
   }
 
   render() {
