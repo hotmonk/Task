@@ -53,6 +53,22 @@ app.get("/categories",function(req,res){
  });
 })
 
+app.get("/categories/:id",function(req,res){
+  Cat.findById(req.params.id, function(err, category){
+    if(err){
+        console.log(err);
+    } else {
+     // console.log(allCategories);
+      //console.log(filtered);
+      var categoryData={
+        name:category.name,
+        key:category._id
+      }
+      res.json(categoryData);
+    }
+ });
+})
+
 ///get all subcategories of a category
 /// checked
 app.get("/categories/:id/subcat",function(req,res){
@@ -71,6 +87,16 @@ app.get("/categories/:id/subcat",function(req,res){
           res.json(final_res);
         }
     });
+});
+
+app.get("/subcat/:id",function(req,res){
+    Sub_cat.findById(req.params.id,function(err,response){
+      if(err){
+        console.log(err);
+      }else{
+        res.json(response);
+      }
+    })
 });
 
 
@@ -240,7 +266,7 @@ app.get('/vendor/:id', vendorAuth, function(req, res){
 
 ///get all items
 app.get('/vendor/newsfeed', vendorAuth, function(req, res){
-  Item.find({}, function(err, allItems){
+  Item.find({}).populate('cat_id').populate('sub_cat_id').exec(function(err, allItems){
     if(err)
     {
         console.log(err);
@@ -253,10 +279,13 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
           cat_id: item.cat_id,
           sub_cat_id: item.sub_cat_id,
           quantity: item.quantity,
-          image: item.image
+          image: item.image,
+          status:item.status
         }
       });
-      console.log(allItems);
+      filtered=filtered.filter((item)=>{
+          return item.status=='inBid';
+      })
       res.json(filtered);
     }
  });
