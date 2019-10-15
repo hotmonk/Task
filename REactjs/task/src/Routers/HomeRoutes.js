@@ -9,6 +9,7 @@ import ItemForm from '../Components/SellerPages/AddNewItem';
 import vendorRequest from '../Components/VendorPages/requestVendor';
 import vendorProfile from '../Components/VendorPages/ProfileVendor';
 import sellerProfile from '../Components/SellerPages/ProfileSeller';
+import newsFeed from '../Components/VendorPages/NewsFeed';
 
 
 const Routes = (props) => {
@@ -22,6 +23,7 @@ const Routes = (props) => {
                 <Route path='/seller/:id/items' component={ItemForm}/>
                 <Route path='/seller/profile' component={sellerProfile}/>
                 <Route path='/vendor/profile' component={vendorProfile}/>
+                <Route path='/vendor/newsfeed' component={newsFeed}/>
              </Switch>
         )
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { vendorLogin } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
-import {Redirect} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 class LoginVendor extends Component {
 
@@ -29,7 +29,7 @@ class LoginVendor extends Component {
       };
 
       componentDidUpdate(prevProps) {
-        const { error, isAuthenticated } = this.props;
+        const { error } = this.props;
         if (error !== prevProps.error) {
           if (error.id === 'VENDOR_LOGIN_FAIL') {
             this.setState({ msg: error.msg.msg });
@@ -49,7 +49,7 @@ class LoginVendor extends Component {
         if(this.props.isAuthenticated)
         {
             return (
-                <Redirect to='./profile' />
+                <Redirect to='./newsfeed' />
             )
         }
         

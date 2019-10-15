@@ -171,7 +171,7 @@ app.get('/seller/:id', sellerAuth, function(req, res){
 })
 
 //Items uploaded by customer
-app.get('/seller/:id/items', sellerAuth, function(req, res){
+app.get('/seller/items', sellerAuth, function(req, res){
     Seller.findById(req.params.id).populate("items").exec(function(err, foundSeller){
         if(err){
             console.log(err);
@@ -181,7 +181,7 @@ app.get('/seller/:id/items', sellerAuth, function(req, res){
     });
 });
 
-app.post('/seller/:id/items', sellerAuth, function(req, res){
+app.post('/seller/:id/items', function(req, res){
   let newItem = new Item(req.body);
   newItem['cust_id']=req.seller.id;
   console.log(newItem);

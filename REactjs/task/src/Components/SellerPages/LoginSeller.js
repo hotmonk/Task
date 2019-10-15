@@ -30,7 +30,7 @@ class LoginSeller extends Component {
       };
 
       componentDidUpdate(prevProps) {
-        const { error, isAuthenticated } = this.props;
+        const { error } = this.props;
         if (error !== prevProps.error) {
           if (error.id === 'SELLER_LOGIN_FAIL') {
             this.setState({ msg: error.msg.msg });
@@ -81,7 +81,7 @@ class LoginSeller extends Component {
     render() {
         return (
             <div>
-                {this.redirectit()}
+                { this.redirectit() }
                 <h3>Login as Seller!</h3>
                 <form onSubmit={this.onSubmit}>
                 {this.state.msg ? (

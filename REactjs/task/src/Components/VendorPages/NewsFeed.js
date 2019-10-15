@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 
 class SignUpVendor extends Component {
@@ -59,20 +60,19 @@ class SignUpVendor extends Component {
       }
 
     render() {
-        var Viewh=null;
-        if(this.state.item){
-            Viewh=(
+        return(
+            <div>
+            {
+                this.state.item?(
                 <div>
                     <button onClick={this.handleBack}>Go Back</button>
                    <h1> Item Details:</h1>
-                   <h2>category:{item.cat.name}</h2> 
-                   <h2>subcategory:{item.subcat.name}</h2>
-                   <h2>quantity:{item.quantity}</h2>{item.subcat.quantity_type}
+                   <h2>category:{this.state.item.cat.name}</h2> 
+                   <h2>subcategory:{this.state.item.subcat.name}</h2>
+                   <h2>quantity:{this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
                    
                 </div>
-            )
-        }else{
-            Viewh=(
+            ):(
                 <div>
                 <h1>Here are all the items for sale</h1>
                 <ul>
@@ -86,8 +86,9 @@ class SignUpVendor extends Component {
                 </ul>
             </div>
             )
-        }
-        return <Viewh />;
+            }
+            </div>
+        )
     }
 }
 
