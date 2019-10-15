@@ -1,5 +1,7 @@
 import React,{Component} from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { clearErrors } from '../../actions/errorActions';
 
 class ItemForm extends Component
 {
@@ -15,6 +17,13 @@ class ItemForm extends Component
             categories:null,
             subcategories:null
         }
+        this.handleCategory=this.handleCategory.bind(this);
+        this.handleQuantity=this.handleQuantity.bind(this);
+        this.handleSubcategory=this.handleSubcategory.bind(this);
+        this.submitHandler=this.submitHandler.bind(this);
+    }
+
+    componentDidMount(){
         axios.get('https://localhost:4000/categories')
             .then(function(response){
                 this.setState({
@@ -24,7 +33,7 @@ class ItemForm extends Component
             .catch((error)=>{
                 console.log(error);
             })
-        
+
         if(this.state.categories.length){
             axios.get('https://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
                 .then(function(response){
@@ -38,16 +47,12 @@ class ItemForm extends Component
                     console.log(error);
                 })
         }
-        this.handleCategory=this.handleCategory.bind(this);
-        this.handleQuantity=this.handleQuantity.bind(this);
-        this.handleSubcategory=this.handleSubcategory.bind(this);
-        this.submitHandler=this.submitHandler.bind(this);
     }
 
     submitHandler(event){
         event.preventDefault();
         const item = {
-//            cust_id:this.props.id,
+            cust_id:this.props.seller.id,
             cat_id:this.state.category_id,
             sub_cat_id:this.state.subcat_id,
             quantity:this.state.quantity,
@@ -127,4 +132,13 @@ class ItemForm extends Component
     }
 };
 
-export default ItemForm;
+const mapStateToProps = state => ({
+    seller:state.sellerAuth.seller,
+    isAuthenticated: state.sellerAuth.isAuthenticated,
+    error: state.error
+  });
+  
+  export default connect(
+    mapStateToProps,
+    { clearErrors }
+  )(ItemForm);
