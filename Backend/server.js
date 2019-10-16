@@ -131,12 +131,16 @@ app.post('/seller/signUp', function(req, res) {
           newSeller.password = hash;
           newSeller.save()
             .then(seller => {
+              console.log(seller);
               jwt.sign(
                 { id: seller.id },
                 config.get('jwtSecretseller'),
                 { expiresIn: 3600 },
                 (err, token) => {
-                  if(err) throw err;
+                  if(err){
+                    console.log(err);
+                    throw err;
+                  } 
                   res.json({
                     token,
                     seller: {
@@ -149,7 +153,10 @@ app.post('/seller/signUp', function(req, res) {
                   });
                 }
               )
-            });
+            })
+            .catch(err=>{
+              res.status(400).json({ msg: 'seller signup failed' });
+            })
         })
       })
     })
@@ -170,8 +177,9 @@ app.get('/seller/:id', sellerAuth, function(req, res){
   })
 })
 
+
 //Items uploaded by customer
-app.get('/seller/items', sellerAuth, function(req, res){
+app.get('/seller/:id/items', sellerAuth, function(req, res){
     Seller.findById(req.params.id).populate("items").exec(function(err, foundSeller){
         if(err){
             console.log(err);
@@ -181,9 +189,9 @@ app.get('/seller/items', sellerAuth, function(req, res){
     });
 });
 
-app.post('/seller/:id/items', function(req, res){
+app.post('/seller/:id/items',sellerAuth, function(req, res){
   let newItem = new Item(req.body);
-  newItem['cust_id']=req.seller.id;
+  newItem['cust_id']=req.params.id;
   console.log(newItem);
   newItem.save()
       .then(newItem => {
@@ -250,19 +258,6 @@ app.post('/vendor/signUp', function(req, res) {
 
 
 //vendor profile
-///checked
-app.get('/vendor/:id', vendorAuth, function(req, res){
-  Vendor.findById(req.params.id, function(err, foundVendor){
-    if(err)
-    {
-      console.log(err);
-    }
-    else
-    {
-      res.json(foundVendor);
-    }
-  })
-})
 
 ///get all items
 app.get('/vendor/newsfeed', vendorAuth, function(req, res){
@@ -289,9 +284,23 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
       filtered=filtered.filter((item)=>{
           return item.status=='inBid';
       })
+      console.log(filtered);
       res.json(filtered);
     }
  });
+})
+///checked
+app.get('/vendor/:id', vendorAuth, function(req, res){
+  Vendor.findById(req.params.id, function(err, foundVendor){
+    if(err)
+    {
+      console.log(err);
+    }
+    else
+    {
+      res.json(foundVendor);
+    }
+  })
 })
 
 

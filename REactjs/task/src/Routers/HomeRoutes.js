@@ -24,6 +24,7 @@ const Routes = (props) => {
                 <Route path='/seller/profile' component={sellerProfile}/>
                 <Route path='/vendor/profile' component={vendorProfile}/>
                 <Route path='/vendor/newsfeed' component={newsFeed}/>
+                <Route path='/seller/additem' component={ItemForm}/>
              </Switch>
         )
 
