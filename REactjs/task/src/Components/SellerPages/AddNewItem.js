@@ -58,7 +58,7 @@ class ItemForm extends Component
             quantity:this.state.quantity,
             status:'inBid'
         }
-        axios.post( 'https://localhost:4000/seller/'+item.cust_id+'/items', item )
+        axios.post( 'https://localhost:4000/seller/' + item.cust_id + '/items', item )
             .then(res => console.log("Seller Logging In"));
     }
 

@@ -11,9 +11,9 @@ export class VendorLogout extends Component {
   render() {
     return (
       <Fragment>
-        <Button onClick={this.props.vendorLogout}>
+        <button onClick={this.props.vendorLogout}>
           Logout Vendor
-        </Button>
+        </button>
       </Fragment>
     );
   }

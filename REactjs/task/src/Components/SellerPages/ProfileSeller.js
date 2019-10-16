@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -8,7 +8,7 @@ class sellerProfile extends Component {
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
-          if (error.id === 'SELLER_REGISTER_FAIL') {
+          if (error.id === 'SELLER_REGISTER_FAIL' || error.id === 'SELLER_LOGIN_FAIL') {
             this.setState({ msg: error.msg.msg });
           } else {
             this.setState({ msg: null });

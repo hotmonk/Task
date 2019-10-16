@@ -12,7 +12,6 @@ import {
   SELLER_REGISTER_FAIL
 } from './types';
 
-// Setup config/headers and token
 export const tokenConfig = getState => {
   // Get token from localstorage
   const token = getState().sellerAuth.token;

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 
-class SignUpVendor extends Component {
+class NewsFeed extends Component {
 
     constructor(props) {
         super(props);
@@ -33,9 +33,9 @@ class SignUpVendor extends Component {
     
             // If token, add to headers
             if (token) {
-                config.headers['x-auth-seller-token'] = token;
+                config.headers['x-auth-vendor-token'] = token;
             }
-            axios.get('http://localhost:4000/seller/login/seller', config)
+            axios.get('http://localhost:4000/vendor/login/vendor', config)
                 .then(response=>{
                     this.setState({
                         items:response
@@ -65,11 +65,11 @@ class SignUpVendor extends Component {
             {
                 this.state.item?(
                 <div>
-                    <button onClick={this.handleBack}>Go Back</button>
+                   <button onClick={this.handleBack}>Go Back</button>
                    <h1> Item Details:</h1>
-                   <h2>category:{this.state.item.cat.name}</h2> 
-                   <h2>subcategory:{this.state.item.subcat.name}</h2>
-                   <h2>quantity:{this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
+                   <h2> category: {this.state.item.cat.name}</h2> 
+                   <h2> subcategory: {this.state.item.subcat.name}</h2>
+                   <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
                    
                 </div>
             ):(
@@ -77,11 +77,13 @@ class SignUpVendor extends Component {
                 <h1>Here are all the items for sale</h1>
                 <ul>
                 {
+                    this.state.items?
                         this.state.items.map(item=>{
                             return (<li key={item.id} onClick={this.handleList.bind(item)}>
                                 category:{item.cat.name}  subcategory:{item.subcat.name}  quantity:{item.quantity}{item.subcat.quantity_type}
                             </li>)
-                        })
+                        }) : (<h1>No Items to display</h1>)
+                    
                 }
                 </ul>
             </div>
@@ -101,4 +103,4 @@ const mapStateToProps = state => ({
   export default connect(
     mapStateToProps,
     { clearErrors }
-  )(SignUpVendor);
+  )(NewsFeed);
