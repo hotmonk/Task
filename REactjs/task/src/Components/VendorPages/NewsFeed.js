@@ -65,7 +65,6 @@ class NewsFeed extends Component {
             {
                 this.state.item?(
                 <div>
-                    {console.log(this.state.item)}
                    <button onClick={this.handleBack}>Go Back</button>
                    <h1> Item Details:</h1>
                    <h2> category: {this.state.item.cat.name}</h2> 

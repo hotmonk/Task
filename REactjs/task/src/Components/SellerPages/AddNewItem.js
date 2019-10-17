@@ -17,13 +17,7 @@ class ItemForm extends Component
             categories:null,
             subcategories:null
         }
-        this.handleCategory=this.handleCategory.bind(this);
-        this.handleQuantity=this.handleQuantity.bind(this);
-        this.handleSubcategory=this.handleSubcategory.bind(this);
-        this.submitHandler=this.submitHandler.bind(this);
-    }
 
-    componentDidMount(){
         axios.get('https://localhost:4000/categories')
             .then(function(response){
                 this.setState({
@@ -33,8 +27,15 @@ class ItemForm extends Component
             .catch((error)=>{
                 console.log(error);
             })
+        this.handleCategory=this.handleCategory.bind(this);
+        this.handleQuantity=this.handleQuantity.bind(this);
+        this.handleSubcategory=this.handleSubcategory.bind(this);
+        this.submitHandler=this.submitHandler.bind(this);
+    }
 
-        if(this.state.categories.length){
+    componentDidMount(){
+
+        if(this.state.categories && this.state.categories.length){
             axios.get('https://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
                 .then(function(response){
                     this.setState({
@@ -98,36 +99,41 @@ class ItemForm extends Component
     render()
     {
         return (
-             <form onSubmit={this.submitHandler}>
-                <select onChange={this.handleCategory} value={this.state.category_id} >
-                    {
-                        this.state.categories.map(category=>{
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        })
-                    }
-                </select>
-                {
-                    this.state.subcategories ?(
-                    <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+            <div>
+            {
+                this.state.categories ? (
+                    <form onSubmit={this.submitHandler}>
+                    <select onChange={this.handleCategory} value={this.state.category_id} >
                         {
-                            this.state.subcategories.map(subcategory=>{
-                                <option key={subcategory.id} value={subcategory.id} >
-                                    {subcategory.name}
-                                </option>
+                            this.state.categories.map(category=>{
+                                return (<option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>)
                             })
                         }
-                    </select>)
-                        :null
-                }
-                <div>
-                    <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
-                    <p><strong>{this.state.quantity_type}</strong></p>
-                </div>
-                
-                <input type="submit" value="Add new item" />
-            </form> 
+                    </select>
+                    {
+                        this.state.subcategories ?(
+                        <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+                            {
+                                this.state.subcategories.map(subcategory=>{
+                                    return (<option key={subcategory.id} value={subcategory.id} >
+                                        {subcategory.name}
+                                    </option>)
+                                })
+                            }
+                        </select>)
+                            :null
+                    }
+                    <div>
+                        <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
+                        <p><strong>{this.state.quantity_type}</strong></p>
+                    </div>
+                    
+                    <input type="submit" value="Add new item" />
+                </form> ) : (<div>Sorry No vendor available</div>)
+            }
+            </div>
         );
     }
 };
