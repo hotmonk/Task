@@ -35,7 +35,7 @@ connection. once('open',function(){
 ///GET ALL CATEGORIES
 ///checked
 app.get("/categories",function(req,res){
-  Cat.find({}).populate('sub_cats') function(err, allCategories){
+  Cat.find({}).populate('sub_cats').exec(function(err, allCategories){
     if(err){
         console.log(err);
     } else {
