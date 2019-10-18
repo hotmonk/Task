@@ -35,7 +35,7 @@ connection. once('open',function(){
 ///GET ALL CATEGORIES
 ///checked
 app.get("/categories",function(req,res){
-  Cat.find({}, function(err, allCategories){
+  Cat.find({}).populate('sub_cats') function(err, allCategories){
     if(err){
         console.log(err);
     } else {
@@ -43,7 +43,8 @@ app.get("/categories",function(req,res){
         return {
           name:category.name,
           id:category._id,
-          key: category._id
+          key: category._id,
+          sub_cats:category.sub_cats
         }
       })
      // console.log(allCategories);
