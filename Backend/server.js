@@ -54,6 +54,7 @@ app.get("/categories",function(req,res){
  });
 })
 
+
 // app.get("/categories/:id",function(req,res){
 //   Cat.findById(req.params.id, function(err, category){
 //     if(err){
@@ -114,7 +115,7 @@ app.get('/seller/:id/viewItem',sellerAuth,function(req,res){
     {
       var filtered=allItems.filter((item)=>{
           return item.cust_id==req.params.id;
-      })
+      });
       res.json(filtered);
     }
  });

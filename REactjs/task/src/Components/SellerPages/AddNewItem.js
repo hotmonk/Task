@@ -17,31 +17,30 @@ class ItemForm extends Component
             categories:null,
             subcategories:null
         }
-
-        axios.get('https://localhost:4000/categories')
-            .then(function(response){
-                this.setState({
-                    categories:response,
-                });
-            })
-            .catch((error)=>{
-                console.log(error);
-            })
         this.handleCategory=this.handleCategory.bind(this);
         this.handleQuantity=this.handleQuantity.bind(this);
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
-    }
-
-    componentDidMount(){
-
+        if(this.props.isAuthenticated){
+            axios.get('http://localhost:4000/categories')
+                .then((response)=>{
+                    console.log(response.data);
+                    this.setState({
+                        categories:response.data,
+                    });
+                })
+                .catch((error)=>{
+                    console.log(error);
+                })
+        }
         if(this.state.categories && this.state.categories.length){
             axios.get('https://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
-                .then(function(response){
+                .then((response)=>{
+                    console.log(response);
                     this.setState({
-                        subcategories:response,
+                        subcategories:response.data,
                         category_id:this.state.categories[0].key,
-                        subcat_id:response[0].key
+                        subcat_id:response.data[0].key
                     });
                 })
                 .catch((error)=>{
@@ -59,7 +58,7 @@ class ItemForm extends Component
             quantity:this.state.quantity,
             status:'inBid'
         }
-        axios.post( 'https://localhost:4000/seller/' + item.cust_id + '/items', item )
+        axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item )
             .then(res => console.log("Seller Logging In"));
     }
 
@@ -139,6 +138,7 @@ class ItemForm extends Component
 };
 
 const mapStateToProps = state => ({
+    token:state.sellerAuth.token,
     seller:state.sellerAuth.seller,
     isAuthenticated: state.sellerAuth.isAuthenticated,
     error: state.error

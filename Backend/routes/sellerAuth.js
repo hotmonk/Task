@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
   Seller.findOne({ email })
     .then(seller => {
       if(!seller) return res.status(400).json({ msg: 'Seller Does not exist' });
-
+      
       bcrypt.compare(password, seller.password)
         .then(isMatch => {
           if(!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
@@ -32,6 +32,7 @@ router.post('/', (req, res) => {
             { expiresIn: 36000000 },
             (err, token) => {
               if(err) throw err;
+
               res.json({
                 token,
                 seller: {
