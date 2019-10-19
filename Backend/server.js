@@ -44,7 +44,6 @@ app.get("/categories",function(req,res){
           name:category.name,
           id:category._id,
           key: category._id,
-          sub_cats:category.sub_cats
         }
       })
      // console.log(allCategories);
@@ -74,7 +73,7 @@ app.get("/categories",function(req,res){
 ///get all subcategories of a category
 /// checked
 app.get("/categories/:id/subcat",function(req,res){
-    Cat.findById(req.params.id).populate("sub_cats").exec(function(err, result){
+    Cat.findById(req.params.id).populate('sub_cats').exec(function(err, result){
         if(err||!result){
           console.log(err);
         }else{
@@ -82,6 +81,7 @@ app.get("/categories/:id/subcat",function(req,res){
           var final_res=sub_cat.map(subcat=>{
             return {
               key:subcat._id,
+              id:subcat._id,
               name:subcat.name,
               quantity_type:subcat.quantity_type
             }

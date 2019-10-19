@@ -24,24 +24,26 @@ class ItemForm extends Component
         if(this.props.isAuthenticated){
             axios.get('http://localhost:4000/categories')
                 .then((response)=>{
-                    console.log(response.data);
                     this.setState({
-                        categories:response.data,
+                        categories:response.data
                     });
-                })
-                .catch((error)=>{
-                    console.log(error);
-                })
-        }
-        if(this.state.categories && this.state.categories.length){
-            axios.get('https://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
-                .then((response)=>{
-                    console.log(response);
-                    this.setState({
-                        subcategories:response.data,
-                        category_id:this.state.categories[0].key,
-                        subcat_id:response.data[0].key
-                    });
+                    if(this.state.categories && this.state.categories.length){
+                        axios.get('http://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
+                            .then((response)=>{
+                                this.setState({
+                                    subcategories:response.data,
+                                    category_id:this.state.categories[0].key,
+                                    subcat_id:response.data[0].key
+                                });
+                                console.log(this.state.categories),
+                                console.log(this.state.subcategories),
+                                console.log(this.state.category_id),
+                                console.log(this.state.subcat_id)
+                            })
+                            .catch((error)=>{
+                                console.log(error);
+                            })
+                    }
                 })
                 .catch((error)=>{
                     console.log(error);
@@ -70,9 +72,13 @@ class ItemForm extends Component
                     subcategories:response ,
                     category_id:curid,
                 });
-                if(response.length){
+                if(response&&response.length){
                     this.setState({
                         subcat_id:response[0].key
+                    });
+                }else{
+                    this.setState({
+                        subcat_id:null
                     });
                 }
             })
@@ -102,32 +108,32 @@ class ItemForm extends Component
             {
                 this.state.categories ? (
                     <form onSubmit={this.submitHandler}>
-                    <select onChange={this.handleCategory} value={this.state.category_id} >
-                        {
-                            this.state.categories.map(category=>{
-                                return (<option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>)
-                            })
-                        }
-                    </select>
-                    {
-                        this.state.subcategories ?(
-                        <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+                        <select onChange={this.handleCategory} value={this.state.cat_id} >
                             {
-                                this.state.subcategories.map(subcategory=>{
-                                    return (<option key={subcategory.id} value={subcategory.id} >
-                                        {subcategory.name}
+                                this.state.categories.map(category=>{
+                                    return (<option key={category.key} value={category.id}>
+                                        {category.name}
                                     </option>)
                                 })
                             }
-                        </select>)
-                            :null
-                    }
-                    <div>
-                        <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
-                        <p><strong>{this.state.quantity_type}</strong></p>
-                    </div>
+                        </select>
+                        {
+                            this.state.subcategories ?(
+                            <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+                                {
+                                    this.state.subcategories.map(subcategory=>{
+                                        return (<option key={subcategory.id} value={subcategory.id} >
+                                            {subcategory.name}
+                                        </option>)
+                                    })
+                                }
+                            </select>)
+                                :null
+                        }
+                        <div>
+                            <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
+                            <p><strong>{this.state.quantity_type}</strong></p>
+                        </div>
                     
                     <input type="submit" value="Add new item" />
                 </form> ) : (<div>Sorry No vendor available</div>)
