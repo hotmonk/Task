@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 
 class sellerProfile extends Component {
 
@@ -16,23 +17,24 @@ class sellerProfile extends Component {
         }
       }
 
-    static propTypes = {
-        sellerData:PropTypes.isRequired,
-        isAuthenticated: PropTypes.bool,
-        error: PropTypes.object.isRequired,
-        clearErrors: PropTypes.func.isRequired
-      };
-
       render(){
           return (
             <div>
-                <h1>welcome {this.props.sellerData.name}</h1>
-                <p>Here are all the details you entered</p>
-                <h3>Name:{this.props.sellerData.name}</h3>
-                <h3>Email:{this.props.sellerData.email}</h3>
-                <h3>Contact:{this.props.sellerData.contact}</h3>
-                <h3>Address:{this.props.sellerData.address}</h3>
-                <button>Edit Details</button>
+              <div>
+                  <h1>welcome {this.props.sellerData.name}</h1>
+                  <p>Here are all the details you entered</p>
+                  <h3>Name:{this.props.sellerData.name}</h3>
+                  <h3>Email:{this.props.sellerData.email}</h3>
+                  <h3>Contact:{this.props.sellerData.contact}</h3>
+                  <h3>Address:{this.props.sellerData.address}</h3>
+                  <button>Edit Details</button>
+              </div>
+              <div>
+                <Link to={"/seller/newItem"}>Add Items For Sale</Link>
+              </div>
+              <div>
+                <Link to={"/seller/items"}>View All items added by you</Link>
+              </div>
             </div>
           );
       }

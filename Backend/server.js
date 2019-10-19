@@ -103,6 +103,23 @@ app.get("/categories/:id/subcat",function(req,res){
 
 /// SELLER ROUTES
 ///checked
+
+app.get('/seller/:id/viewItem',sellerAuth,function(req,res){
+  Item.find({}).populate('cat_id').populate('sub_cat_id').exec(function(err, allItems){
+    if(err)
+    {
+        console.log(err);
+    } 
+    else 
+    {
+      var filtered=allItems.filter((item)=>{
+          return item.cust_id==req.params.id;
+      })
+      res.json(filtered);
+    }
+ });
+});
+
 app.post('/seller/signUp', function(req, res) {
   const { name, email, contact, address, password } = req.body;
 
@@ -193,7 +210,7 @@ app.get('/seller/:id/items', sellerAuth, function(req, res){
 app.post('/seller/:id/items',sellerAuth, function(req, res){
   let newItem = new Item(req.body);
   newItem['cust_id']=req.params.id;
-  console.log(newItem);
+  newItem['status']="inBid";
   newItem.save()
       .then(newItem => {
         res.status(200).json({newItem: 'Item added successfully by Customer'});

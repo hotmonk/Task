@@ -11,11 +11,12 @@ function sellerAuth(req, res, next)
 
   try 
   {
-    const decoded = jwt.verify(token, config.get('jwtSecretSeller'));
+    const decoded = jwt.verify(token, config.get('jwtSecretseller'));
     req.seller = decoded;
     next();
   } 
   catch (e) {
+    console.log(e),
     res.status(400).json({ msg: 'Token is not valid' });
   }
 }

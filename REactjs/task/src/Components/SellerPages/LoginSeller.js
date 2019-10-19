@@ -56,7 +56,7 @@ class LoginSeller extends Component {
         if(this.props.isAuthenticated)
         {
             return (
-                <Redirect to='./additem' />
+                <Redirect to='./profile' />
             )
         }
         

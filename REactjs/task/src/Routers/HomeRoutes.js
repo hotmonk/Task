@@ -10,6 +10,7 @@ import vendorRequest from '../Components/VendorPages/requestVendor';
 import vendorProfile from '../Components/VendorPages/ProfileVendor';
 import sellerProfile from '../Components/SellerPages/ProfileSeller';
 import newsFeed from '../Components/VendorPages/NewsFeed';
+import ViewItem from '../Components/SellerPages/viewItemPage';
 
 
 const Routes = (props) => {
@@ -20,7 +21,8 @@ const Routes = (props) => {
                 <Route path='/vendor/login' exact component={LoginVendor}/>
                 <Route path='/seller/login' exact component={LoginSeller}/>
                 <Route path='/vendor/newWasteType' exact component={vendorRequest} />
-                <Route path='/seller/:id/items' component={ItemForm}/>
+                <Route path='/seller/items' component={ViewItem}/>
+                <Route path='/seller/newItem' component={ItemForm}/>
                 <Route path='/seller/profile' component={sellerProfile}/>
                 <Route path='/vendor/profile' component={vendorProfile}/>
                 <Route path='/vendor/newsfeed' component={newsFeed}/>
