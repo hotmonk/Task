@@ -34,11 +34,7 @@ class ItemForm extends Component
                                     subcategories:response.data,
                                     category_id:this.state.categories[0].key,
                                     subcat_id:response.data[0].key
-                                });
-                                console.log(this.state.categories),
-                                console.log(this.state.subcategories),
-                                console.log(this.state.category_id),
-                                console.log(this.state.subcat_id)
+                                })
                             })
                             .catch((error)=>{
                                 console.log(error);
@@ -53,31 +49,50 @@ class ItemForm extends Component
 
     submitHandler(event){
         event.preventDefault();
-        const item = {
-            cust_id:this.props.seller.id,
-            cat_id:this.state.category_id,
-            sub_cat_id:this.state.subcat_id,
-            quantity:this.state.quantity,
-            status:'inBid'
-        }
-        axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item )
-            .then(res => console.log("Seller Logging In"));
+        if(this.props.isAuthenticated){
+            const token = this.props.token;
+  
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+    
+            // If token, add to headers
+            if (token) {
+                config.headers['x-auth-seller-token'] = token;
+            }
+            const item = {
+                cust_id:this.props.seller.id,
+                cat_id:this.state.category_id,
+                sub_cat_id:this.state.subcat_id,
+                quantity:this.state.quantity
+            }
+            axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item ,config)
+                .then(res => {
+                    console.log("Item added to the selling list")
+                })
+                .catch(e=>{
+                    console.log("item add request failed.retry later")
+                });
+          }
     }
 
     handleCategory(event){
         let curid=event.target.value;
-        axios.get('/categories/'+curid+'/subcat')
-            .then(function(response){
-                this.setState({
-                    subcategories:response ,
-                    category_id:curid,
-                });
-                if(response&&response.length){
+        axios.get('http://localhost:4000/categories/'+curid+'/subcat')
+            .then((response)=>{
+                if(response.data&&response.data.length){
                     this.setState({
-                        subcat_id:response[0].key
+                        subcategories:response.data ,
+                        category_id:curid,
+                        subcat_id:response.data[0].key
                     });
                 }else{
                     this.setState({
+                        subcategories:response.data ,
+                        category_id:curid,
                         subcat_id:null
                     });
                 }
@@ -123,7 +138,7 @@ class ItemForm extends Component
                                 {
                                     this.state.subcategories.map(subcategory=>{
                                         return (<option key={subcategory.id} value={subcategory.id} >
-                                            {subcategory.name}
+                                            { subcategory.name+' '+subcategory.quantity_type }
                                         </option>)
                                     })
                                 }
