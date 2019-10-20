@@ -76,7 +76,7 @@ class vendorRequest extends Component {
                     <div>
                       <label>Sub-Category Name: </label>
                       <input  type="text"
-                              value={this.state.email}
+                              value={this.state.cat_name}
                               onChange={this.onChangesub_cat_name}
                               />
                     </div>

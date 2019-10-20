@@ -106,19 +106,57 @@ app.get("/categories/:id/subcat",function(req,res){
 ///checked
 
 app.get('/seller/:id/viewItem',sellerAuth,function(req,res){
-  Item.find({}).populate('cat_id').populate('sub_cat_id').exec(function(err, allItems){
+  Seller.findById(req.params.id).populate({ 
+    path: 'items',
+    populate: {
+      path: 'cat_id',
+      model: 'Cat'
+    },
+    populate:{
+      path:'sub_cat_id',
+      model:'Sub_cat'
+    }
+})
+.exec(function(err, response) {
+  if(err)
+  {
+      console.log(err);
+  } 
+  else 
+  {
+    var filtered=response.items.filter((item)=>{
+        return (item.status==='inBid');
+    });
+    res.json(filtered);
+  }
+});
+});
+
+app.get('/seller/:id/viewSelledItem',sellerAuth,function(req,res){
+    Seller.findById(req.params.id).populate({ 
+      path: 'items',
+      populate: {
+        path: 'cat_id',
+        model: 'Cat'
+      },
+      populate:{
+        path:'sub_cat_id',
+        model:'Sub_cat'
+      }
+  })
+  .exec(function(err, response) {
     if(err)
     {
         console.log(err);
     } 
     else 
     {
-      var filtered=allItems.filter((item)=>{
-          return item.cust_id==req.params.id;
+      var filtered=response.items.filter((item)=>{
+          return (item.status==='sold');
       });
       res.json(filtered);
     }
- });
+  });
 });
 
 app.post('/seller/signUp', function(req, res) {
@@ -198,23 +236,22 @@ app.get('/seller/:id', sellerAuth, function(req, res){
 
 
 //Items uploaded by customer
-app.get('/seller/:id/items', sellerAuth, function(req, res){
-    Seller.findById(req.params.id).populate("items").exec(function(err, foundSeller){
-        if(err){
-            console.log(err);
-        }else{
-          res.json(foundSeller.items);
-        }
-    });
-});
-
 app.post('/seller/:id/items',sellerAuth, function(req, res){
   let newItem = new Item(req.body);
   newItem['cust_id']=req.params.id;
   newItem['status']="inBid";
   newItem.save()
-      .then(newItem => {
-        res.status(200).json({newItem: 'Item added successfully by Customer'});
+      .then(Item => {
+        Seller.findById(req.params.id,function(err,response){
+          response.items.push(Item._id),
+          response.save()
+            .then(item=>{
+              res.status(200).json({newItem: 'Item added successfully by Customer'});            })
+            .catch(err=>{
+              console.log(err)
+              res.status(400).send('adding new item failed');
+            })
+        })
       })
       .catch(err => {
         res.status(400).send('adding new item failed');

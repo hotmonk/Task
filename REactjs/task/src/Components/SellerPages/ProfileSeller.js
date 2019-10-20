@@ -35,6 +35,9 @@ class sellerProfile extends Component {
               <div>
                 <Link to={"/seller/items"}>View All items added by you</Link>
               </div>
+              <div>
+                <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
+              </div>
             </div>
           );
       }

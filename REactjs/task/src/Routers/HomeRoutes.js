@@ -11,6 +11,7 @@ import vendorProfile from '../Components/VendorPages/ProfileVendor';
 import sellerProfile from '../Components/SellerPages/ProfileSeller';
 import newsFeed from '../Components/VendorPages/NewsFeed';
 import ViewItem from '../Components/SellerPages/viewItemPage';
+import ViewSelledItem from '../Components/SellerPages/SoldItems';
 
 
 const Routes = (props) => {
@@ -27,6 +28,7 @@ const Routes = (props) => {
                 <Route path='/vendor/profile' component={vendorProfile}/>
                 <Route path='/vendor/newsfeed' component={newsFeed}/>
                 <Route path='/seller/additem' component={ItemForm}/>
+                <Route path='/seller/soldItems' component={ViewSelledItem}/>
              </Switch>
         )
 

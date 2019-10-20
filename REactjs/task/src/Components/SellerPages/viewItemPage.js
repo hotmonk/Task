@@ -87,6 +87,9 @@ class ViewItem extends Component {
                 <div>
                     <Link to="./newItem">Add new Item</Link>
                 </div>
+                <div>
+                    <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
+                </div>
             </div>
         )
     }

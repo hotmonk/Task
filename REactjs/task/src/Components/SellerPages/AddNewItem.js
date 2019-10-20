@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
+import { Link } from 'react-router-dom';
 
 class ItemForm extends Component
 {
@@ -154,6 +155,9 @@ class ItemForm extends Component
                     <input type="submit" />
                 </form> ) : (<div>Sorry No vendor available</div>)
             }
+            <div>
+                <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
+              </div>
             </div>
         );
     }
