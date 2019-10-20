@@ -72,6 +72,7 @@ class ItemForm extends Component
             axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
+                    this.props.history.push('/seller/items')
                 })
                 .catch(e=>{
                     console.log("item add request failed.retry later")
@@ -150,7 +151,7 @@ class ItemForm extends Component
                             <p><strong>{this.state.quantity_type}</strong></p>
                         </div>
                     
-                    <input type="submit" value="Add new item" />
+                    <input type="submit" />
                 </form> ) : (<div>Sorry No vendor available</div>)
             }
             </div>
