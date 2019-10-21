@@ -58,6 +58,9 @@ class ViewItem extends Component {
 
     render() {
         return(
+            
+            <div>
+              {this.props.isAuthenticated ? (
             <div>
                 {
                     this.state.item?(
@@ -92,6 +95,10 @@ class ViewItem extends Component {
                 <div>
                     <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
                 </div>
+            </div>
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         )
     }

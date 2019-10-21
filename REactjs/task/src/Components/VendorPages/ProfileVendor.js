@@ -27,6 +27,8 @@ class vendorProfile extends Component {
       render(){
           return (
             <div>
+              {this.props.isAuthenticated ? (
+            <div>
                 <h1>welcome {this.props.vendorData.name}</h1>
                 <p>Here are all the details you entered</p>
                 <h3>Name:{this.props.vendorData.name}</h3>
@@ -47,6 +49,10 @@ class vendorProfile extends Component {
               {/* <div>
                 <Link to={"/vendor/soldItems"}>View All requests and their status</Link>
               </div> */}
+            </div>
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
           );
       }

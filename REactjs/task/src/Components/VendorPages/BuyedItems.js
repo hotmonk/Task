@@ -58,6 +58,9 @@ class ViewBuyedItem extends Component {
 
     render() {
         return(
+            
+            <div>
+              {this.props.isAuthenticated ? (
             <div>
                 {
                     this.state.item?(
@@ -92,6 +95,11 @@ class ViewBuyedItem extends Component {
                 <div>
                         <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
                 </div>
+            </div>
+            
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         )
     }

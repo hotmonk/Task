@@ -90,6 +90,8 @@ class NewsFeed extends Component {
     render() {
         return(
             <div>
+              {this.props.isAuthenticated ? (
+            <div>
             {
                 this.state.item?(
                 <div>
@@ -126,6 +128,11 @@ class NewsFeed extends Component {
             </div>
             )
             }
+            </div>
+            
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         )
     }

@@ -20,24 +20,33 @@ class sellerProfile extends Component {
       render(){
           return (
             <div>
-              <div>
-                  <h1>welcome {this.props.sellerData.name}</h1>
-                  <p>Here are all the details you entered</p>
-                  <h3>Name:{this.props.sellerData.name}</h3>
-                  <h3>Email:{this.props.sellerData.email}</h3>
-                  <h3>Contact:{this.props.sellerData.contact}</h3>
-                  <h3>Address:{this.props.sellerData.address}</h3>
-                  <button>Edit Details</button>
-              </div>
-              <div>
-                <Link to={"/seller/newItem"}>Add Items For Sale</Link>
-              </div>
-              <div>
-                <Link to={"/seller/items"}>View All items added by you</Link>
-              </div>
-              <div>
-                <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
-              </div>
+              {this.props.isAuthenticated ? (
+                <div>
+                  <div>
+                      <h1>welcome {this.props.sellerData.name}</h1>
+                      <p>Here are all the details you entered</p>
+                      <h3>Name:{this.props.sellerData.name}</h3>
+                      <h3>Email:{this.props.sellerData.email}</h3>
+                      <h3>Contact:{this.props.sellerData.contact}</h3>
+                      <h3>Address:{this.props.sellerData.address}</h3>
+                      <button>Edit Details</button>
+                  </div>
+                  <div>
+                    <Link to={"/seller/newItem"}>Add Items For Sale</Link>
+                  </div>
+                  <div>
+                    <Link to={"/seller/items"}>View All items added by you</Link>
+                  </div>
+                  <div>
+                    <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
+                  </div>
+                  <div>
+                    <Link to={"/seller/logout"}>LogOut!</Link>
+                  </div>
+                </div>
+              ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
           );
       }
