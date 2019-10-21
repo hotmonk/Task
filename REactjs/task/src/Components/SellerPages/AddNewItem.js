@@ -122,42 +122,47 @@ class ItemForm extends Component
     {
         return (
             <div>
-            {
-                this.state.categories ? (
-                    <form onSubmit={this.submitHandler}>
-                        <select onChange={this.handleCategory} value={this.state.cat_id} >
-                            {
-                                this.state.categories.map(category=>{
-                                    return (<option key={category.key} value={category.id}>
-                                        {category.name}
-                                    </option>)
-                                })
-                            }
-                        </select>
-                        {
-                            this.state.subcategories ?(
-                            <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+              {this.props.isAuthenticated ? (
+                <div>
+                    this.state.categories ? (
+                        <form onSubmit={this.submitHandler}>
+                            <select onChange={this.handleCategory} value={this.state.cat_id} >
                                 {
-                                    this.state.subcategories.map(subcategory=>{
-                                        return (<option key={subcategory.id} value={subcategory.id} >
-                                            { subcategory.name+' '+subcategory.quantity_type }
+                                    this.state.categories.map(category=>{
+                                        return (<option key={category.key} value={category.id}>
+                                            {category.name}
                                         </option>)
                                     })
                                 }
-                            </select>)
-                                :null
-                        }
-                        <div>
-                            <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
-                            <p><strong>{this.state.quantity_type}</strong></p>
-                        </div>
-                    
-                    <input type="submit" />
-                </form> ) : (<div>Sorry No vendor available</div>)
-            }
-            <div>
-                <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
-              </div>
+                            </select>
+                            {
+                                this.state.subcategories ?(
+                                <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+                                    {
+                                        this.state.subcategories.map(subcategory=>{
+                                            return (<option key={subcategory.id} value={subcategory.id} >
+                                                { subcategory.name+' '+subcategory.quantity_type }
+                                            </option>)
+                                        })
+                                    }
+                                </select>)
+                                    :null
+                            }
+                            <div>
+                                <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
+                                <p><strong>{this.state.quantity_type}</strong></p>
+                            </div>
+                        
+                        <input type="submit" />
+                    </form> ) : (<div>Sorry No vendor available</div>)
+                }
+                <div>
+                    <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
+                </div>
+            </div>
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         );
     }

@@ -57,6 +57,9 @@ class ViewBuyedItem extends Component {
 
     render() {
         return(
+            
+            <div>
+              {this.props.isAuthenticated ? (
             <div>
                 {
                     this.state.item?(
@@ -87,6 +90,11 @@ class ViewBuyedItem extends Component {
                 <div>
                     <Link to="./newItem">Add new Item</Link>
                 </div>
+            </div>
+            
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         )
     }

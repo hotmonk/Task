@@ -64,6 +64,8 @@ class vendorRequest extends Component {
     render() {
         return (
             <div>
+              {this.props.isAuthenticated ? (
+            <div>
                 <h3>Request for a new Category of Waste!</h3>
                 <form onSubmit={this.onSubmit}>
                     <div>
@@ -90,6 +92,10 @@ class vendorRequest extends Component {
 
                     <input type="submit" value="Add a new type of waste" />
                 </form>
+            </div>
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
             </div>
         )
     }
