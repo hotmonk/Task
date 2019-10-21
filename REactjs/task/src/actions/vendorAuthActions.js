@@ -37,7 +37,7 @@ export const loadVendor = () => (dispatch, getState) => {
   dispatch({ type: VENDOR_LOADING });
 
   axios
-    .get('http://localhost:4000/vendor/login/vendor', tokenConfig(getState))
+    .get(process.env.REACT_APP_BASE_URL+'/vendor/login/vendor', tokenConfig(getState))
     .then(res =>
       dispatch({
         type: VENDOR_LOADED,
@@ -65,7 +65,7 @@ export const signupVendor = ({ name, email, contact, address, password }) => dis
   const body = JSON.stringify({ name, email, contact, address, password });
 
   axios
-    .post('http://localhost:4000/vendor/signUp', body, config)
+    .post(process.env.REACT_APP_BASE_URL+'/vendor/signUp', body, config)
     .then(res =>
       dispatch({
         type: VENDOR_REGISTER_SUCCESS,
@@ -95,7 +95,7 @@ export const vendorLogin = ({ email, password }) => dispatch => {
   const body = JSON.stringify({ email, password });
 
   axios
-    .post('http://localhost:4000/vendor/login', body, config)
+    .post(process.env.REACT_APP_BASE_URL+'/vendor/login', body, config)
     .then(res =>
       dispatch({
         type: VENDOR_LOGIN_SUCCESS,

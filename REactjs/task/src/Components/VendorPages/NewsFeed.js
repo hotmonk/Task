@@ -5,6 +5,7 @@ import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import {Link} from 'react-router-dom';
 
+
 class NewsFeed extends Component {
 
     constructor(props) {
@@ -29,7 +30,7 @@ class NewsFeed extends Component {
           if (token) {
               config.headers['x-auth-vendor-token'] = token;
           }
-          axios.get('http://localhost:4000/vendor/newsfeed', config)
+          axios.get(process.env.REACT_APP_BASE_URL+'/vendor/newsfeed', config)
               .then(response=>{
                   this.setState({
                       items:response.data
@@ -64,9 +65,9 @@ class NewsFeed extends Component {
               item_id:this.state.item.id,
               price:100
           })
-          axios.post('http://localhost:4000/vendor/'+this.props.vendor.id+'/transaction', body ,config)
+          axios.post(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor.id+'/transaction', body ,config)
               .then(response=>{
-                  console.log(response.data),
+                  console.log(response.data);
                   this.props.history.push('/vendor/viewBuyedItems')
               })
               .catch(error=>{

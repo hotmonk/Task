@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
+var configuration=require('config');
 
 class ViewBuyedItem extends Component {
 
@@ -31,7 +32,7 @@ class ViewBuyedItem extends Component {
             if (token) {
                 config.headers['x-auth-vendor-token'] = token;
             }
-            axios.get('http://localhost:4000/vendor/'+this.props.vendor.id+'/viewBuyedItem', config)
+            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor.id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data

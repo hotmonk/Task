@@ -31,7 +31,7 @@ class ViewSelledItem extends Component {
             if (token) {
                 config.headers['x-auth-seller-token'] = token;
             }
-            axios.get('http://localhost:4000/seller/'+this.props.seller.id+'/viewSelledItem', config)
+            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/viewSelledItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data

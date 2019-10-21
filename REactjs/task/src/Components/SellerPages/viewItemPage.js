@@ -31,7 +31,7 @@ class ViewItem extends Component {
             if (token) {
                 config.headers['x-auth-seller-token'] = token;
             }
-            axios.get('http://localhost:4000/seller/'+this.props.seller.id+'/viewItem', config)
+            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/viewItem', config)
                 .then(response=>{
                     console.log(response),
                     this.setState({

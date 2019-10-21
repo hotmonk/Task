@@ -60,7 +60,7 @@ class vendorRequest extends Component {
           }
 
           const body=JSON.stringify(newTypeWaste);
-        axios.post('http://localhost:4000/vendor/newWasteType', body,config)
+        axios.post(process.env.REACT_APP_BASE_URL+'/vendor/newWasteType', body,config)
             .then(res => 
                 this.props.history.push('/vendor/profile')  
             )

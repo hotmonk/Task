@@ -23,13 +23,13 @@ class ItemForm extends Component
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
         if(this.props.isAuthenticated){
-            axios.get('http://localhost:4000/categories')
+            axios.get(process.env.REACT_APP_BASE_URL+'/categories')
                 .then((response)=>{
                     this.setState({
                         categories:response.data
                     });
                     if(this.state.categories && this.state.categories.length){
-                        axios.get('http://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
+                        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
                             .then((response)=>{
                                 this.setState({
                                     subcategories:response.data,
@@ -70,7 +70,7 @@ class ItemForm extends Component
                 sub_cat_id:this.state.subcat_id,
                 quantity:this.state.quantity
             }
-            axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item ,config)
+            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + item.cust_id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
                     this.props.history.push('/seller/items')
@@ -83,7 +83,7 @@ class ItemForm extends Component
 
     handleCategory(event){
         let curid=event.target.value;
-        axios.get('http://localhost:4000/categories/'+curid+'/subcat')
+        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+curid+'/subcat')
             .then((response)=>{
                 if(response.data&&response.data.length){
                     this.setState({

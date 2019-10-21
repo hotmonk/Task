@@ -90,12 +90,6 @@ class SignUpVendor extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
-        console.log(`name ${this.state.name}`);
-        console.log(`Email: ${this.state.email}`);
-        console.log(`Contact: ${this.state.contact}`);
-        console.log(`Address: ${this.state.address}`);
-
         const { name, email, contact, address, password } = this.state;
 
         // Create user object
