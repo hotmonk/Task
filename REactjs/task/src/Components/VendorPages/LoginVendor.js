@@ -49,7 +49,7 @@ class LoginVendor extends Component {
         if(this.props.isAuthenticated)
         {
             return (
-                <Redirect to='./newsfeed' />
+                <Redirect to='./profile' />
             )
         }
         

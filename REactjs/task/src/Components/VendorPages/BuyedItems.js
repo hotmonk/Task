@@ -5,7 +5,7 @@ import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
 
-class ViewItem extends Component {
+class ViewBuyedItem extends Component {
 
     constructor(props) {
         super(props);
@@ -29,11 +29,10 @@ class ViewItem extends Component {
     
             // If token, add to headers
             if (token) {
-                config.headers['x-auth-seller-token'] = token;
+                config.headers['x-auth-vendor-token'] = token;
             }
-            axios.get('http://localhost:4000/seller/'+this.props.seller.id+'/viewItem', config)
+            axios.get('http://localhost:4000/vendor/'+this.props.vendor.id+'/viewBuyedItem', config)
                 .then(response=>{
-                    console.log(response),
                     this.setState({
                         items:response.data
                     })
@@ -88,22 +87,19 @@ class ViewItem extends Component {
                 <div>
                     <Link to="./newItem">Add new Item</Link>
                 </div>
-                <div>
-                    <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
-                </div>
             </div>
         )
     }
 }
 
 const mapStateToProps = state => ({
-    token:state.sellerAuth.token,
-    seller:state.sellerAuth.seller,
-    isAuthenticated: state.sellerAuth.isAuthenticated,
+    token:state.vendorAuth.token,
+    vendor:state.vendorAuth.vendor,
+    isAuthenticated: state.vendorAuth.isAuthenticated,
     error: state.error
   });
   
   export default connect(
     mapStateToProps,
     { clearErrors }
-  )(ViewItem);
+  )(ViewBuyedItem);

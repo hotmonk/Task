@@ -13,8 +13,8 @@ class NewsFeed extends Component {
             item:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handlePurchase=this.handlePurchase.bind(this);
         if(this.props.isAuthenticated){
-            console.log(this.props.vendor);
           const token = this.props.token;
 
           // Headers
@@ -30,7 +30,6 @@ class NewsFeed extends Component {
           }
           axios.get('http://localhost:4000/vendor/newsfeed', config)
               .then(response=>{
-                  console.log(response.data);
                   this.setState({
                       items:response.data
                   });
@@ -46,6 +45,34 @@ class NewsFeed extends Component {
         error: PropTypes.object.isRequired,
         clearErrors: PropTypes.func.isRequired
       };
+
+      handlePurchase(){
+        const token = this.props.token;
+        const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
+  
+          // If token, add to headers
+          if (token) {
+              config.headers['x-auth-vendor-token'] = token;
+          }
+
+          const body=JSON.stringify({
+              item_id:this.state.item.id,
+              price:100
+          })
+          console.log("request sent");
+          axios.post('http://localhost:4000/vendor/'+this.props.vendor.id+'/transaction', body ,config)
+              .then(response=>{
+                  console.log(response.data),
+                  this.props.history.push('/vendor/viewBuyedItems')
+              })
+              .catch(error=>{
+                  console.log(error);
+              })
+      }
 
       handleList(item){
           this.setState({
@@ -70,8 +97,11 @@ class NewsFeed extends Component {
                    <h2> category: {this.state.item.cat.name}</h2> 
                    <h2> subcategory: {this.state.item.subcat.name}</h2>
                    <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
-                   
+                   <div>
+                        <button onClick={this.handlePurchase}>Purchase it</button>
+                   </div>
                 </div>
+                
             ):(
                 <div>
                 <h1>Here are all the items for sale</h1>

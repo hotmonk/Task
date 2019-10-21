@@ -35,7 +35,7 @@ connection. once('open',function(){
 ///GET ALL CATEGORIES
 ///checked
 app.get("/categories",function(req,res){
-  Cat.find({}).populate('sub_cats').exec(function(err, allCategories){
+  Cat.find({},function(err, allCategories){
     if(err){
         console.log(err);
     } else {
@@ -104,18 +104,16 @@ app.get("/categories/:id/subcat",function(req,res){
 
 /// SELLER ROUTES
 ///checked
-
 app.get('/seller/:id/viewItem',sellerAuth,function(req,res){
   Seller.findById(req.params.id).populate({ 
     path: 'items',
-    populate: {
+    populate: [{
       path: 'cat_id',
       model: 'Cat'
-    },
-    populate:{
+    },{
       path:'sub_cat_id',
       model:'Sub_cat'
-    }
+    }]
 })
 .exec(function(err, response) {
   if(err)
@@ -132,17 +130,17 @@ app.get('/seller/:id/viewItem',sellerAuth,function(req,res){
 });
 });
 
+///checked
 app.get('/seller/:id/viewSelledItem',sellerAuth,function(req,res){
     Seller.findById(req.params.id).populate({ 
       path: 'items',
-      populate: {
+      populate: [{
         path: 'cat_id',
         model: 'Cat'
-      },
-      populate:{
+      },{
         path:'sub_cat_id',
         model:'Sub_cat'
-      }
+      }]
   })
   .exec(function(err, response) {
     if(err)
@@ -159,6 +157,7 @@ app.get('/seller/:id/viewSelledItem',sellerAuth,function(req,res){
   });
 });
 
+///checked
 app.post('/seller/signUp', function(req, res) {
   const { name, email, contact, address, password } = req.body;
 
@@ -235,7 +234,8 @@ app.get('/seller/:id', sellerAuth, function(req, res){
 })
 
 
-//Items uploaded by customer
+//upload new item by customer
+///checked
 app.post('/seller/:id/items',sellerAuth, function(req, res){
   let newItem = new Item(req.body);
   newItem['cust_id']=req.params.id;
@@ -269,6 +269,7 @@ app.post('/vendor/signUp', function(req, res) {
   }
 
   // Check for existing user
+  //checked
   Vendor.findOne({ email })
     .then(vendor => {
       if(vendor) return res.status(400).json({ msg: 'Vendor with the given email already exists' });
@@ -314,10 +315,104 @@ app.post('/vendor/signUp', function(req, res) {
 
 
 //vendor profile
+///add new item to buy list
+///checked
+app.post('/vendor/:id/transaction',vendorAuth,function(req,res){
+    var vendor_id=req.params.id;
+    var item_id=req.body.item_id;
+    var price=req.body.price;
+    const transaction=new Transaction({
+      vendor:vendor_id,
+      item:item_id,
+      price:price
+    });
+    Item.findById(item_id,function(err1,res1){
+      if(err1){
+        res.status(400).json(err1);
+      }
+      if(res1.status==='sold'){
+        res.json({
+          msg:"item already sold"
+        })
+      }
+      res1.status='sold';
+      res1.save(function(err2,res2){
+        if(err2){
+          res.status(400).json(err2);
+        }
+        transaction.save()
+          .then(trans=>{
+            Vendor.findById(vendor_id,function(err4,res4){
+              if(err4){
+                console.log('adding transaction failed');
+                res.status(400).json({
+                  msg:"transaction failed"
+                })
+              }
+              res4.transactions.push(trans._id);
+              res4.save()
+                .then(res5=>{
+                  console.log("transaction added"),
+                  res.json({
+                    msg:"item added"
+                  })
+                })
+                .catch(error=>{
+                  res.status(400).json(error)
+                })
+            })
+          })
+          .catch(err3=>{
+            res.status(400).json(err3);
+          })
+      })
+    })
+})
 
-///get all items
+///fetch all purchased items
+app.get('/vendor/:id/viewBuyedItem',vendorAuth,function(req,res){
+  
+  Vendor.findById(req.params.id).populate({ 
+    path: 'transactions',
+    populate: {
+      path: 'item',
+      model: 'Item',
+      populate: [{
+        path: 'cat_id',
+        model: 'Cat'
+      },{
+        path:'sub_cat_id',
+        model:'Sub_cat'
+      }]
+    },
+  })
+  .exec(function(err, response) {
+    if(err)
+    {
+        console.log(err);
+    } 
+    else 
+    {
+      var filtered=response.transactions.filter(transaction=>{
+          return (transaction.item.status==='sold');
+      });
+      filtered=filtered.map(trans=>{
+        return trans.item
+      })
+      res.json(filtered);
+    }
+  });
+});
+
 app.get('/vendor/newsfeed', vendorAuth, function(req, res){
-  Item.find({}).populate('cat_id').populate('sub_cat_id').exec(function(err, allItems){
+  Item.find({}).populate([{
+    path: 'cat_id',
+    model: 'Cat'
+  },{
+    path:'sub_cat_id',
+    model:'Sub_cat'
+  }])
+  .exec(function(err, allItems){
     if(err)
     {
         console.log(err);
@@ -340,7 +435,6 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
       filtered=filtered.filter((item)=>{
           return item.status=='inBid';
       })
-      console.log(filtered);
       res.json(filtered);
     }
  });

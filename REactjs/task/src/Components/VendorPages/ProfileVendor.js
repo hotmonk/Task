@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 class vendorProfile extends Component {
 
@@ -16,12 +17,12 @@ class vendorProfile extends Component {
         }
       }
 
-    static propTypes = {
-        vendorData:PropTypes.isRequired,
-        isAuthenticated: PropTypes.bool,
-        error: PropTypes.object.isRequired,
-        clearErrors: PropTypes.func.isRequired
-      };
+    // static propTypes = {
+    //     vendorData:PropTypes.isRequired,
+    //     isAuthenticated: PropTypes.bool,
+    //     error: PropTypes.object.isRequired,
+    //     clearErrors: PropTypes.func.isRequired
+    //   };
 
       render(){
           return (
@@ -33,6 +34,18 @@ class vendorProfile extends Component {
                 <h3>Contact:{this.props.vendorData.contact}</h3>
                 <h3>Address:{this.props.vendorData.address}</h3>
                 <button>Edit Details</button>
+                <div>
+                <Link to={"/vendor/newsfeed"}>View Items For Sale</Link>
+              </div>
+              <div>
+                <Link to={"/vendor/viewBuyedItems"}>View All items purchased by you</Link>
+              </div>
+              <div>
+                <Link to={"/vendor/newWasteType"}>Add a new category request</Link>
+              </div>
+              {/* <div>
+                <Link to={"/vendor/soldItems"}>View All requests and their status</Link>
+              </div> */}
             </div>
           );
       }
