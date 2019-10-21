@@ -75,7 +75,8 @@ class ViewBuyedItem extends Component {
                     {
                         this.state.items? this.state.items.map(item=>{
                                 return (<li key={item._id} onClick={()=>this.handleList(item)}>
-                                    category:{item.cat_id.name}  subcategory:{item.sub_cat_id.name}  quantity:{item.quantity}{item.sub_cat_id.quantity_type}
+                                    <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
+                                    <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
                                 </li>)
                             }) : (<h1>No Items to display</h1>)
                         
@@ -85,7 +86,10 @@ class ViewBuyedItem extends Component {
                 )
                 }
                 <div>
-                    <Link to="./newItem">Add new Item</Link>
+                    <Link to="./newsfeed">Purchase new Item</Link>
+                </div>
+                <div>
+                        <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
                 </div>
             </div>
         )

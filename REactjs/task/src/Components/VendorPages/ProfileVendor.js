@@ -41,8 +41,9 @@ class vendorProfile extends Component {
                 <Link to={"/vendor/viewBuyedItems"}>View All items purchased by you</Link>
               </div>
               <div>
-                <Link to={"/vendor/newWasteType"}>Add a new category request</Link>
-              </div>
+                        <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
+                </div>
+              
               {/* <div>
                 <Link to={"/vendor/soldItems"}>View All requests and their status</Link>
               </div> */}

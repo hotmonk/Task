@@ -13,7 +13,6 @@ function vendorAuth(req, res, next)
   {
     const decoded = jwt.verify(token, config.get('jwtSecretvendor'));
     req.vendor = decoded;
-    console.log(req.vendor);
     next();
   } 
   catch (e) {

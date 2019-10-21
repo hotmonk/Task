@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { clearErrors } from '../../actions/errorActions';
 
 class vendorRequest extends Component {
 
@@ -39,26 +41,32 @@ class vendorRequest extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
-        console.log(`cat_name ${this.state.cat_name}`);
-        console.log(`sub_cat_name: ${this.state.sub_cat_name}`);
-        console.log(`quantity_type: ${this.state.quantity_type}`);
-
         const newTypeWaste = {
             cat_name: this.state.cat_name,
             sub_cat_name: this.state.sub_cat_name,
             quantity_type: this.state.quantity_type,
             status: "Approved"
         }
+        const token = this.props.token;
+        const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
+  
+          // If token, add to headers
+          if (token) {
+              config.headers['x-auth-vendor-token'] = token;
+          }
 
-        axios.post('http://localhost:4000/vendor/newWasteType', newTypeWaste)
-            .then(res => console.log("hii"));
-
-        this.setState({
-            cat_name: '',
-            sub_cat_name: '',
-            quantity_type: '',
-        })
+          const body=JSON.stringify(newTypeWaste);
+        axios.post('http://localhost:4000/vendor/newWasteType', body,config)
+            .then(res => 
+                this.props.history.push('/vendor/profile')  
+            )
+            .catch(err=>{
+                console.log(err);
+            })
     }
 
     render() {
@@ -69,14 +77,14 @@ class vendorRequest extends Component {
                     <div>
                       <label>Category Name: </label>
                       <input  type="text"
-                              value={this.state.name}
+                              value={this.state.cat_name}
                               onChange={this.onChangecat_name}
                               />
                     </div>
                     <div>
                       <label>Sub-Category Name: </label>
                       <input  type="text"
-                              value={this.state.cat_name}
+                              value={this.state.sub_cat_name}
                               onChange={this.onChangesub_cat_name}
                               />
                     </div>
@@ -94,6 +102,15 @@ class vendorRequest extends Component {
         )
     }
 }
+
+const mapStateToProps = state => ({
+    token:state.vendorAuth.token,
+    vendor:state.vendorAuth.vendor,
+    isAuthenticated: state.vendorAuth.isAuthenticated,
+    error: state.error
+  });
   
-  
-export default vendorRequest;
+  export default connect(
+    mapStateToProps,
+    { clearErrors }
+  )(vendorRequest);

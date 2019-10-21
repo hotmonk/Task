@@ -422,16 +422,14 @@ app.get('/vendor/newsfeed', vendorAuth, function(req, res){
       var filtered=allItems.map(item=>{
         return {
           id: item._id,
-          cat: {
-            ...item.cat_id,
-            sub_cats:[]
-          },
+          cat: item.cat_id,
           subcat: item.sub_cat_id,
           quantity: item.quantity,
           image: item.image,
           status:item.status
         }
       });
+      console.log(filtered);
       filtered=filtered.filter((item)=>{
           return item.status=='inBid';
       })
