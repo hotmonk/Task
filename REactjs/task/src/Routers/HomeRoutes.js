@@ -13,8 +13,6 @@ import newsFeed from '../Components/VendorPages/NewsFeed';
 import ViewItem from '../Components/SellerPages/viewItemPage';
 import ViewSelledItem from '../Components/SellerPages/SoldItems';
 import ViewBuyedItem from '../Components/VendorPages/BuyedItems';
-import LogoutVendor from '../Components/VendorPages/LogoutVendor';
-import LogoutSeller from '../Components/SellerPages/LogoutSeller';
 
 
 const Routes = (props) => {
@@ -33,8 +31,6 @@ const Routes = (props) => {
                 <Route path='/seller/additem' component={ItemForm}/>
                 <Route path='/seller/soldItems' component={ViewSelledItem}/>
                 <Route path='/vendor/viewBuyedItems' component={ViewBuyedItem}/>
-                <Route path='/seller/login' component={LogoutSeller} />
-                <Route path='/vendor/login' component={LogoutVendor} />
              </Switch>
         )
 

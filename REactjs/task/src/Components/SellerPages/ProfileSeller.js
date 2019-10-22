@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
+import SellerLogout from './LogoutSeller';
 
 class sellerProfile extends Component {
 
@@ -15,13 +15,16 @@ class sellerProfile extends Component {
             this.setState({ msg: null });
           }
         }
+        if(!this.props.isAuthenticated){
+          this.props.history.push('/seller/login');
+        }
       }
-
       render(){
           return (
             <div>
               {this.props.isAuthenticated ? (
                 <div>
+                  <SellerLogout/>
                   <div>
                       <h1>welcome {this.props.sellerData.name}</h1>
                       <p>Here are all the details you entered</p>
@@ -39,9 +42,6 @@ class sellerProfile extends Component {
                   </div>
                   <div>
                     <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
-                  </div>
-                  <div>
-                    <Link to={"/seller/logout"}>LogOut!</Link>
                   </div>
                 </div>
               ) : (

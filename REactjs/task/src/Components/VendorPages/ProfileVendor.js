@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import VendorLogout from './LogoutVendor';
 
 class vendorProfile extends Component {
 
@@ -14,9 +14,10 @@ class vendorProfile extends Component {
           } else {
             this.setState({ msg: null });
           }
+        }else{
+          this.props.history.push('/vendor/login');
         }
       }
-
     // static propTypes = {
     //     vendorData:PropTypes.isRequired,
     //     isAuthenticated: PropTypes.bool,
@@ -29,6 +30,7 @@ class vendorProfile extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+              <VendorLogout/>
                 <h1>welcome {this.props.vendorData.name}</h1>
                 <p>Here are all the details you entered</p>
                 <h3>Name:{this.props.vendorData.name}</h3>

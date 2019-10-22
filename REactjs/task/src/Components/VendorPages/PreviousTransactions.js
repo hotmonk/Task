@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
-var configuration=require('config');
+import VendorLogout from './LogoutVendor';
 
 class ViewBuyedItem extends Component {
 
@@ -43,6 +43,12 @@ class ViewBuyedItem extends Component {
                 })
           }
     }
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
+    }
 
       handleList(item){
           this.setState({
@@ -61,6 +67,7 @@ class ViewBuyedItem extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                <VendorLogout/>
                 {
                     this.state.item?(
                     <div>

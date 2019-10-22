@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
+import SellerLogout from './LogoutSeller';
 
 class ViewItem extends Component {
 
@@ -33,7 +33,7 @@ class ViewItem extends Component {
             }
             axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/viewItem', config)
                 .then(response=>{
-                    console.log(response),
+                    console.log(response);
                     this.setState({
                         items:response.data
                     })
@@ -42,6 +42,13 @@ class ViewItem extends Component {
                     console.log(error);
                 })
           }
+    }
+
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/seller/login');
+        }
     }
 
       handleList(item){
@@ -62,6 +69,7 @@ class ViewItem extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                <SellerLogout/>
                 {
                     this.state.item?(
                     <div>

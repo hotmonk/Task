@@ -3,6 +3,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
+import SellerLogout from './LogoutSeller';
 
 class ItemForm extends Component
 {
@@ -45,6 +46,12 @@ class ItemForm extends Component
                 .catch((error)=>{
                     console.log(error);
                 })
+        }
+    }
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/seller/login');
         }
     }
 
@@ -124,7 +131,8 @@ class ItemForm extends Component
             <div>
               {this.props.isAuthenticated ? (
                 <div>
-                    this.state.categories ? (
+                    <SellerLogout/>
+                 {   this.state.categories ? (
                         <form onSubmit={this.submitHandler}>
                             <select onChange={this.handleCategory} value={this.state.cat_id} >
                                 {

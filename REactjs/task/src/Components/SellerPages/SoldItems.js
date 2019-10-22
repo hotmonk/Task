@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
+import SellerLogout from './LogoutSeller';
 
 class ViewSelledItem extends Component {
 
@@ -42,7 +42,12 @@ class ViewSelledItem extends Component {
                 })
           }
     }
-
+    componentDidUpdate()
+    {
+      if(!this.props.isAuthenticated){
+        this.props.history.push('/seller/login');
+      }
+    }
       handleList(item){
           this.setState({
               item
@@ -60,6 +65,7 @@ class ViewSelledItem extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                <SellerLogout/>
                 {
                     this.state.item?(
                     <div>

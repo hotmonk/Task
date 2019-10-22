@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
+import VendorLogout from './LogoutVendor';
 
 class vendorRequest extends Component {
 
@@ -30,6 +31,12 @@ class vendorRequest extends Component {
         this.setState({
             sub_cat_name: e.target.value
         });
+    }
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
     }
 
     onChangequantity_type(e) {
@@ -74,6 +81,7 @@ class vendorRequest extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                <VendorLogout/>
                 <h3>Request for a new Category of Waste!</h3>
                 <form onSubmit={this.onSubmit}>
                     <div>

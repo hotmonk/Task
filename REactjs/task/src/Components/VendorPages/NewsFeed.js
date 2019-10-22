@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import {Link} from 'react-router-dom';
-
+import VendorLogout from './LogoutVendor';
 
 class NewsFeed extends Component {
 
@@ -87,11 +87,19 @@ class NewsFeed extends Component {
           })
       }
 
+      componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
+    }
+
     render() {
         return(
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                 <VendorLogout/>
             {
                 this.state.item?(
                 <div>
