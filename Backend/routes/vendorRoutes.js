@@ -66,6 +66,97 @@ router.post('/signUp', function(req, res) {
         })
       })
   });  
+
+  ///unchecked
+  router.post('/:id/addselections',vendorAuth,function(req,res){
+    Vendor.findById(req.params.id,function(err,vendor){
+      if(err){
+        console.log("vendor finding process failed");
+      }else{
+        if(vendor.selection_id){
+          Selection.findById(vendor.selection_id,function(err,selectionList){
+            if(err){
+              console.log("finding of selection failed");
+            }else{
+                if(req.body.intake&&req.body.intake.length){
+                  var saturated=req.body.intake.map(request=>{
+                      if(!(selectionList.intake.includes(request.subcat_id))){
+                          selectionList.intake.push(request.subcat_id);
+                          Sub_cat.findById(request.subcat_id,function(err,subcategory){
+                            if(err){
+                              console.log(err);
+                            }else{
+                              subcategory.selection_data.push(request);
+                              subcategory.save(function(err,savedsub){
+                                if(err){
+                                  console.log(err);
+                                }else{
+                                  return "added subcategory to selection "+savedsub.name ;
+                                }
+                              });
+                            }
+                          })
+                      }
+                  });
+                  selectionList.save(function(err,final){
+                    if(err){
+                      console.log(err);
+                    }else{
+                      res.json({
+                        msg:"added selected subcat to list",
+                        items:final
+                      })
+                    }
+                  })
+                }
+            }
+          })
+        }else{
+          var selection=new Selection({
+            vendor_id:vendor._id
+          });
+          selection.save(function(err,selectionList){
+            if(err){
+              console.log(err);
+            }else{
+              vendor.selection_id=selectionList._id;
+              vendor.save(function(err,vendor2){
+                if(req.body.intake&&req.body.intake.length){
+                  var saturated=req.body.intake.map(request=>{
+                        selectionList.intake.push(request.subcat_id);
+                        Sub_cat.findById(request.subcat_id,function(err,subcategory){
+                          if(err){
+                            console.log(err);
+                          }else{
+                            subcategory.selection_data.push(request);
+                            subcategory.save(function(err,savedsub){
+                              if(err){
+                                console.log(err);
+                              }else{
+                                return "added subcategory to selection "+savedsub.name ;
+                              }
+                            });
+                          }
+                        })
+                  });
+                  selectionList.save(function(err,final){
+                    if(err){
+                      console.log(err);
+                    }else{
+                      res.json({
+                        msg:"added selected subcat to list",
+                        items:final
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  })
   
   
   //vendor profile
