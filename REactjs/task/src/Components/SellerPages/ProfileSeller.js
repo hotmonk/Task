@@ -24,14 +24,14 @@ class sellerProfile extends Component {
             <div>
               {this.props.isAuthenticated ? (
                 <div>
-                  <SellerLogout/>
+                  <SellerLogout />
                   <div>
-                      <h1>welcome {this.props.sellerData.name}</h1>
-                      <p>Here are all the details you entered</p>
-                      <h3>Name:{this.props.sellerData.name}</h3>
-                      <h3>Email:{this.props.sellerData.email}</h3>
-                      <h3>Contact:{this.props.sellerData.contact}</h3>
-                      <h3>Address:{this.props.sellerData.address}</h3>
+                      <h1>Welcome {this.props.sellerData.name}</h1>
+                      <p>Here are all your Details..</p>
+                      <h3>Name: {this.props.sellerData.name}</h3>
+                      <h3>Email: {this.props.sellerData.email}</h3>
+                      <h3>Contact: {this.props.sellerData.contact}</h3>
+                      <h3>Address: {this.props.sellerData.address}</h3>
                       <button>Edit Details</button>
                   </div>
                   <div>
