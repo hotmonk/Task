@@ -34,7 +34,11 @@ var Vendor = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Request"
         }
-      ]
+      ],
+    selection_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Selection"
+    }
 });
 
 module.exports = mongoose.model("Vendor", Vendor);
