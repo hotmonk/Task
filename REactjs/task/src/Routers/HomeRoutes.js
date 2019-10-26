@@ -13,7 +13,7 @@ import newsFeed from '../Components/VendorPages/NewsFeed';
 import ViewItem from '../Components/SellerPages/viewItemPage';
 import ViewSelledItem from '../Components/SellerPages/SoldItems';
 import ViewBuyedItem from '../Components/VendorPages/BuyedItems';
-
+import Ratings from '../Components/SellerPages/ratings';
 
 const Routes = (props) => {
         return(
@@ -23,6 +23,7 @@ const Routes = (props) => {
                 <Route path='/vendor/login' exact component={LoginVendor}/>
                 <Route path='/seller/login' exact component={LoginSeller}/>
                 <Route path='/vendor/newWasteType' exact component={vendorRequest} />
+                <Route path='/seller/ratings' component={Ratings}/>
                 <Route path='/seller/items' component={ViewItem}/>
                 <Route path='/seller/newItem' component={ItemForm}/>
                 <Route path='/seller/profile' component={sellerProfile}/>
