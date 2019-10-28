@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signupVendor } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 
 class SignUpVendor extends Component {
 
@@ -151,6 +151,8 @@ class SignUpVendor extends Component {
 
                     <input type="submit" value="Register Vendor" />
                 </form>
+                <h3>Already a user?</h3>
+                <Link to='/vendor/login'>Login!</Link>
             </div>
         )
     }

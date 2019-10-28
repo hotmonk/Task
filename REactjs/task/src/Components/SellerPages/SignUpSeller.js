@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
-import {Redirect} from 'react-router-dom';
+import {Redirect,Link} from 'react-router-dom';
 
 class SignUpSeller extends Component {
 
@@ -150,6 +150,8 @@ class SignUpSeller extends Component {
                     </div>
 
                     <input type="submit" value="Register Seller" />
+                    <h3>Already have an account?</h3>
+                    <Link to='/seller/login'>Login!</Link>
                 </form>
             </div>
         )

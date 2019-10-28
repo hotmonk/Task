@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 var Seller = require('../models/sellerModel.js');
 var Item = require('../models/itemModel.js');
+var Ratings =require('../models/sellerratings.js');
 const sellerAuth = require('../middleware/sellerAuth.js');
 
 router.get('/:id/viewItem',sellerAuth,function(req,res){

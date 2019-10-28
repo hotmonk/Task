@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { vendorLogin } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link} from 'react-router-dom';
 
 class LoginVendor extends Component {
 
@@ -78,6 +78,8 @@ class LoginVendor extends Component {
     render() {
         return (
             <div>
+                <h2>NOT A VENDOR?</h2>
+                <Link to='/seller/login'>Login as seller!</Link>
                 {this.redirectit()}
                 <h3>Login as Vendor!</h3>
                 <form onSubmit={this.onSubmit}>
@@ -98,6 +100,8 @@ class LoginVendor extends Component {
 
                     <input type="submit" value="Login Vendor" />
                 </form>
+                <h3>New user?</h3>
+                <Link to='/vendor/signUp'>Sign Up!</Link>
             </div>
         )
     }
