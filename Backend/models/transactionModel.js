@@ -9,7 +9,8 @@ var Transaction = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item"
     },
-    price: Number
+    price: Number,
+    rating:Number
 });
 
 module.exports = mongoose.model("Transaction", Transaction);

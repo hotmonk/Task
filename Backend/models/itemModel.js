@@ -16,6 +16,10 @@ var Item = new mongoose.Schema({
     quantity: Number,
     image: String,
     status: String,
+    transaction_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Transaction"
+    }
 });
 
 module.exports = mongoose.model("Item", Item);

@@ -71,12 +71,12 @@ class ItemForm extends Component
             if (token) {
                 config.headers['x-auth-seller-token'] = token;
             }
-            const item = {
+            const item =JSON.stringify ({
                 cust_id:this.props.seller.id,
                 cat_id:this.state.category_id,
                 sub_cat_id:this.state.subcat_id,
                 quantity:this.state.quantity
-            }
+            })
             axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + item.cust_id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
