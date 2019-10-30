@@ -48,6 +48,12 @@ class vendorProfile extends Component {
               <div>
                         <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
                 </div>
+                <div>
+                        <Link to='/vendor/chooseCat'>choose categories to quote for</Link>
+                </div>
+                <div>
+                        <Link to='/vendor/editPrice'>edit quoted price for items</Link>
+                </div>
               
               {/* <div>
                 <Link to={"/vendor/soldItems"}>View All requests and their status</Link>

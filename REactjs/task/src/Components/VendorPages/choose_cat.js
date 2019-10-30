@@ -36,6 +36,28 @@ class chooseCat extends Component {
                                   subcat_id:response.data[0].key
                               })
                           })
+                          .then(()=>{
+                            const token = this.props.token;
+                            // Headers
+                            const config = {
+                                headers: {
+                                'Content-type': 'application/json'
+                                }
+                            };
+                            // If token, add to headers
+                            if (token) {
+                                config.headers['x-auth-vendor-token'] = token;
+                            }
+                            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+                                .then(res=>{
+                                    this.setState({
+                                        list:res.data
+                                    })
+                                })
+                                .catch(e=>{
+                                    console.log(e);
+                                })
+                          })
                           .catch((error)=>{
                               console.log(error);
                           })
@@ -44,8 +66,6 @@ class chooseCat extends Component {
               .catch((error)=>{
                   console.log(error);
               })
-
-          axios.get(process.env.REACT_APP_BASE_URL+'vendor/selections/'+this.props.vendorData.selection_id)
       }
     }
     componentDidUpdate(prevProps) {
@@ -57,7 +77,8 @@ class chooseCat extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }else{
+        }
+        if(!this.props.isAuthenticated){
           this.props.history.push('/vendor/login');
         }
       }
@@ -112,7 +133,7 @@ class chooseCat extends Component {
         if (token) {
             config.headers['x-auth-vendor-token'] = token;
         }
-        axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections'+id,config)
+        axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
             .then(res => {
                 this.setState({
                   list:res.data,
@@ -120,7 +141,7 @@ class chooseCat extends Component {
                 })
             })
             .catch(e=>{
-                console.log("category add request failed.retry later")
+                console.log("category add request failed.retry later"+e)
             });
       }
     }
@@ -155,7 +176,7 @@ class chooseCat extends Component {
           subcat_id:this.state.subcat_id,
           price:this.state.price
         });
-        axios.post( process.env.REACT_APP_BASE_URL+'/vendor/selections'+this.props.vendorData.selection_id, item ,config)
+        axios.post( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
             .then(res => {
                 this.setState({
                   list:res.data,
@@ -163,7 +184,7 @@ class chooseCat extends Component {
                 })
             })
             .catch(e=>{
-                console.log("category add request failed.retry later")
+                console.log("category add request failed.retry later",e)
             });
       }
     }
@@ -204,16 +225,16 @@ class chooseCat extends Component {
                                 <p><strong>Rs.</strong></p>
                             </div>
                         
-                        <button>ADD</button>>
+                        <button>ADD</button>
                     </form> ) : null
                 }
                 <div>
                     {
-                      this.props.list&&this.props.list.length ?(
+                      this.state.list&&this.state.list.length ?(
                         <ul>
                           {
                             this.state.list.map(selected=>(
-                              <li>
+                              <li key={selected._id}>
                                 <div>Category:{selected.subcat_id.cat_id.name}</div>
                                 <div>Sub-category:{selected.subcat_id.name}</div>
                                 <div>Price:{selected.price}  {selected.subcat_id.quantity_type}</div>
@@ -238,6 +259,7 @@ class chooseCat extends Component {
 }
 
 const mapStateToProps = state => ({
+    token:state.vendorAuth.token,
     vendorData:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,
     error: state.error

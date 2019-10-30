@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
+import axios from 'axios';
 
 class editPrice extends Component {
     constructor(props)
@@ -11,12 +12,25 @@ class editPrice extends Component {
             items:[]
         }
         if(this.props.isAuthenticated){
-            axios.get(process.env.REACT_APP_BASE_URL+'/categories')
-                .then((response)=>{
-
+            const token = this.props.token;
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            // If token, add to headers
+            if (token) {
+                config.headers['x-auth-vendor-token'] = token;
+            }
+            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+                .then(res=>{
+                    this.setState({
+                        items:res.data
+                    })
                 })
-                .catch((error)=>{
-                    console.log(error);
+                .catch(e=>{
+                    console.log(e);
                 })
         }
     }
@@ -42,12 +56,12 @@ class editPrice extends Component {
           });
           items[index].price=event.target.value;
           this.setState({
-              items
+              items:items
           })
       }
 
       deleteHandler(event,id){
-          event.preventDefault();
+        event.preventDefault();
         if(this.props.isAuthenticated){
           const token = this.props.token;
           // Headers
@@ -60,15 +74,14 @@ class editPrice extends Component {
           if (token) {
               config.headers['x-auth-vendor-token'] = token;
           }
-          axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections'+id,config)
+          axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
               .then(res => {
                   this.setState({
-                    list:res.data,
-                    present:false
+                    list:res.data
                   })
               })
               .catch(e=>{
-                  console.log("category add request failed.retry later")
+                  console.log("category add request failed.retry later",e)
               });
         }
       }
@@ -91,11 +104,11 @@ class editPrice extends Component {
     
             // If token, add to headers
             if (token) {
-                config.headers['x-auth-seller-token'] = token;
+                config.headers['x-auth-vendor-token'] = token;
             }
-          axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections'+this.props.vendorData.selection_id,body,config)
+          axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
             .then(res=>{
-                this.props.history('/vendor/profile');
+                this.props.history.push('/vendor/profile');
             })
             .catch(err=>{
                 console.log(err);
@@ -117,15 +130,15 @@ class editPrice extends Component {
               <VendorLogout/>
               <div>
                     {
-                      this.props.list&&this.props.list.length ?(
+                      this.state.items&&this.state.items.length ?(
                         <ul>
                           {
-                            this.state.list.map((selected,index)=>(
-                              <li>
+                            this.state.items.map((selected,index)=>(
+                              <li key={selected._id}>
                                 <div>Category:{selected.subcat_id.cat_id.name}</div>
                                 <div>Sub-category:{selected.subcat_id.name}</div>
-                                <div>Price:<input type="text" onChange={()=>this.handlePriceChange(index)} value={selected.price}/>  {selected.subcat_id.quantity_type}</div>
-                                <button onClick={()=>this.deleteHandler(selected._id)}>Delete</button>
+                                <div>Price:<input type="text" onChange={(event)=>this.handlePriceChange(event,index)} value={selected.price}/>  {selected.subcat_id.quantity_type}</div>
+                                <button onClick={(event)=>this.deleteHandler(event,selected._id)}>Delete</button>
                               </li>
                             ))
                           }
@@ -135,7 +148,7 @@ class editPrice extends Component {
                       )
                     }
                 </div>
-                <button onClick={()=>this.submitForm}>save changes</button>
+                <button onClick={(event)=>this.submitForm(event)}>save changes</button>
                 <Link to='/vendor/profile'>Go to profile page!</Link>
             </div>
             ) : (

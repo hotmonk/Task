@@ -6,10 +6,10 @@ var SelectionHandler = new mongoose.Schema({
         ref: "Vendor"
     },
     price: Number,
-    selection_id:[{
+    selection_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Selection"
-    }],
+    },
     subcat_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Sub_cat"

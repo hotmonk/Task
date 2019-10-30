@@ -80,7 +80,7 @@ class ViewBuyedItem extends Component {
                     </div>
                 ):(
                     <div>
-                    <h1>Here are all the items for sale</h1>
+                    <h1>Here are all the items you purchased</h1>
                     <ul>
                     {
                         this.state.items? this.state.items.map(item=>{

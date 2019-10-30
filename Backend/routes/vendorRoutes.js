@@ -44,25 +44,37 @@ router.post('/signUp', function(req, res) {
             if(err) throw err;
             newVendor.password = hash;
             newVendor.save()
-              .then(vendor => {
-                jwt.sign(
-                  { id: vendor.id },
-                  config.get('jwtSecretvendor'),
-                  { expiresIn: 3600 },
-                  (err, token) => {
-                    if(err) throw err;
-                    res.json({
-                      token,
-                      vendor: {
-                        id: vendor.id,
-                        name: vendor.name,
-                        email: vendor.email,
-                        contact: vendor.contact,
-                        address: vendor.address
+              .then(vendor2 => {
+                var selection=new Selection({
+                  vendor_id:vendor2._id
+                });
+                selection.save(function(err2,selected){
+                  if(err2){
+                    console.log(err2);
+                  }else{
+                    vendor2.selection_id=selected._id
+                    vendor2.save();
+                    jwt.sign(
+                      { id: vendor2.id },
+                      config.get('jwtSecretvendor'),
+                      { expiresIn: 3600 },
+                      (err, token) => {
+                        if(err) throw err;
+                        res.json({
+                          token,
+                          vendor: {
+                            id: vendor2.id,
+                            name: vendor2.name,
+                            email: vendor2.email,
+                            contact: vendor2.contact,
+                            address: vendor2.address,
+                            selection_id:selected._id
+                          }
+                        });
                       }
-                    });
+                    )
                   }
-                )
+                });
               });
           })
         })
@@ -71,7 +83,6 @@ router.post('/signUp', function(req, res) {
 
 
   ///delete any category
-  ///unchecked
   router.delete('/selections/:selectionHandlerid',vendorAuth,function(req,res){
       SelectionHandler.findById(req.params.selectionHandlerid,function(err,selectionHandler){
         if(err){
@@ -83,16 +94,16 @@ router.post('/signUp', function(req, res) {
             if(err2){
               console.log(err2);
             }else{
-              SelectionHandler.findByIdAndDelete(req.params.selectionHandlerid,function(err3,removed){
+              SelectionHandler.findByIdAndDelete(req.params.selectionHandlerid,function(err3){
                 if(err3){
                   console.log(err3);
                 }else{
                   var filtered=subcat.selectionHandle_id;
                   filtered=filtered.filter(query=>{
-                    return query!==req.params.selectionHandlerid;
+                    return !query.equals(req.params.selectionHandlerid);
                   })
                   subcat.selectionHandle_id=filtered;
-                  subcat.save(function(err4,saved){
+                  subcat.save(function(err4){
                     if(err4){
                       console.log(err4);
                     }else{
@@ -102,10 +113,10 @@ router.post('/signUp', function(req, res) {
                         }else{
                           var filtered=selection.intake;
                           filtered=filtered.filter(query=>{
-                            return query!==req.params.selectionHandlerid;
+                            return !query.equals(req.params.selectionHandlerid);
                           })
                           selection.intake=filtered;
-                          selection.save(function(err6,savedsel){
+                          selection.save(function(err6){
                             if(err6){
                               console.log(err6);
                             }else{
@@ -116,8 +127,8 @@ router.post('/signUp', function(req, res) {
                                   path:'subcat_id',
                                   model:'Sub_cat',
                                   populate:{
-                                    model:'cat_id',
-                                    path:'Cat'
+                                    path:'cat_id',
+                                    model:'Cat'
                                   }
                                 }
                               }).exec(function(err7,selectionList){
@@ -143,17 +154,16 @@ router.post('/signUp', function(req, res) {
   })
 
   ///fetch all desired categories
-  ///unchecked
   router.get('/selections/:selectionid',vendorAuth,function(req,res){
-    Selection.findById(req.params.selection_id).populate({
+    Selection.findById(req.params.selectionid).populate({
       path:'intake',
       model:'SelectionHandler',
       populate:{
         path:'subcat_id',
         model:'Sub_cat',
         populate:{
-          model:'cat_id',
-          path:'Cat'
+          path:'cat_id',
+          model:'Cat'
         }
       }
     }).exec(function(err,selectionList){
@@ -166,7 +176,6 @@ router.post('/signUp', function(req, res) {
   });
 
   ///change price of items
-  ///unchecked
   router.put('/selections/:selectionid',vendorAuth,function(req,res){
     Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
       if(err2){
@@ -174,7 +183,7 @@ router.post('/signUp', function(req, res) {
       }else{
         var mapped=req.body.items.map((item,index)=>{
           if(item.price!==selectionList.intake[index].price){
-            selectionHandler.findById(item._id,function(err3,response){
+            SelectionHandler.findById(item._id,function(err3,response){
               if(err3){
                 console.log(err3);
                 return false;
@@ -193,11 +202,13 @@ router.post('/signUp', function(req, res) {
             return false;
           }
         })
+        res.json({
+          msg:"saved all the changes made in prices"
+        })
       }
     })
   })
 
-  ///unchecked
   ///Add new wanted category to selectionlist
   router.post('/selections/:selectionid',vendorAuth,function(req,res){
     Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
@@ -222,7 +233,7 @@ router.post('/signUp', function(req, res) {
               if(err3){
                 console.log("finding of selection failed" + err3);
               }else{
-                Sub_cat.findById(request.subcat_id,function(err4,subcat){
+                Sub_cat.findById(req.body.subcat_id,function(err4,subcat){
                   if(err4){
                     console.log(err4);
                   }else{
@@ -236,7 +247,7 @@ router.post('/signUp', function(req, res) {
                           if(err6){
                             console.log("saving list failed "+err6);
                           }else{
-                            Selection.findById(req.params.selection_id).populate({
+                            Selection.findById(req.params.selectionid).populate({
                               path:'intake',
                               model:'SelectionHandler',
                               populate:{
@@ -555,9 +566,9 @@ router.post('/signUp', function(req, res) {
         }
         else
         {
-          let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type});
           if(category)
           {
+            let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type, cat_id:category._id});
             newSubCat.save()
               .then(newSubCat => {
                 category.sub_cats.push(newSubCat);
@@ -580,6 +591,7 @@ router.post('/signUp', function(req, res) {
             let newCat = new Cat({name: req.body.cat_name});
             newCat.save()
               .then(newCat => {
+                let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type, cat_id:newCat._id});
                 newSubCat.save()
                     .then(newSubCat => {
                       newCat.sub_cats.push(newSubCat);
