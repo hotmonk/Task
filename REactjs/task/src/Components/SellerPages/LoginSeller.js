@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { sellerLogin } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
-import {Redirect} from 'react-router-dom';
+import {Redirect,Link} from 'react-router-dom';
 
 class LoginSeller extends Component {
 
@@ -81,6 +81,8 @@ class LoginSeller extends Component {
     render() {
         return (
             <div>
+                <h2>NOT A SELLER?</h2>
+                <Link to='/vendor/login'>Login as vendor!</Link>
                 { this.redirectit() }
                 <h3>Login as Seller!</h3>
                 <form onSubmit={this.onSubmit}>
@@ -103,6 +105,8 @@ class LoginSeller extends Component {
                     </div>
 
                     <input type="submit" value="Login Seller" />
+                    <h3>Don't have an account?</h3>
+                    <Link to='/seller/signUp'>Sign Up!</Link>
                 </form>
             </div>
         )
