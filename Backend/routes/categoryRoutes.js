@@ -14,12 +14,10 @@ router.get("/",function(req,res){
         var filtered=allCategories.map(category=>{
           return {
             name:category.name,
-            id:category._id,
-            key: category._id,
+            id:category.id,
+            key: category.id,
           }
         })
-       // console.log(allCategories);
-        //console.log(filtered);
         res.json(filtered);
       }
    });

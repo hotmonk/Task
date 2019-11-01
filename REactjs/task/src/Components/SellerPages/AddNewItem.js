@@ -31,11 +31,11 @@ class ItemForm extends Component
                     });
                     if(this.state.categories && this.state.categories.length){
                         axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
-                            .then((response)=>{
+                            .then((response2)=>{
                                 this.setState({
-                                    subcategories:response.data,
+                                    subcategories:response2.data,
                                     category_id:this.state.categories[0].key,
-                                    subcat_id:response.data[0].key
+                                    subcat_id:response2.data[0].key
                                 })
                             })
                             .catch((error)=>{
@@ -77,7 +77,7 @@ class ItemForm extends Component
                 sub_cat_id:this.state.subcat_id,
                 quantity:this.state.quantity
             })
-            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + item.cust_id + '/items', item ,config)
+            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + this.props.seller.id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
                     this.props.history.push('/seller/items')
