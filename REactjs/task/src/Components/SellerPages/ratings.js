@@ -1,29 +1,35 @@
-import React, { Component } from 'react';
-import Rating from 'react-rating';
-
-export class SellerLogout extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {value: 0};
-    
-        this.handleClick = this.handleClick.bind(this);
-      }
-    
-      handleClick(event) {
-        console.log(this.state.value);
-        this.setState({value: undefined});
-      }
-    
+import React from 'react';
+import StarRatingComponent from 'react-star-rating-component';
+ 
+class Rating extends React.Component {
+  constructor() {
+    super();
+ 
+    this.state = {
+      rating: 1
+    };
+  }
+ 
+  onStarClick(nextValue, prevValue, name) {
+    this.setState({rating: nextValue});
+  }
+ 
   render() {
-    return (
+    const { rating } = this.state;
+    
+    return (                
       <div>
-         <h1>RATINGS</h1>   
-         <Rating {...this.props}
-           emptySymbol="fa fa-star-o fa-2x"
-           fullSymbol="fa fa-star fa-2x"
-          initialRating={this.state.value} />
-         <button onClick={this.handleClick}>Submit</button>
+        <h2>Rating from state: {rating}</h2>
+        <StarRatingComponent 
+          name="rate1" 
+          starCount={5}
+          value={rating}
+          height='10px'
+          onStarClick={this.onStarClick.bind(this)}
+        />
       </div>
     );
   }
 }
+
+export default Rating;
