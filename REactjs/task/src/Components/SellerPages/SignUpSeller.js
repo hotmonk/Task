@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import {Redirect,Link} from 'react-router-dom';
+import FetchLocation from './FetchLocation';
 
 class SignUpSeller extends Component {
 
@@ -24,6 +25,7 @@ class SignUpSeller extends Component {
             contact: '',
             address: '',
             password: '',
+            place: null,
             msg: null
         }
     }
@@ -148,7 +150,7 @@ class SignUpSeller extends Component {
                               onChange={this.onChangepassword}
                               />
                     </div>
-
+                    <FetchLocation/>
                     <input type="submit" value="Register Seller" />
                     <h3>Already have an account?</h3>
                     <Link to='/seller/login'>Login!</Link>

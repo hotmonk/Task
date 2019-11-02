@@ -12,11 +12,15 @@ router.get("/",function(req,res){
           console.log(err);
       } else {
         var filtered=allCategories.map(category=>{
-          return {
-            name:category.name,
-            id:category._id,
-            key: category._id,
-          }
+          category.populate({
+            path:'sub_cats',
+            model:'Sub_cat'
+          })
+          // return {
+          //   name:category.name,
+          //   id:category._id,
+          //   key: category._id,
+          // }
         })
        // console.log(allCategories);
         //console.log(filtered);

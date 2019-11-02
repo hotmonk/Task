@@ -7,12 +7,9 @@ var Sub_cat = new mongoose.Schema({
     },
     name: String,
     quantity_type: String,
-    selection_data:[{
-        price:Number,
-        selection_id:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Selection"
-        }
+    selectionHandle_id:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SelectionHandler"
     }]
 });
 

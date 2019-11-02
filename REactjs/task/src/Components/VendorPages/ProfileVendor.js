@@ -14,9 +14,10 @@ class vendorProfile extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }else{
-          this.props.history.push('/vendor/login');
         }
+        if(!this.props.isAuthenticated){
+          this.props.history.push('/vendor/login');
+      }
       }
     // static propTypes = {
     //     vendorData:PropTypes.isRequired,
