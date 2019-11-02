@@ -40,7 +40,8 @@ router.post('/', (req, res) => {
                     name: vendor.name,
                     email: vendor.email,
                     contact: vendor.contact,
-                    address: vendor.address
+                    address: vendor.address,
+                    selection_id:vendor.selection_id
                 }
               });
             });

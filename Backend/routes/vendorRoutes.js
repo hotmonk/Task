@@ -9,6 +9,8 @@ var Item = require('../models/itemModel.js');
 var Transaction = require('../models/transactionModel.js');
 var Cat = require('../models/catModel.js');
 var Sub_cat = require('../models/sub_catModel.js');
+var SelectionHandler=require('../models/selectionHandleModel.js');
+var Selection=require('../models/selectionModel.js');
 var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
 
@@ -67,96 +69,341 @@ router.post('/signUp', function(req, res) {
       })
   });  
 
+
+  ///delete any category
   ///unchecked
-  router.post('/:id/addselections',vendorAuth,function(req,res){
-    Vendor.findById(req.params.id,function(err,vendor){
-      if(err){
-        console.log("vendor finding process failed");
-      }else{
-        if(vendor.selection_id){
-          Selection.findById(vendor.selection_id,function(err,selectionList){
-            if(err){
-              console.log("finding of selection failed");
+  router.delete('/selections/:selectionHandlerid',vendorAuth,function(req,res){
+      SelectionHandler.findById(req.params.selectionHandlerid,function(err,selectionHandler){
+        if(err){
+          console.log(err);
+        }else{
+          var subcatid=selectionHandler.subcat_id;
+          var selectionid=selectionHandler.selection_id;
+          Sub_cat.findById(subcatid,function(err2,subcat){
+            if(err2){
+              console.log(err2);
             }else{
-                if(req.body.intake&&req.body.intake.length){
-                  var saturated=req.body.intake.map(request=>{
-                      if(!(selectionList.intake.includes(request.subcat_id))){
-                          selectionList.intake.push(request.subcat_id);
-                          Sub_cat.findById(request.subcat_id,function(err,subcategory){
-                            if(err){
-                              console.log(err);
+              SelectionHandler.findByIdAndDelete(req.params.selectionHandlerid,function(err3,removed){
+                if(err3){
+                  console.log(err3);
+                }else{
+                  var filtered=subcat.selectionHandle_id;
+                  filtered=filtered.filter(query=>{
+                    return query!==req.params.selectionHandlerid;
+                  })
+                  subcat.selectionHandle_id=filtered;
+                  subcat.save(function(err4,saved){
+                    if(err4){
+                      console.log(err4);
+                    }else{
+                      Selection.findById(selectionid,function(err5,selection){
+                        if(err5){
+                          console.log(err5);
+                        }else{
+                          var filtered=selection.intake;
+                          filtered=filtered.filter(query=>{
+                            return query!==req.params.selectionHandlerid;
+                          })
+                          selection.intake=filtered;
+                          selection.save(function(err6,savedsel){
+                            if(err6){
+                              console.log(err6);
                             }else{
-                              subcategory.selection_data.push(request);
-                              subcategory.save(function(err,savedsub){
-                                if(err){
-                                  console.log(err);
-                                }else{
-                                  return "added subcategory to selection "+savedsub.name ;
+                              Selection.findById(selectionid).populate({
+                                path:'intake',
+                                model:'SelectionHandler',
+                                populate:{
+                                  path:'subcat_id',
+                                  model:'Sub_cat',
+                                  populate:{
+                                    model:'cat_id',
+                                    path:'Cat'
+                                  }
                                 }
-                              });
+                              }).exec(function(err7,selectionList){
+                                if(err7){
+                                  console.log(err7);
+                                }else{
+                                  res.json(selectionList.intake);
+                                }
+                              })
                             }
                           })
-                      }
-                  });
-                  selectionList.save(function(err,final){
-                    if(err){
-                      console.log(err);
-                    }else{
-                      res.json({
-                        msg:"added selected subcat to list",
-                        items:final
+                        }
                       })
                     }
                   })
                 }
-            }
-          })
-        }else{
-          var selection=new Selection({
-            vendor_id:vendor._id
-          });
-          selection.save(function(err,selectionList){
-            if(err){
-              console.log(err);
-            }else{
-              vendor.selection_id=selectionList._id;
-              vendor.save(function(err,vendor2){
-                if(req.body.intake&&req.body.intake.length){
-                  var saturated=req.body.intake.map(request=>{
-                        selectionList.intake.push(request.subcat_id);
-                        Sub_cat.findById(request.subcat_id,function(err,subcategory){
-                          if(err){
-                            console.log(err);
-                          }else{
-                            subcategory.selection_data.push(request);
-                            subcategory.save(function(err,savedsub){
-                              if(err){
-                                console.log(err);
-                              }else{
-                                return "added subcategory to selection "+savedsub.name ;
-                              }
-                            });
-                          }
-                        })
-                  });
-                  selectionList.save(function(err,final){
-                    if(err){
-                      console.log(err);
-                    }else{
-                      res.json({
-                        msg:"added selected subcat to list",
-                        items:final
-                      })
-                    }
-                  })
-                }
-              })
+              });
+
             }
           })
         }
+      })
+  })
+
+  ///fetch all desired categories
+  ///unchecked
+  router.get('/selections/:selectionid',vendorAuth,function(req,res){
+    Selection.findById(req.params.selection_id).populate({
+      path:'intake',
+      model:'SelectionHandler',
+      populate:{
+        path:'subcat_id',
+        model:'Sub_cat',
+        populate:{
+          model:'cat_id',
+          path:'Cat'
+        }
+      }
+    }).exec(function(err,selectionList){
+      if(err){
+        console.log(err);
+      }else{
+        res.json(selectionList.intake);
+      }
+    })
+  });
+
+  ///change price of items
+  ///unchecked
+  router.put('/selections/:selectionid',vendorAuth,function(req,res){
+    Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
+      if(err2){
+        console.log("finding of selection failed" + err2);
+      }else{
+        var mapped=req.body.items.map((item,index)=>{
+          if(item.price!==selectionList.intake[index].price){
+            selectionHandler.findById(item._id,function(err3,response){
+              if(err3){
+                console.log(err3);
+                return false;
+              }else{
+                response.price=item.price;
+                response.save(function(err4,saved){
+                  if(err4){
+                    console.log(err4);
+                  }else{
+                    return true;
+                  }
+                });
+              }
+            })
+          }else{
+            return false;
+          }
+        })
       }
     })
   })
+
+  ///unchecked
+  ///Add new wanted category to selectionlist
+  router.post('/selections/:selectionid',vendorAuth,function(req,res){
+    Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
+      if(err2){
+        console.log("finding of selection failed" + err2);
+      }else{
+        var filtered=selectionList.intake.filter(request=>{
+          return request.subcat_id===req.body.subcat_id
+        })
+        if(filtered&&filtered.length){
+          res.json({
+            msg:"subcategory already present in the list"
+          })
+        }else{
+            var newhandle=new SelectionHandler({
+              vendor_id:req.body.vendorid,
+              price:req.body.price,
+              selection_id:req.params.selectionid,
+              subcat_id:req.body.subcat_id
+            })
+            newhandle.save(function(err3,newhandler){
+              if(err3){
+                console.log("finding of selection failed" + err3);
+              }else{
+                Sub_cat.findById(request.subcat_id,function(err4,subcat){
+                  if(err4){
+                    console.log(err4);
+                  }else{
+                    subcat.selectionHandle_id.push(newhandler._id);
+                    subcat.save(function(err5,subcat){
+                      if(err5){
+                        console.log(err5);
+                      }else{
+                        selectionList.intake.push(newhandler._id);
+                        selectionList.save(function(err6){
+                          if(err6){
+                            console.log("saving list failed "+err6);
+                          }else{
+                            Selection.findById(req.params.selection_id).populate({
+                              path:'intake',
+                              model:'SelectionHandler',
+                              populate:{
+                                path:'subcat_id',
+                                model:'Sub_cat',
+                                populate:{
+                                  path:'cat_id',
+                                  model:'Cat'
+                                }
+                              }
+                            }).exec(function(err7,selectionList){
+                              if(err7){
+                                console.log(err7);
+                              }else{
+                                res.json(selectionList.intake);
+                              }
+                            })
+                          }
+                        })
+                      }
+                    })
+                  }
+                })
+                
+              }
+            })
+      }
+    }
+    })
+  })
+  // router.post(':id/selections',vendorAuth,function(req,res){
+  //   Vendor.findById(req.params.id,function(err,vendor){
+  //     if(err){
+  //       console.log("vendor finding process failed");
+  //     }else{
+  //       if(vendor.selection_id){
+  //         Selection.findById(vendor.selection_id,function(err2,selectionList){
+  //           if(err2){
+  //             console.log("finding of selection failed" + err2);
+  //           }else{
+  //               if(req.body.intake&&req.body.intake.length){
+  //                 var saturated=req.body.intake.map(request=>{
+  //                     var newhandle=new SelectionHandler({
+  //                       vendor_id:vendor._id,
+  //                       price:request.price,
+  //                       selection_id:selectionList._id,
+  //                       subcat_id:request.subcat_id
+  //                     })
+  //                     newhandle.save(function(err3,newhandler){
+  //                       if(err3){
+  //                         console.log("finding of selection failed" + err3);
+  //                       }else{
+  //                         Sub_cat.findById(request.subcat_id,function(err4,subcat){
+  //                           if(err4){
+  //                             console.log(err4);
+  //                           }else{
+  //                             subcat.selectionHandle_id.push(newhandler._id);
+  //                             subcat.save(function(err5,subcat){
+  //                               if(err5){
+  //                                 console.log(err5);
+  //                               }else{
+  //                                 selectionList.intake.push(newhandler._id);
+  //                                 selectionList.save(function(err6,selectionList){
+  //                                   if(err6){
+  //                                     console.log("saving list failed "+err6);
+  //                                   }else{
+  //                                     res.redirect('');
+  //                                   }
+  //                                 })
+  //                               }
+  //                             })
+  //                           }
+  //                         })
+                          
+  //                       }
+  //                     })
+  //                     // if(!(selectionList.intake.includes(request.subcat_id))){
+  //                     //     selectionList.intake.push(request.subcat_id);
+  //                     //     Sub_cat.findById(request.subcat_id,function(err,subcategory){
+  //                     //       if(err){
+  //                     //         console.log(err);
+  //                     //       }else{
+  //                     //         subcategory.selection_data.push(request);
+  //                     //         subcategory.save(function(err,savedsub){
+  //                     //           if(err){
+  //                     //             console.log(err);
+  //                     //           }else{
+  //                     //             return "added subcategory to selection "+savedsub.name ;
+  //                     //           }
+  //                     //         });
+  //                     //       }
+  //                     //     })
+  //                     // }
+  //                 });
+  //                 // selectionList.save(function(err,final){
+  //                 //   if(err){
+  //                 //     console.log(err);
+  //                 //   }else{
+  //                 //     res.json({
+  //                 //       msg:"added selected subcat to list",
+  //                 //       items:final
+  //                 //     })
+  //                 //   }
+  //                 // })
+  //               }
+  //           }
+  //         })
+  //       }else{
+  //         var selection=new Selection({
+  //           vendor_id:vendor._id
+  //         });
+  //         selection.save(function(err,selectionList){
+  //           if(err){
+  //             console.log(err);
+  //           }else{
+  //             vendor.selection_id=selectionList._id;
+  //             vendor.save(function(err2,vendor2){
+  //               if(err2){
+  //                 console.log(err2);
+  //                 res.status(400).json(err2);
+  //               }else{
+  //                 if(req.body.intake&&req.body.intake.length){
+  //                   var saturated=req.body.intake.map(request=>{
+  //                       var newhandle=new SelectionHandler({
+  //                         vendor_id:vendor._id,
+  //                         price:request.price,
+  //                         selection_id:selectionList._id,
+  //                         subcat_id:request.subcat_id
+  //                       })
+  //                       newhandle.save(function(err3,newhandler){
+  //                         if(err3){
+  //                           console.log("finding of selection failed" + err3);
+  //                         }else{
+  //                           Sub_cat.findById(request.subcat_id,function(err4,subcat){
+  //                             if(err4){
+  //                               console.log(err4);
+  //                             }else{
+  //                               subcat.selectionHandle_id.push(newhandler._id);
+  //                               subcat.save(function(err5,subcat){
+  //                                 if(err5){
+  //                                   console.log(err5);
+  //                                 }else{
+  //                                   selectionList.intake.push(newhandler._id);
+  //                                   selectionList.save(function(err6,selectionList){
+  //                                     if(err6){
+  //                                       console.log("saving list failed "+err6);
+  //                                     }else{
+  //                                       res.redirect('');
+  //                                     }
+  //                                   })
+  //                                 }
+  //                               })
+  //                             }
+  //                           })
+                            
+  //                         }
+  //                       })
+  //                   });
+  //                 }
+  //               }
+  //             })
+  //           }
+  //         })
+  //       }
+  //     }
+  //   })
+  // })
   
   
   //vendor profile

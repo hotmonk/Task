@@ -7,7 +7,7 @@ var selection = new mongoose.Schema({
     },
     intake:[{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Sub_cat"
+            ref: "SelectionHandler"
         }]
 });
 
