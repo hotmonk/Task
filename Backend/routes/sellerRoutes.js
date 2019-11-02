@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 var Seller = require('../models/sellerModel.js');
 var Item = require('../models/itemModel.js');
 const sellerAuth = require('../middleware/sellerAuth.js');
+var Vendor=require('../models/vendorModel.js');
 
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -147,7 +148,9 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
     })
   })
   
-  
+  function compareit(a,b){
+
+  }
   //upload new item by customer
   ///checked
   router.post('/:id/items',sellerAuth, function(req, res){
@@ -159,7 +162,31 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
           Seller.findById(req.params.id,function(err,response){
             response.items.push(Item._id),
             response.save()
-              .then(item=>{
+              .then(seller=>{
+                Sub_cat.findById(req.body.sub_cat_id).populate({
+                  path:'selectionHandle_id',
+                  populate:{
+                    path:'vendor_id'
+                  }
+                }).exec(function(err2,subcats){
+                  if(err2){
+                    console.log(err2);
+                  }else{
+                    var arr=subcats.selectionHandle_id;
+                    arr=arr.filter(handle=>{
+                      return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<5;
+                    })
+                    arr.sort((a,b)=>{
+                      if(a.price>b.price){
+                        return -1;
+                      }else if(a.price<b.price){
+                        return 1;
+                      }
+                      return 0;
+                    })
+                    console.log(arr);
+                  }
+                })
                 res.status(200).json({newItem: 'Item added successfully by Customer'});            })
               .catch(err=>{
                 console.log(err)

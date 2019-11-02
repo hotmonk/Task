@@ -1,18 +1,24 @@
 var mongoose = require('mongoose');
 
 var Seller = new mongoose.Schema({
+    //NAME OF VENDOR
     name: {
         type: String,
         required: true
     },
+    ///EMAIL OF VENDOR
     email: {
         type: String,
         required: true,
-        unique:true
+        unique:true,
+        lowercase:true
     },
+    ///CONTACT NUMBER OF VENDOR
     contact: {
         type: Number,
-        required: true
+        required: true,
+        minlength:10,
+        maxlength:10
     },
     address: {
         type: String,
@@ -20,7 +26,8 @@ var Seller = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength:8
     },
     items: [
         {
@@ -28,7 +35,10 @@ var Seller = new mongoose.Schema({
             ref: "Item"
         }
       ],
-    location: String,
+
+    ///to store coordinates of seller
+    latitude:Number,
+    longitude:Number
 });
 
 module.exports = mongoose.model("Seller", Seller);

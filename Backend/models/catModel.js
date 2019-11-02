@@ -1,7 +1,12 @@
 var mongoose = require('mongoose');
 
 var Cat = new mongoose.Schema({
-    name: String,
+  ///NAME OF CATEGORY
+    name:{
+      type:String,
+      lowercase:true
+  } ,
+    ///ARRAY OF SUBCAT ID BELONGING TO THIS CATEGORY
     sub_cats: [
         {
             type: mongoose.Schema.Types.ObjectId,
