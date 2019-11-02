@@ -53,6 +53,7 @@ router.post('/', (req, res) => {
 // @desc    Get user data
 // @access  Private
 router.get('/seller', auth, (req, res) => {
+  console.log(req.seller);
   Seller.findById(req.seller.id)
     .select('-password')
     .then(seller => res.json(seller));

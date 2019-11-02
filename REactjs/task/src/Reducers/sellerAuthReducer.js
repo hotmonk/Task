@@ -10,7 +10,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
-  token: localStorage.getItem('token'),
+  token: localStorage.getItem('x-auth-seller-token'),
   isAuthenticated: null,
   isLoading: false,
   seller: null
@@ -32,7 +32,7 @@ export default function(state = initialState, action) {
       };
     case SELLER_LOGIN_SUCCESS:
     case SELLER_REGISTER_SUCCESS:
-      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('x-auth-seller-token', action.payload.token);
       return {
         ...state,
         ...action.payload,
@@ -43,7 +43,7 @@ export default function(state = initialState, action) {
     case SELLER_LOGIN_FAIL:
     case SELLER_LOGOUT_SUCCESS:
     case SELLER_REGISTER_FAIL:
-      localStorage.removeItem('token');
+      localStorage.removeItem('x-auth-seller-token');
       return {
         ...state,
         token: null,
