@@ -16,9 +16,7 @@ var Seller = new mongoose.Schema({
     ///CONTACT NUMBER OF VENDOR
     contact: {
         type: Number,
-        required: true,
-        minlength:10,
-        maxlength:10
+        required: true
     },
     address: {
         type: String,

@@ -22,8 +22,6 @@ var Item = new mongoose.Schema({
     ///STATUS CAN BE INBID,PAYMENT,DONE
     status:{
         type:String,
-        uppercase:true,
-        default:'INBID'
     } ,
     ///TRANSACTION ID OF ASSOCIATED ITEM
     transaction_id: {
