@@ -58,19 +58,12 @@ class ItemForm extends Component
     submitHandler(event){
         event.preventDefault();
         if(this.props.isAuthenticated){
-            const token = this.props.token;
-  
             // Headers
             const config = {
                 headers: {
                 'Content-type': 'application/json'
                 }
             };
-    
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-seller-token'] = token;
-            }
             const item =JSON.stringify ({
                 cust_id:this.props.seller.id,
                 cat_id:this.state.category_id,

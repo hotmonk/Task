@@ -9,6 +9,8 @@ import {
   SELLER_REGISTER_FAIL
 } from '../actions/types';
 
+import setAuthToken from '../utils/setSellerAuthToken'
+
 const initialState = {
   token: localStorage.getItem('x-auth-seller-token'),
   isAuthenticated: null,
@@ -33,6 +35,7 @@ export default function(state = initialState, action) {
     case SELLER_LOGIN_SUCCESS:
     case SELLER_REGISTER_SUCCESS:
       localStorage.setItem('x-auth-seller-token', action.payload.token);
+      setAuthToken(localStorage.getItem('x-auth-seller-token'));
       return {
         ...state,
         ...action.payload,
@@ -44,6 +47,7 @@ export default function(state = initialState, action) {
     case SELLER_LOGOUT_SUCCESS:
     case SELLER_REGISTER_FAIL:
       localStorage.removeItem('x-auth-seller-token');
+      setAuthToken(null);
       return {
         ...state,
         token: null,

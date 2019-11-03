@@ -12,17 +12,12 @@ class editPrice extends Component {
             items:[]
         }
         if(this.props.isAuthenticated){
-            const token = this.props.token;
             // Headers
             const config = {
                 headers: {
                 'Content-type': 'application/json'
                 }
             };
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-vendor-token'] = token;
-            }
             axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
                 .then(res=>{
                     this.setState({
@@ -63,17 +58,12 @@ class editPrice extends Component {
       deleteHandler(event,id){
         event.preventDefault();
         if(this.props.isAuthenticated){
-          const token = this.props.token;
           // Headers
           const config = {
               headers: {
               'Content-type': 'application/json'
               }
           };
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
           axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
               .then(res => {
                   this.setState({
@@ -93,19 +83,12 @@ class editPrice extends Component {
           var body=JSON.stringify({
               ...this.state
           })
-          const token = this.props.token;
-  
             // Headers
             const config = {
                 headers: {
                 'Content-type': 'application/json'
                 }
             };
-    
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-vendor-token'] = token;
-            }
           axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
             .then(res=>{
                 this.props.history.push('/vendor/profile');

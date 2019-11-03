@@ -37,17 +37,13 @@ class chooseCat extends Component {
                               })
                           })
                           .then(()=>{
-                            const token = this.props.token;
                             // Headers
                             const config = {
                                 headers: {
                                 'Content-type': 'application/json'
                                 }
                             };
-                            // If token, add to headers
-                            if (token) {
-                                config.headers['x-auth-vendor-token'] = token;
-                            }
+                            console.log(this.props);
                             axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
                                 .then(res=>{
                                     this.setState({
@@ -122,17 +118,12 @@ class chooseCat extends Component {
 
     deleteHandler(id){
       if(this.props.isAuthenticated){
-        const token = this.props.token;
         // Headers
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
-        // If token, add to headers
-        if (token) {
-            config.headers['x-auth-vendor-token'] = token;
-        }
         axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
             .then(res => {
                 this.setState({
@@ -158,19 +149,12 @@ class chooseCat extends Component {
         return ;
       }
       if(this.props.isAuthenticated){
-        const token = this.props.token;
-
         // Headers
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
-
-        // If token, add to headers
-        if (token) {
-            config.headers['x-auth-vendor-token'] = token;
-        }
         const item = JSON.stringify({
           vendorid:this.props.vendorData.id,
           subcat_id:this.state.subcat_id,

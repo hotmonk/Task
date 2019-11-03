@@ -8,7 +8,6 @@ class vendorRequest extends Component {
 
     constructor(props) {
         super(props);
-
         this.onChangecat_name = this.onChangecat_name.bind(this);
         this.onChangesub_cat_name = this.onChangesub_cat_name.bind(this);
         this.onChangequantity_type = this.onChangequantity_type.bind(this);
@@ -54,19 +53,13 @@ class vendorRequest extends Component {
             quantity_type: this.state.quantity_type,
             status: "Approved"
         }
-        const token = this.props.token;
         const config = {
               headers: {
               'Content-type': 'application/json'
               }
           };
-  
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
 
-          const body=JSON.stringify(newTypeWaste);
+        const body=JSON.stringify(newTypeWaste);
         axios.post(process.env.REACT_APP_BASE_URL+'/vendor/newWasteType', body,config)
             .then(res => 
                 this.props.history.push('/vendor/profile')  

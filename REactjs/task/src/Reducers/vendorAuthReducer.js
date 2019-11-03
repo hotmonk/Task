@@ -9,6 +9,8 @@ import {
     VENDOR_REGISTER_FAIL
   } from '../actions/types';
   
+  import setAuthToken from '../utils/setVendorAuthToken'
+
   const initialState = {
     token: localStorage.getItem('x-auth-vendor-token'),
     isAuthenticated: null,
@@ -33,6 +35,7 @@ import {
       case VENDOR_LOGIN_SUCCESS:
       case VENDOR_REGISTER_SUCCESS:
         localStorage.setItem('x-auth-vendor-token', action.payload.token);
+        setAuthToken(localStorage.getItem('x-auth-vendor-token'));
         return {
           ...state,
           ...action.payload,
@@ -44,6 +47,7 @@ import {
       case VENDOR_LOGOUT_SUCCESS:
       case VENDOR_REGISTER_FAIL:
         localStorage.removeItem('x-auth-vendor-token');
+        setAuthToken(null);
         return {
           ...state,
           token: null,

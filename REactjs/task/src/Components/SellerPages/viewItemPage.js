@@ -18,7 +18,6 @@ class ViewItem extends Component {
 
     componentDidMount(){
         if(this.props.isAuthenticated){
-            const token = this.props.token;
   
             // Headers
             const config = {
@@ -26,11 +25,6 @@ class ViewItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-    
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-seller-token'] = token;
-            }
             axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/viewItem', config)
                 .then(response=>{
                     console.log(response);

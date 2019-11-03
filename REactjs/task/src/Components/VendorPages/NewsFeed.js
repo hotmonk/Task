@@ -17,19 +17,12 @@ class NewsFeed extends Component {
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
         if(this.props.isAuthenticated){
-          const token = this.props.token;
-
           // Headers
           const config = {
               headers: {
               'Content-type': 'application/json'
               }
           };
-  
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
           axios.get(process.env.REACT_APP_BASE_URL+'/vendor/newsfeed', config)
               .then(response=>{
                   this.setState({
@@ -49,17 +42,11 @@ class NewsFeed extends Component {
       };
 
       handlePurchase(){
-        const token = this.props.token;
         const config = {
               headers: {
               'Content-type': 'application/json'
               }
           };
-  
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
 
           const body=JSON.stringify({
               item_id:this.state.item.id,
