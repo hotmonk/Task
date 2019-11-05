@@ -56,6 +56,9 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
         },{
           path:'sub_cat_id',
           model:'Sub_cat'
+        },{
+          path:'transaction_id',
+          model:'Transaction'
         }]
     })
     .exec(function(err, response) {
@@ -66,12 +69,46 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
       else 
       {
         var filtered=response.items.filter((item)=>{
-            return (item.status==='sold');
+            return (item.status!=='INBID');
         });
         res.json(filtered);
       }
     });
   });
+
+  ///save rating by a seller for vendor
+  router.post('/:id/saveRating',sellerAuth,function(req,res){
+    Transaction.findById(req.body.transaction_id,function(err,transaction){
+      if(err){
+        console.log("transaction finding failed",err);
+      }else{
+        transaction.rating=req.body.rating;
+        transaction.save(function(err2,savedTransaction){
+          if(err2){
+            console.log(err2);
+          }else{
+            Item.findById(savedTransaction.item,function(err3,item){
+                if(err3){
+                  console.log(err3);
+                }else{
+                  item.status='DONE';
+                  item.save(function(err4){
+                    if(err4){
+                      console.log(err4);
+                    }else{
+                      res.json({
+                        msg:"ratings saved successfully"
+                      })
+                    }
+                  });
+                }
+            })
+          }
+        })
+      }
+      
+    })
+});
   
   ///checked
   router.post('/signUp', function(req, res) {
