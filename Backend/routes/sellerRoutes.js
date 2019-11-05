@@ -61,6 +61,31 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
       }
     });
   });
+  router.get('/:id/viewRateItem',sellerAuth,function(req,res){
+    Seller.findById(req.params.id).populate({ 
+      path: 'items',
+      populate: [{
+        path: 'cat_id',
+        model: 'Cat'
+      },{
+        path:'sub_cat_id',
+        model:'Sub_cat'
+      }]
+  })
+  .exec(function(err, response) {
+    if(err)
+    {
+        console.log(err);
+    } 
+    else 
+    {
+      var filtered=response.items.filter((item)=>{
+          return (item.status==='rating');
+      });
+      res.json(filtered);
+    }
+  });
+});
   
   ///checked
   router.post('/signUp', function(req, res) {

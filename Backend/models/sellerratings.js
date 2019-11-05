@@ -5,7 +5,7 @@ var Sell_rat = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Seller"
     },
-    transaction: Number,
+    number_of_transaction: Number,
     cumulative_rating: Number,
 
 });
