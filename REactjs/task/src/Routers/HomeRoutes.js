@@ -1,26 +1,38 @@
 import React from 'react';
 import { Switch,Route } from 'react-router-dom';
-import Login from '../Containers/Login.js';
-import SignUp from '../Containers/SignUp.js';
-import Options from '../Containers/selleroptions.js';
-import Transactions from '../Containers/transactions.js';
-import Profile from '../Containers/sellerprofile.js';
-import Add from '../Containers/addItems.js';
-import SignUpBuyer from '../Containers/SignUp.js';
-import SignUpSeller from '../Containers/SignUpSeller.js';
 
-const Routes =(props)=> {
+import LoginSeller from '../Components/SellerPages/LoginSeller';
+import LoginVendor from '../Components/VendorPages/LoginVendor';
+import SignUpSeller from '../Components/SellerPages/SignUpSeller';
+import SignUpVendor from '../Components/VendorPages/SignUpVendor';
+import ItemForm from '../Components/SellerPages/AddNewItem';
+import vendorRequest from '../Components/VendorPages/requestVendor';
+import vendorProfile from '../Components/VendorPages/ProfileVendor';
+import sellerProfile from '../Components/SellerPages/ProfileSeller';
+import newsFeed from '../Components/VendorPages/NewsFeed';
+import ViewItem from '../Components/SellerPages/viewItemPage';
+import ViewSelledItem from '../Components/SellerPages/SoldItems';
+import ViewBuyedItem from '../Components/VendorPages/BuyedItems';
+import Ratings from '../Components/SellerPages/ratings';
+
+const Routes = (props) => {
         return(
-                <Switch>
-                    <Route path='/' exact component={Login} />
-                    <Route path='/home' exact component={SignUp} />
-                    <Route path='/options' exact component={Options} />
-                    <Route path='/transaction' exact component={Transactions}/>
-                    <Route path='/profile' exact component={Profile}/>
-                    <Route path='/add' exact component={Add}/>
-                    <Route path='/signUp1' exact component={SignUpBuyer}/>
-                    <Route path='/signUp2' exact component={SignUpSeller}/>
-                </Switch>
+             <Switch>
+                <Route path='/vendor/signUp' exact component={SignUpVendor}/>
+                <Route path='/seller/signUp' exact component={SignUpSeller}/>
+                <Route path='/vendor/login' exact component={LoginVendor}/>
+                <Route path='/seller/login' exact component={LoginSeller}/>
+                <Route path='/vendor/newWasteType' exact component={vendorRequest} />
+                <Route path='/seller/ratings' component={Ratings}/>
+                <Route path='/seller/items' component={ViewItem}/>
+                <Route path='/seller/newItem' component={ItemForm}/>
+                <Route path='/seller/profile' component={sellerProfile}/>
+                <Route path='/vendor/profile' component={vendorProfile}/>
+                <Route path='/vendor/newsfeed' component={newsFeed}/>
+                <Route path='/seller/additem' component={ItemForm}/>
+                <Route path='/seller/soldItems' component={ViewSelledItem}/>
+                <Route path='/vendor/viewBuyedItems' component={ViewBuyedItem}/>
+             </Switch>
         )
 
 }
