@@ -82,7 +82,7 @@ router.post('/signUp', function(req, res) {
   });  
 
 
-  ///delete any category
+  ///delete any category preferance
   router.delete('/selections/:selectionHandlerid',vendorAuth,function(req,res){
       SelectionHandler.findById(req.params.selectionHandlerid,function(err,selectionHandler){
         if(err){
@@ -209,7 +209,7 @@ router.post('/signUp', function(req, res) {
     })
   })
 
-  ///Add new wanted category to selectionlist
+  ///Add new wanted category to selectionlist for preferance
   router.post('/selections/:selectionid',vendorAuth,function(req,res){
     Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
       if(err2){
@@ -433,12 +433,12 @@ router.post('/signUp', function(req, res) {
         if(err1){
           res.status(400).json(err1);
         }
-        if(res1.status==='sold'){
+        if(res1.status!=='INBID'){
           res.json({
             msg:"item already sold"
           })
         }
-        res1.status='sold';
+        res1.status='RATING';
         res1.save(function(err2,res2){
           if(err2){
             res.status(400).json(err2);
@@ -496,10 +496,7 @@ router.post('/signUp', function(req, res) {
       } 
       else 
       {
-        var filtered=response.transactions.filter(transaction=>{
-            return (transaction.item.status==='sold');
-        });
-        filtered=filtered.map(trans=>{
+        var filtered=response.transactions.map(trans=>{
           return trans.item
         })
         res.json(filtered);
@@ -532,15 +529,15 @@ router.post('/signUp', function(req, res) {
             status:item.status
           }
         });
-        console.log(filtered);
         filtered=filtered.filter((item)=>{
-            return item.status=='inBid';
+            return item.status==='INBID';
         })
         res.json(filtered);
       }
    });
   })
   ///checked
+  ///probably not used anywhere
   router.get('/:id', vendorAuth, function(req, res){
     Vendor.findById(req.params.id, function(err, foundVendor){
       if(err)

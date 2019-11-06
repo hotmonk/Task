@@ -58,21 +58,28 @@ class editPrice extends Component {
       deleteHandler(event,id){
         event.preventDefault();
         if(this.props.isAuthenticated){
-          // Headers
-          const config = {
-              headers: {
-              'Content-type': 'application/json'
-              }
-          };
-          axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
+
+            var body=JSON.stringify({
+                ...this.state
+            })
+              // Headers
+              const config = {
+                  headers: {
+                  'Content-type': 'application/json'
+                  }
+              };
+            axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+              .then(res=>{
+                  return axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config);
+              })
               .then(res => {
                   this.setState({
-                    list:res.data
+                    items:res.data
                   })
               })
-              .catch(e=>{
-                  console.log("category add request failed.retry later",e)
-              });
+              .catch(err=>{
+                console.log("category add request failed.retry later",err)
+              })
         }
       }
 

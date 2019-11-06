@@ -62,9 +62,9 @@ class ViewSelledItem extends Component {
                 return (
                     <div>
                         <StarRatingComponent 
-                            name="rate1"  starCount={5} value={rating} height='10px' onStarClick={this.onStarClick.bind(this)}
+                            name="rate1"  starCount={5} value={this.state.rating} height='10px' onStarClick={this.onStarClick.bind(this)}
                         />
-                        <button onClick={ ()=> {this.handleSaveBack} }>Save and Go Back</button>
+                        <button onClick={ this.handleSaveBack.bind(this) }>Save and Go Back</button>
                     </div>
                 )
             case 'DONE':
@@ -77,6 +77,7 @@ class ViewSelledItem extends Component {
                 )
             case 'PAYMENT':
             case 'INBID':
+            default:
                 return null;
       }
     }

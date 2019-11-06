@@ -125,7 +125,7 @@ class ItemForm extends Component
               {this.props.isAuthenticated ? (
                 <div>
                     <SellerLogout/>
-                 {   this.state.categories ? (
+                 {   this.state.categories&&this.state.categories.length ? (
                         <form onSubmit={this.submitHandler}>
                             <select onChange={this.handleCategory} value={this.state.cat_id} >
                                 {

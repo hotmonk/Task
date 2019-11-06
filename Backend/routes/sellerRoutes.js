@@ -39,7 +39,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
     else 
     {
       var filtered=response.items.filter((item)=>{
-          return (item.status==='inBid');
+          return (item.status==='INBID');
       });
       res.json(filtered);
     }
@@ -194,7 +194,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
   router.post('/:id/items',sellerAuth, function(req, res){
     let newItem = new Item(req.body);
     newItem['cust_id']=req.params.id;
-    newItem['status']="inBid";
+    newItem['status']="INBID";
     newItem.save()
         .then(Item => {
           Seller.findById(req.params.id,function(err,response){

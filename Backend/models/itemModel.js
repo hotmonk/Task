@@ -19,7 +19,7 @@ var Item = new mongoose.Schema({
     ///QUANTITY OF THE ITEM AVAILABLE FOR SALE
     quantity: Number,
     image: String,
-    ///STATUS CAN BE INBID,PAYMENT,DONE
+    ///STATUS CAN BE INBID,PAYMENT,RATING,DONE
     status:{
         type:String,
     } ,

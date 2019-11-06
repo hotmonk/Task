@@ -43,7 +43,6 @@ class chooseCat extends Component {
                                 'Content-type': 'application/json'
                                 }
                             };
-                            console.log(this.props);
                             axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
                                 .then(res=>{
                                     this.setState({
