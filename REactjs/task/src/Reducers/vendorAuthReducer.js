@@ -26,6 +26,7 @@ import {
           isLoading: true
         };
       case VENDOR_LOADED:
+      setAuthToken(localStorage.getItem('x-auth-vendor-token'));
         return {
           ...state,
           isAuthenticated: true,

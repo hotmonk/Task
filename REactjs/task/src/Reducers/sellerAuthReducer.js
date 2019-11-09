@@ -26,6 +26,7 @@ export default function(state = initialState, action) {
         isLoading: true
       };
     case SELLER_LOADED:
+    setAuthToken(localStorage.getItem('x-auth-seller-token'));
       return {
         ...state,
         isAuthenticated: true,

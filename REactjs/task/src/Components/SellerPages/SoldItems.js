@@ -57,9 +57,8 @@ class ViewSelledItem extends Component {
       }
 
       handleByStatus(){
-        switch(this.state.item.status){
-            case 'Rating':
-                return (
+        if(this.state.item.status==="RATING"){
+            return (
                     <div>
                         <StarRatingComponent 
                             name="rate1"  starCount={5} value={this.state.rating} height='10px' onStarClick={this.onStarClick.bind(this)}
@@ -67,19 +66,18 @@ class ViewSelledItem extends Component {
                         <button onClick={ this.handleSaveBack.bind(this) }>Save and Go Back</button>
                     </div>
                 )
-            case 'DONE':
-                return (
+        }else if(this.state.item.status==='DONE'){
+            return (
                     <div>
                         <StarRatingComponent 
-                            name="rate1"  starCount={5} value={this.state.item.transaction_id.rating} height='10px'
+                            name="rate2"  starCount={5} value={this.state.item.transaction_id.rating} height='10px' editing={false}
+                            onStarClick={this.onStarClick.bind(this)}
                         />
                     </div>
                 )
-            case 'PAYMENT':
-            case 'INBID':
-            default:
-                return null;
-      }
+        }else{
+            return null;
+        }
     }
 
       handleSaveBack(){
@@ -130,7 +128,7 @@ class ViewSelledItem extends Component {
                         <h2> category: {this.state.item.cat_id.name}</h2> 
                         <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                         <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                        {this.handleByStatus.bind(this)}
+                        {this.handleByStatus()}
                     </div>
                 ):(
                     <div>
