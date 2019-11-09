@@ -65,12 +65,12 @@ class ItemForm extends Component
                 }
             };
             const item =JSON.stringify ({
-                cust_id:this.props.seller.id,
+                cust_id:this.props.seller._id,
                 cat_id:this.state.category_id,
                 sub_cat_id:this.state.subcat_id,
                 quantity:this.state.quantity
             })
-            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + this.props.seller.id + '/items', item ,config)
+            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + this.props.seller._id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
                     this.props.history.push('/seller/items')

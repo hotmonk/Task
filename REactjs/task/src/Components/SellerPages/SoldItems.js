@@ -26,7 +26,7 @@ class ViewSelledItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/viewSelledItem', config)
+            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller._id+'/viewSelledItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -98,7 +98,7 @@ class ViewSelledItem extends Component {
         if (token) {
             config.headers['x-auth-seller-token'] = token;
         }
-        axios.post(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller.id+'/saveRating',sitem, config)
+        axios.post(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller._id+'/saveRating',sitem, config)
             .then(response=>{
                 this.setState({
                     item:null,

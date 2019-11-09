@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
               res.json({
                 token,
                 vendor: {
-                    id: vendor.id,
+                    _id: vendor.id,
                     name: vendor.name,
                     email: vendor.email,
                     contact: vendor.contact,
