@@ -445,6 +445,8 @@ router.post('/signUp', function(req, res) {
           }
           transaction.save()
             .then(trans=>{
+              res2.transaction_id=trans._id;
+              res2.save();
               Vendor.findById(vendor_id,function(err4,res4){
                 if(err4){
                   console.log('adding transaction failed');

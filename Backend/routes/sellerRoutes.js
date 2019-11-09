@@ -9,6 +9,7 @@ var Item = require('../models/itemModel.js');
 var Sub_cat=require('../models/sub_catModel');
 const sellerAuth = require('../middleware/sellerAuth.js');
 var Vendor=require('../models/vendorModel.js');
+var Transaction=require('../models/transactionModel.js');
 
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
