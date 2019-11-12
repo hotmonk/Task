@@ -154,7 +154,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
                     res.json({
                       token,
                       seller: {
-                        id: seller.id,
+                        _id: seller.id,
                         name: seller.name,
                         email: seller.email,
                         contact: seller.contact,

@@ -25,7 +25,7 @@ class ViewBuyedItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor.id+'/viewBuyedItem', config)
+            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data

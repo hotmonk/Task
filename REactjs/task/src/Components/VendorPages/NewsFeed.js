@@ -52,10 +52,10 @@ class NewsFeed extends Component {
               item_id:this.state.item.id,
               price:100
           })
-          axios.post(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor.id+'/transaction', body ,config)
+          axios.post(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
               .then(response=>{
                   console.log(response.data);
-                  this.props.history.push('/vendor/viewBuyedItems')
+                  this.props.history.push('/vendor/payments')
               })
               .catch(error=>{
                   console.log(error);

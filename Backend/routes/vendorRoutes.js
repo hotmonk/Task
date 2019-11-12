@@ -63,7 +63,7 @@ router.post('/signUp', function(req, res) {
                         res.json({
                           token,
                           vendor: {
-                            id: vendor2.id,
+                            _id: vendor2.id,
                             name: vendor2.name,
                             email: vendor2.email,
                             contact: vendor2.contact,
