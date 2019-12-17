@@ -86,13 +86,15 @@ class chooseCat extends Component {
                     this.setState({
                         subcategories:response.data ,
                         category_id:curid,
-                        subcat_id:response.data[0].key
+                        subcat_id:response.data[0].key,
+                        present:false
                     });
                 }else{
                     this.setState({
                         subcategories:response.data ,
                         category_id:curid,
-                        subcat_id:null
+                        subcat_id:null,
+                        present:false
                     });
                 }
             })
@@ -105,6 +107,7 @@ class chooseCat extends Component {
         let curid=event.target.value;
         this.setState({
             subcat_id:curid,
+            present:false
         });
         
     }
@@ -115,31 +118,31 @@ class chooseCat extends Component {
         });
     }
 
-    deleteHandler(id){
-      if(this.props.isAuthenticated){
-        // Headers
-        const config = {
-            headers: {
-            'Content-type': 'application/json'
-            }
-        };
-        axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
-            .then(res => {
-                this.setState({
-                  list:res.data,
-                  present:false
-                })
-            })
-            .catch(e=>{
-                console.log("category add request failed.retry later"+e)
-            });
-      }
-    }
+    // deleteHandler(id){
+    //   if(this.props.isAuthenticated){
+    //     // Headers
+    //     const config = {
+    //         headers: {
+    //         'Content-type': 'application/json'
+    //         }
+    //     };
+    //     axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
+    //         .then(res => {
+    //             this.setState({
+    //               list:res.data,
+    //               present:false
+    //             })
+    //         })
+    //         .catch(e=>{
+    //             console.log("category add request failed.retry later"+e)
+    //         });
+    //   }
+    // }
 
     submitHandler(event){
       event.preventDefault();
       var filtered=this.state.list.filter(subcat=>{
-        return subcat.subcat_id===this.state.subcat_id
+        return subcat.subcat_id._id===this.state.subcat_id
       })
       if(filtered&&filtered.length){
         this.setState({
@@ -175,67 +178,72 @@ class chooseCat extends Component {
       render(){
           return (
             <div>
-              {this.props.isAuthenticated ? (
                 <div>
-                    <VendorLogout/>
-                    <Link to='/vendor/profile'>Done Adding!</Link>
-                {   this.state.categories ? (
-                        <form onSubmit={this.submitHandler}>
-                            <select onChange={this.handleCategory} value={this.state.cat_id} >
-                                {
-                                    this.state.categories.map(category=>{
-                                        return (<option key={category.key} value={category.id}>
-                                            {category.name}
-                                        </option>)
-                                    })
-                                }
-                            </select>
-                            {
-                                this.state.subcategories ?(
-                                <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
-                                    {
-                                        this.state.subcategories.map(subcategory=>{
-                                            return (<option key={subcategory.id} value={subcategory.id} >
-                                                { subcategory.name+' '+subcategory.quantity_type }
-                                            </option>)
-                                        })
-                                    }
-                                </select>)
-                                    :null
-                            }
-                            <div>
-                                <input type="text" value={this.props.price} onChange={this.handlePrice} placeholder="enter price" />
-                                <p><strong>Rs.</strong></p>
-                            </div>
-                        
-                        <button>ADD</button>
-                    </form> ) : null
-                }
-                <div>
-                    {
-                      this.state.list&&this.state.list.length ?(
-                        <ul>
-                          {
-                            this.state.list.map(selected=>(
-                              <li key={selected._id}>
-                                <div>Category:{selected.subcat_id.cat_id.name}</div>
-                                <div>Sub-category:{selected.subcat_id.name}</div>
-                                <div>Price:{selected.price}  {selected.subcat_id.quantity_type}</div>
-                                <button onClick={()=>this.deleteHandler(selected._id)}>Delete</button>
-                              </li>
-                            ))
-                          }
-                        </ul>
-                      ):(
-                        <div><strong>You have selected no prefered category</strong></div>
-                      )
-                    }
+                    {this.state.present? (<h1>Item already present in the list</h1>):null}
                 </div>
-                <Link to='/vendor/profile'>Done!</Link>
-            </div>
-            ) : (
-                <h4>Please Login First!</h4>
-              )}
+                <div>
+                {this.props.isAuthenticated ? (
+                        <div>
+                            <VendorLogout/>
+                            <Link to='/vendor/profile'>Done Adding!</Link>
+                        {   this.state.categories ? (
+                                <form onSubmit={this.submitHandler}>
+                                    <select onChange={this.handleCategory} value={this.state.cat_id} >
+                                        {
+                                            this.state.categories.map(category=>{
+                                                return (<option key={category.key} value={category.id}>
+                                                    {category.name}
+                                                </option>)
+                                            })
+                                        }
+                                    </select>
+                                    {
+                                        this.state.subcategories ?(
+                                        <select onChange={this.handleSubcategory} value={this.state.subcat_id}>
+                                            {
+                                                this.state.subcategories.map(subcategory=>{
+                                                    return (<option key={subcategory.id} value={subcategory.id} >
+                                                        { subcategory.name+' '+subcategory.quantity_type }
+                                                    </option>)
+                                                })
+                                            }
+                                        </select>)
+                                            :null
+                                    }
+                                    <div>
+                                        <div><strong>Rs.</strong><input type="text" value={this.props.price} onChange={this.handlePrice} placeholder="enter price" /></div>
+                                    </div>
+                                
+                                <button>ADD</button>
+                            </form> ) : null
+                        }
+                        <div>
+                            {
+                            this.state.list&&this.state.list.length ?(
+                                <ul>
+                                {
+                                    this.state.list.map(selected=>(
+                                    <li key={selected._id}>
+                                        <div>Category:{selected.subcat_id.cat_id.name}</div>
+                                        <div>Sub-category:{selected.subcat_id.name}</div>
+                                        <div>Price:{selected.price}  {selected.subcat_id.quantity_type}</div>
+                                        {/* <button onClick={()=>this.deleteHandler(selected._id)}>Delete</button> */}
+                                    </li>
+                                    ))
+                                }
+                                </ul>
+                            ):(
+                                <div><strong>You have selected no prefered category</strong></div>
+                            )
+                            }
+                        </div>
+                        <Link to='/vendor/profile'>Done!</Link>
+                    </div>
+                    ) : (
+                        <h4>Please Login First!</h4>
+                    )}
+                </div>
+              
             </div>
         );
       }

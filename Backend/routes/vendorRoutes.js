@@ -216,11 +216,26 @@ router.post('/signUp', function(req, res) {
         console.log("finding of selection failed" + err2);
       }else{
         var filtered=selectionList.intake.filter(request=>{
-          return request.subcat_id===req.body.subcat_id
+          return request.subcat_id.equals(req.body.subcat_id);
         })
         if(filtered&&filtered.length){
-          res.json({
-            msg:"subcategory already present in the list"
+          Selection.findById(req.params.selectionid).populate({
+            path:'intake',
+            model:'SelectionHandler',
+            populate:{
+              path:'subcat_id',
+              model:'Sub_cat',
+              populate:{
+                path:'cat_id',
+                model:'Cat'
+              }
+            }
+          }).exec(function(err7,selectionList){
+            if(err7){
+              console.log(err7);
+            }else{
+              res.json(selectionList.intake);
+            }
           })
         }else{
             var newhandle=new SelectionHandler({
