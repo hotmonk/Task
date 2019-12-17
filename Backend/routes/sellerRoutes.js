@@ -113,7 +113,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
   
   ///checked
   router.post('/signUp', function(req, res) {
-    const { name, email, contact, address, password } = req.body;
+    const { name, email, contact, address, password ,longitude,latitude} = req.body;
   
     // Simple validation
     if(!name || !email || !contact || !address || !password) 
@@ -131,9 +131,10 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
           email,
           contact,
           address,
-          password
+          password,
+          longitude,
+          latitude
         });
-  
         // Create salt & hash
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(newSeller.password, salt, (err, hash) => {
@@ -141,7 +142,6 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
             newSeller.password = hash;
             newSeller.save()
               .then(seller => {
-                console.log(seller);
                 jwt.sign(
                   { id: seller.id },
                   config.get('jwtSecretseller'),
@@ -187,9 +187,6 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
     })
   })
   
-  function compareit(a,b){
-
-  }
   //upload new item by customer
   ///checked
   router.post('/:id/items',sellerAuth, function(req, res){

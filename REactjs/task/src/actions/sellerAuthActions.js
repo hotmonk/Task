@@ -53,7 +53,7 @@ export const loadSeller = () => (dispatch, getState) => {
 };
 
 // Register User
-export const signupSeller = ({ name, email, contact, address, password }) => dispatch => {
+export const signupSeller = ({ name, email, contact, address, password,latitude,longitude }) => dispatch => {
   // Headers
   const config = {
     headers: {
@@ -62,7 +62,7 @@ export const signupSeller = ({ name, email, contact, address, password }) => dis
   };
 
   // Request body
-  const body = JSON.stringify({ name, email, contact, address, password });
+  const body = JSON.stringify({ name, email, contact, address, password,latitude,longitude });
 
   axios
     .post(process.env.REACT_APP_BASE_URL+'/seller/signUp', body, config)

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { signupVendor } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import {Redirect, Link} from 'react-router-dom';
+import FetchLocation from '../commonComponents/FetchLocation';
 
 class SignUpVendor extends Component {
 
@@ -24,7 +25,10 @@ class SignUpVendor extends Component {
             contact: '',
             address: '',
             password: '',
-            msg: null
+            msg: null,
+            latitude:null,
+            longitude:null,
+            locationEnabled:false
         }
     }
 
@@ -35,16 +39,6 @@ class SignUpVendor extends Component {
         clearErrors: PropTypes.func.isRequired
       };
 
-      redirectit=()=>{
-        if(this.props.isAuthenticated)
-        {
-            return (
-                <Redirect to='./profile' />
-            )
-        }
-        
-    }
-    
       componentDidUpdate(prevProps) {
         const { error } = this.props;
         if (error !== prevProps.error) {
@@ -56,6 +50,16 @@ class SignUpVendor extends Component {
           }
         }
       }
+
+      redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
 
     onChangename(e) {
         this.setState({
@@ -90,7 +94,7 @@ class SignUpVendor extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        const { name, email, contact, address, password } = this.state;
+        const { name, email, contact, address, password,latitude,longitude } = this.state;
 
         // Create user object
         const newVendor = {
@@ -98,10 +102,19 @@ class SignUpVendor extends Component {
         email,
         contact,
         address,
-        password
+        password,
+        latitude,
+        longitude
         };
 
         this.props.signupVendor(newVendor);
+    }
+
+    setCoord(long,lat){
+        this.setState({
+            longitude:long,
+            latitude:lat
+        });
     }
 
     render() {
@@ -148,7 +161,7 @@ class SignUpVendor extends Component {
                               onChange={this.onChangepassword}
                               />
                     </div>
-
+                    <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
                     <input type="submit" value="Register Vendor" />
                 </form>
                 <h3>Already a user?</h3>

@@ -36,6 +36,7 @@ const Routes = (props) => {
                 <Route path='/vendor/editPrice' component={editPrice}/>
                 <Route path='/vendor/chooseCat' component={chooseCat}/>
                 <Route path='/vendor/payments' component={Payment} />
+                <Route path='/' component={LoginSeller} />
              </Switch>
         )
 

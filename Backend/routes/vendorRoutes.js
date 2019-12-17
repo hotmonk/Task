@@ -505,6 +505,24 @@ router.post('/signUp', function(req, res) {
       }
     });
   });
+
+  ///to get item data by its id
+  router.get('/viewItem/:id',vendorAuth,function(req,res){
+    Item.findById(req.params.id).populate([{
+      path: 'cat_id',
+      model: 'Cat'
+    },{
+      path:'sub_cat_id',
+      model:'Sub_cat'
+    }])
+    .exec(function(err,viewItem){
+      if(err){
+        console.log(err);
+      }else{
+        res.json(viewItem);
+      }
+    })
+  })
   
   router.get('/newsfeed', vendorAuth, function(req, res){
     Item.find({}).populate([{

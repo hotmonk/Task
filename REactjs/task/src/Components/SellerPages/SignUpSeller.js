@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import {Redirect,Link} from 'react-router-dom';
+import FetchLocation from '../commonComponents/FetchLocation';
 
 class SignUpSeller extends Component {
 
@@ -25,7 +26,10 @@ class SignUpSeller extends Component {
             address: '',
             password: '',
             place: null,
-            msg: null
+            msg: null,
+            latitude:null,
+            longitude:null,
+            locationEnabled:false
         }
     }
 
@@ -91,18 +95,26 @@ class SignUpSeller extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        const { name, email, contact, address, password } = this.state;
-
+        const { name, email, contact, address, password, latitude, longitude } = this.state;
         // Create user object
         const newSeller = {
         name,
         email,
         contact,
         address,
-        password
+        password,
+        latitude,
+        longitude
         };
 
         this.props.signupSeller(newSeller);
+    }
+
+    setCoord(long,lat){
+        this.setState({
+            longitude:long,
+            latitude:lat
+        });
     }
 
     render() {
@@ -149,6 +161,7 @@ class SignUpSeller extends Component {
                               onChange={this.onChangepassword}
                               />
                     </div>
+                    <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
                     <input type="submit" value="Register Seller" />
                     <h3>Already have an account?</h3>
                     <Link to='/seller/login'>Login!</Link>

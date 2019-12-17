@@ -28,6 +28,8 @@ var Item = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Transaction"
     }
+},{
+    timestamps:true
 });
 
 module.exports = mongoose.model("Item", Item);
