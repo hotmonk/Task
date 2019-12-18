@@ -4,6 +4,7 @@ import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
 import SellerLogout from './LogoutSeller';
+import {baseURL} from '../../../config/constants.js';
 
 class ViewItem extends Component {
 
@@ -25,7 +26,7 @@ class ViewItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller._id+'/viewItem', config)
+            axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                 .then(response=>{
                     console.log(response);
                     this.setState({

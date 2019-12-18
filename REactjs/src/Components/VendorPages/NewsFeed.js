@@ -5,6 +5,7 @@ import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import {Link} from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../../config/constants.js';
 
 class NewsFeed extends Component {
 
@@ -23,7 +24,7 @@ class NewsFeed extends Component {
               'Content-type': 'application/json'
               }
           };
-          axios.get(process.env.REACT_APP_BASE_URL+'/vendor/newsfeed', config)
+          axios.get(baseURL+'/vendor/newsfeed', config)
               .then(response=>{
                   this.setState({
                       items:response.data
@@ -52,7 +53,7 @@ class NewsFeed extends Component {
               item_id:this.state.item.id,
               price:100
           })
-          axios.post(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+          axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
               .then(response=>{
                   console.log(response.data);
                   this.props.history.push('/vendor/payments')

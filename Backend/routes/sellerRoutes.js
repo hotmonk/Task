@@ -211,7 +211,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
                   }else{
                     var arr=subcats.selectionHandle_id;
                     arr=arr.filter(handle=>{
-                      return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<5;
+                      return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<config.get('allowedRadius');
                     })
                     arr.sort((a,b)=>{
                       if(a.price>b.price){

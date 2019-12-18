@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { returnErrors } from './errorActions';
+import {baseURL} from '../../../config/constants.js';
 
 import {
   SELLER_LOADED,
@@ -37,7 +38,7 @@ export const loadSeller = () => (dispatch, getState) => {
   dispatch({ type: SELLER_LOADING });
 
   axios
-    .get(process.env.REACT_APP_BASE_URL+'/seller/login/seller', tokenConfig(getState))
+    .get(baseURL+'/seller/login/seller', tokenConfig(getState))
     .then(res =>
       dispatch({
         type: SELLER_LOADED,
@@ -65,7 +66,7 @@ export const signupSeller = ({ name, email, contact, address, password,latitude,
   const body = JSON.stringify({ name, email, contact, address, password,latitude,longitude });
 
   axios
-    .post(process.env.REACT_APP_BASE_URL+'/seller/signUp', body, config)
+    .post(baseURL+'/seller/signUp', body, config)
     .then(res =>
       dispatch({
         type: SELLER_REGISTER_SUCCESS,
@@ -95,7 +96,7 @@ export const sellerLogin = ({ email, password }) => dispatch => {
   const body = JSON.stringify({ email, password });
 
   axios
-    .post(process.env.REACT_APP_BASE_URL+'/seller/login', body, config)
+    .post(baseURL+'/seller/login', body, config)
     .then(res =>
       dispatch({
         type: SELLER_LOGIN_SUCCESS,

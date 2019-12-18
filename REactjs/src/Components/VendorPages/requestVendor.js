@@ -3,6 +3,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../../config/constants.js';
 
 class vendorRequest extends Component {
 
@@ -60,7 +61,7 @@ class vendorRequest extends Component {
           };
 
         const body=JSON.stringify(newTypeWaste);
-        axios.post(process.env.REACT_APP_BASE_URL+'/vendor/newWasteType', body,config)
+        axios.post(baseURL+'/vendor/newWasteType', body,config)
             .then(res => 
                 this.props.history.push('/vendor/profile')  
             )

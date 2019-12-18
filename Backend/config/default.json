@@ -1,4 +1,5 @@
 {
   "jwtSecretseller": "SecretSeller",
-  "jwtSecretvendor": "SecretVendor"
+  "jwtSecretvendor": "SecretVendor",
+  "allowedRadius":10
 }

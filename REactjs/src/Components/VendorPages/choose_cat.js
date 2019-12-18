@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import axios from 'axios';
+import {baseURL} from '../../../config/constants.js';
 
 class chooseCat extends Component {
     constructor(props){
@@ -22,13 +23,13 @@ class chooseCat extends Component {
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
         if(this.props.isAuthenticated){
-          axios.get(process.env.REACT_APP_BASE_URL+'/categories')
+          axios.get(baseURL+'/categories')
               .then((response)=>{
                   this.setState({
                       categories:response.data
                   });
                   if(this.state.categories && this.state.categories.length){
-                      axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
+                      axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
                           .then((response)=>{
                               this.setState({
                                   subcategories:response.data,
@@ -43,7 +44,7 @@ class chooseCat extends Component {
                                 'Content-type': 'application/json'
                                 }
                             };
-                            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+                            axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
                                 .then(res=>{
                                     this.setState({
                                         list:res.data
@@ -80,7 +81,7 @@ class chooseCat extends Component {
 
     handleCategory(event){
         let curid=event.target.value;
-        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+curid+'/subcat')
+        axios.get(baseURL+'/categories/'+curid+'/subcat')
             .then((response)=>{
                 if(response.data&&response.data.length){
                     this.setState({
@@ -126,7 +127,7 @@ class chooseCat extends Component {
     //         'Content-type': 'application/json'
     //         }
     //     };
-    //     axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
+    //     axios.delete( baseURL+'/vendor/selections/'+id,config)
     //         .then(res => {
     //             this.setState({
     //               list:res.data,
@@ -162,7 +163,7 @@ class chooseCat extends Component {
           subcat_id:this.state.subcat_id,
           price:this.state.price
         });
-        axios.post( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
+        axios.post( baseURL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
             .then(res => {
                 this.setState({
                   list:res.data,

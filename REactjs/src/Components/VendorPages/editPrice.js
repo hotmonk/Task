@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import axios from 'axios';
+import {baseURL} from '../../../config/constants.js';
 
 class editPrice extends Component {
     constructor(props)
@@ -18,7 +19,7 @@ class editPrice extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+            axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
                 .then(res=>{
                     this.setState({
                         items:res.data
@@ -68,9 +69,9 @@ class editPrice extends Component {
                   'Content-type': 'application/json'
                   }
               };
-            axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+            axios.put(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
               .then(res=>{
-                  return axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config);
+                  return axios.delete( baseURL+'/vendor/selections/'+id,config);
               })
               .then(res => {
                   this.setState({
@@ -96,7 +97,7 @@ class editPrice extends Component {
                 'Content-type': 'application/json'
                 }
             };
-          axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+          axios.put(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
             .then(res=>{
                 this.props.history.push('/vendor/profile');
             })

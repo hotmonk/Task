@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../../config/constants.js';
 
 class ViewBuyedItem extends Component {
 
@@ -24,7 +26,7 @@ class ViewBuyedItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
+            axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -56,7 +58,6 @@ class ViewBuyedItem extends Component {
 
     render() {
         return(
-            
             <div>
               {this.props.isAuthenticated ? (
             <div>
@@ -73,13 +74,12 @@ class ViewBuyedItem extends Component {
                     </div>
                 ):(
                     <div>
-                    <h1>Here are all the items you purchased</h1>
+                    <h1>Here are all the items for sale</h1>
                     <ul>
                     {
                         this.state.items? this.state.items.map(item=>{
                                 return (<li key={item._id} onClick={()=>this.handleList(item)}>
-                                    <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
-                                    <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
+                                    category:{item.cat_id.name}  subcategory:{item.sub_cat_id.name}  quantity:{item.quantity}{item.sub_cat_id.quantity_type}
                                 </li>)
                             }) : (<h1>No Items to display</h1>)
                         
@@ -89,13 +89,9 @@ class ViewBuyedItem extends Component {
                 )
                 }
                 <div>
-                    <Link to="./newsfeed">Purchase new Item</Link>
-                </div>
-                <div>
-                        <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
+                    <Link to="./newItem">Add new Item</Link>
                 </div>
             </div>
-            
             ) : (
                 <h4>Please Login First!</h4>
               )}
@@ -114,4 +110,4 @@ const mapStateToProps = state => ({
   export default connect(
     mapStateToProps,
     { clearErrors }
-  )(ViewBuyedItem);
+  )(ViewSelledItem);
