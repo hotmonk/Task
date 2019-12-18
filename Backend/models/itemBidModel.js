@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var Item_Bid = new mongoose.Schema({
+var Item_bid = new mongoose.Schema({
     ///category id to which it belongs
     item_id:{
         type: mongoose.Schema.Types.ObjectId,
@@ -12,4 +12,4 @@ var Item_Bid = new mongoose.Schema({
     }]
 });
 
-module.exports = mongoose.model("Sub_cat", Sub_cat);
+module.exports = mongoose.model("Item_bid", Item_bid);
