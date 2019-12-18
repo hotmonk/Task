@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { returnErrors } from './errorActions';
-import {baseURL} from '../../../config/constants.js';
+import {baseURL} from '../../config/constants.js';
 
 import {
   VENDOR_LOADED,

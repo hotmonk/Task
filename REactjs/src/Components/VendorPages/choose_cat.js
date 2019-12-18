@@ -159,7 +159,7 @@ class chooseCat extends Component {
             }
         };
         const item = JSON.stringify({
-          vendorid:this.props.vendorData.id,
+          vendorid:this.props.vendorData._id,
           subcat_id:this.state.subcat_id,
           price:this.state.price
         });

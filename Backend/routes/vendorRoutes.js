@@ -238,6 +238,7 @@ router.post('/signUp', function(req, res) {
             }
           })
         }else{
+          console.log(req.body);
             var newhandle=new SelectionHandler({
               vendor_id:req.body.vendorid,
               price:req.body.price,
@@ -248,6 +249,7 @@ router.post('/signUp', function(req, res) {
               if(err3){
                 console.log("finding of selection failed" + err3);
               }else{
+                console.log(newhandler);
                 Sub_cat.findById(req.body.subcat_id,function(err4,subcat){
                   if(err4){
                     console.log(err4);
