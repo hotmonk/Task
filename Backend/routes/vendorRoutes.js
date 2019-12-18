@@ -591,7 +591,7 @@ router.post('/signUp', function(req, res) {
   router.post('/newWasteType', vendorAuth, function(req, res){
     let request = new Cat_request(req.body);
     request.vendor_id =req.vendor.id;
-    Cat.findOne({name:req.body.cat_name},function(err,category){
+    Cat.findOne({name:(req.body.cat_name.toLowerCase())},function(err,category){
         if(err)
         {
           console.log(err);
@@ -600,23 +600,35 @@ router.post('/signUp', function(req, res) {
         {
           if(category)
           {
-            let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type, cat_id:category._id});
-            newSubCat.save()
-              .then(newSubCat => {
-                category.sub_cats.push(newSubCat);
-                category.save();
-                request.save()
-                  .then(request => {
-                      res.status(200).json({request: 'request and sub-category added successfully'});
+            Sub_cat.findOne({name:(req.body.sub_cat_name.toLowerCase())},function(err2,subcategory){
+              if(err2){
+                console.log(err2);
+              }else{
+                if(subcategory){
+                  res.json({
+                    msg:"subcategory already present"
+                  })
+                }else{
+                  let newSubCat = new Sub_cat({name: req.body.sub_cat_name, quantity_type: req.body.quantity_type, cat_id:category._id});
+                  newSubCat.save()
+                    .then(newSubCat => {
+                      category.sub_cats.push(newSubCat);
+                      category.save();
+                      request.save()
+                        .then(request => {
+                            res.status(200).json({request: 'request and sub-category added successfully'});
+                        })
+                        .catch(err => {
+                            res.status(400).send('adding new request failed');
+                        });
+                    // res.status(200).json({sub_cat: 'sub-category added successfully'});
                   })
                   .catch(err => {
-                      res.status(400).send('adding new request failed');
+                      res.status(400).send('adding new sub-category failed');
                   });
-               // res.status(200).json({sub_cat: 'sub-category added successfully'});
+                }
+              }
             })
-            .catch(err => {
-                res.status(400).send('adding new sub-category failed');
-            });
           }
           else
           {
