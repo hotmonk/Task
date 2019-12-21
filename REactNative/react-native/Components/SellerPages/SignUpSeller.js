@@ -26,6 +26,17 @@ class SignUpSeller extends Component {
         signupSeller: PropTypes.func.isRequired,
         clearErrors: PropTypes.func.isRequired
    };
+   componentDidUpdate(prevProps) {
+    const { error } = this.props;
+    if (error !== prevProps.error) {
+      // Check for register error
+      if (error.id === 'SELLER_REGISTER_FAIL') {
+        this.setState({ msg: error.msg.msg });
+      } else {
+        this.setState({ msg: null });
+      }
+    }
+  }
     onSubmit=async()=> {
 
         console.log(`Form submitted:`);

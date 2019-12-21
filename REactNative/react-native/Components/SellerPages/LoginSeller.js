@@ -24,7 +24,18 @@ class LoginSeller extends Component {
         sellerLogin: PropTypes.func.isRequired,
         clearErrors: PropTypes.func.isRequired
       };
-
+   
+      componentDidUpdate(prevProps) {
+        const { error } = this.props;
+        if (error !== prevProps.error) {
+          if (error.id === 'SELLER_LOGIN_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+      }
+    
     onSubmit=async()=> {
 
         const { email, password } = this.state;
@@ -47,6 +58,8 @@ class LoginSeller extends Component {
     render() {
         return (
             <View>
+                <Text>NOT A SELLER?</Text>
+                <Text onPress={() => Actions.vendorLogin()}>Login as vendor!</Text>
                 <Text>Login as Seller!</Text>
                 <View >
                 {this.state.msg ? (
@@ -68,6 +81,8 @@ class LoginSeller extends Component {
                     </View>
 
                     <Text onPress={this.onSubmit} >Login Seller</Text>
+                    <Text>Don't have an account?</Text>
+                    <Text onPress={() => Actions.sellerSignUp()}>Sign Up!</Text>
                 </View>
             </View>
         )

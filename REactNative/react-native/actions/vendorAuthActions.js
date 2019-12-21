@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { returnErrors } from './errorActions';
+import {baseURL} from '../config/constants.js';
 
 import {
   VENDOR_LOADED,
@@ -37,13 +38,12 @@ export const loadVendor = () => (dispatch, getState) => {
   dispatch({ type: VENDOR_LOADING });
 
   axios
-    .get('http://localhost:4000/vendor/login/vendor', tokenConfig(getState))
+    .get(baseURL+'/vendor/login/vendor', tokenConfig(getState))
     .then(res =>
-      // dispatch({
-      //   type: VENDOR_LOADED,
-      //   payload: res.data
-     console.log('successfull'),
-      // })
+      dispatch({
+        type: VENDOR_LOADED,
+        payload: res.data
+      })
     )
     .catch(err => {
       dispatch(returnErrors(err.response.data, err.response.status));
@@ -54,7 +54,7 @@ export const loadVendor = () => (dispatch, getState) => {
 };
 
 // Register User
-export const signupVendor = ({ name, email, contact, address, password }) => dispatch => {
+export const signupVendor = ({ name, email, contact, address, password,longitude,latitude }) => dispatch => {
   // Headers
   const config = {
     headers: {
@@ -63,15 +63,14 @@ export const signupVendor = ({ name, email, contact, address, password }) => dis
   };
 
   // Request body
-  const body = JSON.stringify({ name, email, contact, address, password });
+  const body = JSON.stringify({ name, email, contact, address, password,longitude,latitude });
 
   axios
-    .post('http://localhost:4000/vendor/signUp', body, config)
+    .post(baseURL+'/vendor/signUp', body, config)
     .then(res =>
-      // dispatch({
-      //   type: VENDOR_REGISTER_SUCCESS,
-      //   payload: res.data
-        console.log('successful'),
+      dispatch({
+        type: VENDOR_REGISTER_SUCCESS,
+        payload: res.data
       })
     )
     .catch(err => {
@@ -97,7 +96,7 @@ export const vendorLogin = ({ email, password }) => dispatch => {
   const body = JSON.stringify({ email, password });
 
   axios
-    .post('http://localhost:4000/vendor/login', body, config)
+    .post(baseURL+'/vendor/login', body, config)
     .then(res =>
       dispatch({
         type: VENDOR_LOGIN_SUCCESS,
@@ -122,3 +121,4 @@ export const vendorLogout = () => {
 };
 
 // Setup config/headers and token
+

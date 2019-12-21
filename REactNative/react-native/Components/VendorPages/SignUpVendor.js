@@ -54,7 +54,7 @@ class SignUpVendor extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
+        console.log(`Form2 submitted:`);
         console.log(`name ${this.state.name}`);
         console.log(`Email: ${this.state.email}`);
         console.log(`Contact: ${this.state.contact}`);
@@ -121,6 +121,8 @@ class SignUpVendor extends Component {
 
                     <Text onPress={this.onSubmit}>Register Vendor</Text>
                 </View>
+                <Text>Already a user?</Text>
+                <Text onPress={() => Actions.vendorLogin()}>Login!</Text>
             </View>
         )
     }

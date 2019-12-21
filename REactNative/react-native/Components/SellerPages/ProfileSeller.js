@@ -6,15 +6,26 @@ import { Actions } from 'react-native-router-flux';
 
 class sellerProfile extends Component {
 
-    static propTypes = {
-        sellerData:PropTypes.isRequired,
-        isAuthenticated: PropTypes.bool,
-        error: PropTypes.object.isRequired,
-        clearErrors: PropTypes.func.isRequired
-      };
-
+    componentDidUpdate(prevProps) {
+        const { error } = this.props;
+        if (error !== prevProps.error) {
+          // Check for register error
+          if (error.id === 'SELLER_REGISTER_FAIL' || error.id === 'SELLER_LOGIN_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+        if(!this.props.isAuthenticated){
+          this.props.history.push('sellerLogin');
+        }
+      }
       render(){
           return (
+        <View>
+            {this.props.isAuthenticated ? (
+              <View>
+                <SellerLogout />
             <View>
                 <Text>welcome {this.props.sellerData.name}</Text>
                 <Text>Here are all the details you entered</Text>
@@ -29,6 +40,11 @@ class sellerProfile extends Component {
                 <View>
                    <Text onPress={() => Actions.Item()}>View All items added by you</Text>
                 </View>
+            </View>
+            </View>
+              ) : (
+                <Text>Please Login First!</Text>
+              )}
             </View>
           );
       }
