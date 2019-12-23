@@ -43,24 +43,35 @@ class NewsFeed extends Component {
       };
 
       handlePurchase(){
-        const config = {
-              headers: {
-              'Content-type': 'application/json'
-              }
-          };
+          axios.get(baseURL+'/payment/')
+            .then(response=>{
+                console.log(response.data);
+                axios.post(response.data.TXN_URL,response.data)
+                    .then(response2=>{
+                        console.log(response2);
+                    })
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+        // const config = {
+        //       headers: {
+        //       'Content-type': 'application/json'
+        //       }
+        //   };
 
-          const body=JSON.stringify({
-              item_id:this.state.item.id,
-              price:100
-          })
-          axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
-              .then(response=>{
-                  console.log(response.data);
-                  this.props.history.push('/vendor/payments')
-              })
-              .catch(error=>{
-                  console.log(error);
-              })
+        //   const body=JSON.stringify({
+        //       item_id:this.state.item.id,
+        //       price:100
+        //   })
+        //   axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+        //       .then(response=>{
+        //           console.log(response.data);
+        //           this.props.history.push('/vendor/payments')
+        //       })
+        //       .catch(error=>{
+        //           console.log(error);
+        //       })
       }
 
       handleList(item){
@@ -75,7 +86,7 @@ class NewsFeed extends Component {
           })
       }
 
-      componentDidUpdate()
+    componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
