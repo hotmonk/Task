@@ -6,6 +6,7 @@ import { clearErrors } from '../../actions/errorActions';
 import {Link} from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
+import {Route} from 'react-router-dom';
 
 class NewsFeed extends Component {
 
@@ -13,7 +14,8 @@ class NewsFeed extends Component {
         super(props);
         this.state = {
             items:null,
-            item:null
+            item:null,
+            paymentInfo:null
         }
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
@@ -45,11 +47,9 @@ class NewsFeed extends Component {
       handlePurchase(){
           axios.get(baseURL+'/payment/')
             .then(response=>{
-                console.log(response.data);
-                axios.post(response.data.TXN_URL,response.data)
-                    .then(response2=>{
-                        console.log(response2);
-                    })
+                this.setState({
+                    paymentInfo:response.data
+                })
             })
             .catch(err=>{
                 console.log(err);
@@ -91,56 +91,73 @@ class NewsFeed extends Component {
         if(!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
+        if(this.state.paymentInfo){
+            console.log(this.instance);
+            this.instance.submit();
+        }
     }
+    
 
     render() {
         return(
             <div>
-              {this.props.isAuthenticated ? (
-            <div>
-                 <VendorLogout/>
-            {
-                this.state.item?(
-                <div>
-                   <button onClick={this.handleBack}>Go Back</button>
-                   <h1> Item Details:</h1>
-                   <h2> category: {this.state.item.cat.name}</h2> 
-                   <h2> subcategory: {this.state.item.subcat.name}</h2>
-                   <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
-                   <div>
-                        <button onClick={this.handlePurchase}>Purchase it</button>
-                   </div>
-                </div>
-                
-            ):(
-            <div>
-                <h1>Here are all the items for sale</h1>
-                <ul>
+            { this.state.paymentInfo? (
+                    <form ref={el=>{this.instance=el } } method='POST' action={this.state.paymentInfo.TXN_URL}>
+                        {
+                            //this.findFields()
+                            Object.keys(this.state.paymentInfo).map(key=>{
+                                return <input type='hidden' name={key} value={this.state.paymentInfo[key]} />
+                            })
+                        }
+                    </form>
+
+                ) : <div>
+                {this.props.isAuthenticated ? (
+              <div>
+                <VendorLogout/>
                 {
-                    this.state.items? this.state.items.map(item=>{
-                            return (<li key={item.id} onClick={()=>this.handleList(item)}>
-                            <div>category:{item.cat.name}</div><div> subcategory:{item.subcat.name}</div>
-                                    <div>quantity:{item.quantity}{item.subcat.quantity_type}</div>
-                            </li>)
-                        }) : (<h1>No Items to display</h1>)
-                    
-                }
-                </ul>
-                <div>
-                        <Link to='/vendor/viewBuyedItems'>View all purchased items</Link>
-                </div>
-                <div>
-                        <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
-                </div>
-            </div>
-            )
-            }
-            </div>
-            
-            ) : (
-                <h4>Please Login First!</h4>
-              )}
-            </div>
+                  this.state.item?(
+                  <div>
+                     <button onClick={this.handleBack}>Go Back</button>
+                     <h1> Item Details:</h1>
+                     <h2> category: {this.state.item.cat.name}</h2> 
+                     <h2> subcategory: {this.state.item.subcat.name}</h2>
+                     <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
+                     <div>
+                          <button onClick={this.handlePurchase}>Purchase it</button>
+                     </div>
+                  </div>
+                  
+              ):(
+              <div>
+                  <h1>Here are all the items for sale</h1>
+                  <ul>
+                  {
+                      this.state.items? this.state.items.map(item=>{
+                              return (<li key={item.id} onClick={()=>this.handleList(item)}>
+                              <div>category:{item.cat.name}</div><div> subcategory:{item.subcat.name}</div>
+                                      <div>quantity:{item.quantity}{item.subcat.quantity_type}</div>
+                              </li>)
+                          }) : (<h1>No Items to display</h1>)
+                      
+                  }
+                  </ul>
+                  <div>
+                          <Link to='/vendor/viewBuyedItems'>View all purchased items</Link>
+                  </div>
+                  <div>
+                          <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
+                  </div>
+              </div>
+              )
+              }
+              </div>
+              
+              ) : (
+                  <h4>Please Login First!</h4>
+                )}
+              </div>}
+              </div>
         )
     }
 }
