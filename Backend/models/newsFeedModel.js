@@ -1,17 +1,15 @@
 var mongoose = require('mongoose');
 
-var Item_bid = new mongoose.Schema({
+var News_feed = new mongoose.Schema({
     ///category id to which it belongs
-    item_id:{
+    items:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item"
-    },
-    vendor_id:[{
+    }],
+    vendor_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vendor"
-    }],
-    // index_no:Number,
-    // clearInterval_id:Number
+    }
 });
 
-module.exports = mongoose.model("Item_bid", Item_bid);
+module.exports = mongoose.model("News_feed", News_feed);

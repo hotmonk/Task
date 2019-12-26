@@ -13,6 +13,7 @@ var SelectionHandler=require('../models/selectionHandleModel.js');
 var Selection=require('../models/selectionModel.js');
 var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
+var News_feed=require('../models/newsFeedModel.js');
 
 ///VENDOR ROUTES
 ///checked
@@ -48,31 +49,41 @@ router.post('/signUp', function(req, res) {
                 var selection=new Selection({
                   vendor_id:vendor2._id
                 });
+                var newnewsfeed=new News_feed({
+                  vendor_id:vendor2._id
+                })
                 selection.save(function(err2,selected){
                   if(err2){
                     console.log(err2);
                   }else{
-                    vendor2.selection_id=selected._id
-                    vendor2.save();
-                    jwt.sign(
-                      { id: vendor2.id },
-                      config.get('jwtSecretvendor'),
-                      { expiresIn: 3600 },
-                      (err, token) => {
-                        if(err) throw err;
-                        res.json({
-                          token,
-                          vendor: {
-                            _id: vendor2.id,
-                            name: vendor2.name,
-                            email: vendor2.email,
-                            contact: vendor2.contact,
-                            address: vendor2.address,
-                            selection_id:selected._id
+                    newnewsfeed.save(function(err3,newsfeedsaved){
+                      vendor2.selection_id=selected._id;
+                      vendor2.newsFeed=newsfeedsaved._id;
+                      vendor2.save(function(err4,savedVendor){
+                          if(err4){
+                            console.log(err4);
+                          }else{
+                            jwt.sign(
+                              { id: vendor2.id },
+                              config.get('jwtSecretvendor'),
+                              { expiresIn: 3600 },
+                              (err, token) => {
+                                if(err) throw err;
+                                res.json({
+                                  token,
+                                  vendor: {
+                                    _id: vendor2.id,
+                                    name: vendor2.name,
+                                    email: vendor2.email,
+                                    contact: vendor2.contact,
+                                    address: vendor2.address,
+                                    selection_id:selected._id
+                                  }
+                                });
+                              });
                           }
-                        });
-                      }
-                    )
+                      });
+                    })
                   }
                 });
               });
@@ -446,7 +457,12 @@ router.post('/signUp', function(req, res) {
         item:item_id,
         price:price
       });
-      Item.findById(item_id,function(err1,res1){
+      Item.findById(item_id).populate({
+        path:'item_bid',
+        populate:{
+          path:'vendor_id'
+        }
+      }).exec(function(err1,res1){
         if(err1){
           res.status(400).json(err1);
         }
@@ -466,7 +482,7 @@ router.post('/signUp', function(req, res) {
               res2.save();
               Vendor.findById(vendor_id,function(err4,res4){
                 if(err4){
-                  console.log('adding transaction failed');
+                  console.log('adding transaction failed',err4);
                   res.status(400).json({
                     msg:"transaction failed"
                   })
@@ -475,6 +491,15 @@ router.post('/signUp', function(req, res) {
                 res4.save()
                   .then(res5=>{
                     console.log("transaction added"),
+                    res1.item_bid.vendor_id.map(eachVendor=>{
+                      News_feed.findById(eachVendor.newsFeed,function(err5,newsfeedfound){
+                        newsfeedfound.items=newsfeedfound.items.filter(eachItem=>{
+                          return !eachItem.equals(res1._id);
+                        })
+                        newsfeedfound.save();
+                      })
+                      return eachVendor;
+                    })
                     res.json({
                       msg:"item added"
                     })
@@ -541,22 +566,23 @@ router.post('/signUp', function(req, res) {
     })
   })
   
-  router.get('/newsfeed', vendorAuth, function(req, res){
-    Item.find({}).populate([{
-      path: 'cat_id',
-      model: 'Cat'
-    },{
-      path:'sub_cat_id',
-      model:'Sub_cat'
-    }])
-    .exec(function(err, allItems){
-      if(err)
-      {
-          console.log(err);
-      } 
-      else 
-      {
-        var filtered=allItems.map(item=>{
+  router.get(':vendorId/newsfeed', vendorAuth, function(req, res){
+    Vendor.findById(req.params.vendorId).populate({
+      path:'newsFeed',
+      model:'News_feed',
+      populate:{
+        path:'items',
+        model:'Item',
+        populate:[{
+          path: 'cat_id',
+          model: 'Cat'
+        },{
+          path:'sub_cat_id',
+          model:'Sub_cat'
+        }]
+      }
+    }).exec(function(err,vendor){
+        var filtered=vendor.newsFeed.items.map(item=>{
           return {
             id: item._id,
             cat: item.cat_id,
@@ -566,27 +592,24 @@ router.post('/signUp', function(req, res) {
             status:item.status
           }
         });
-        filtered=filtered.filter((item)=>{
-            return item.status==='INBID';
-        })
-        res.json(filtered);
-      }
-   });
-  })
-  ///checked
-  ///probably not used anywhere
-  router.get('/:id', vendorAuth, function(req, res){
-    Vendor.findById(req.params.id, function(err, foundVendor){
-      if(err)
-      {
-        console.log(err);
-      }
-      else
-      {
-        res.json(foundVendor);
-      }
+      res.json(filtered);
     })
   })
+
+  ///checked
+  ///probably not used anywhere
+  // router.get('/:id', vendorAuth, function(req, res){
+  //   Vendor.findById(req.params.id, function(err, foundVendor){
+  //     if(err)
+  //     {
+  //       console.log(err);
+  //     }
+  //     else
+  //     {
+  //       res.json(foundVendor);
+  //     }
+  //   })
+  // })
   
   
   ///new category request

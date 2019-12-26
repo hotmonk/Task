@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 var Cat = require('../models/catModel.js');
-var Sub_cat = require('../models/sub_catModel.js');
-
 
 ///GET ALL CATEGORIES
 ///checked

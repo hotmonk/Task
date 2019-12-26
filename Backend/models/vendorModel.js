@@ -39,6 +39,10 @@ var Vendor = new mongoose.Schema({
             ref: "Request"
         }
     ],
+    newsFeed:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "NewsFeed"
+    },
     selection_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Selection"
