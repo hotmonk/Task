@@ -20,6 +20,7 @@ app.use('/vendor/login', require('./routes/vendorAuth.js'));
 app.use('/seller',require('./routes/sellerRoutes.js'));
 app.use('/vendor',require('./routes/vendorRoutes.js'));
 app.use('/categories',require('./routes/categoryRoutes.js'));
+app.use('/payment',require('./routes/paymentRoutes.js'));
 
 
 app.listen(PORT, function(){
