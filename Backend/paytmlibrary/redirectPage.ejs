@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>Check Out Page</title>
+</head>
+<body>
+    <center><h1>Payment Successful</h1></center>
+<center><h1>Please do not refresh this page...redirecting to newsfeed page in 5 seconds</h1></center>
+
+    <table border="1">
+        <tbody>
+        <% for (name in response) {
+        %>
+        <div><strong><%= name %></strong> : <%= response[name] %></div>
+        <%
+        }
+        %>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+    setTimeout(()=>{
+        window.location='http://localhost:3000/vendor/newsfeed'
+    },5000)
+     
+    </script>
+</body>
+</html>

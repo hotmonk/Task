@@ -2,6 +2,7 @@ const express=require('express'),
       router=express.Router(),
       checksum_lib=require('../paytmlibrary/checksum.js'),
       PaytmConfig=require('../config/paytm.js');
+const axios=require('axios');
 
 const vendorAuth = require('../middleware/vendorAuth.js');
 
@@ -53,47 +54,29 @@ router.get('/',vendorAuth,function(req,res){
         // Send Server-to-Server request to verify Order Status
         var params = {"MID": PaytmConfig.MID, "ORDERID": post_data.ORDERID};
 
-        checksum_lib.genchecksum(params, PaytmConfig.key, function (err, checksum) {
+        checksum_lib.genchecksum(params, PaytmConfig.PAYTM_MERCHANT_KEY, function (err, checksum) {
             if(err){
                 console.log(err);
             }else{
                 params.CHECKSUMHASH = checksum;
-                post_data = 'JsonData='+JSON.stringify(params);
-                res.json({
-                    msg:'success'
-                })
-                // var options = {
-                //     hostname: 'securegw-stage.paytm.in', // for staging
-                //     // hostname: 'securegw.paytm.in', // for production
-                //     port: 443,
-                //     path: '/merchant-status/getTxnStatus',
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/x-www-form-urlencoded',
-                //         'Content-Length': post_data.length
-                //     }
-                // };
-
-                //  https.request(options, function(post_res) {
-                //     post_res.on('data', function (chunk) {
-                //         response += chunk;
-                //     });
-
-                //     post_res.on('end', function(){
-                //         console.log('S2S Response: ', response, "\n");
-
-                //         var _result = JSON.parse(response);
-                //         html += "<b>Status Check Response</b><br>";
-                //         for(var x in _result){
-                //             html += x + " => " + _result[x] + "<br/>";
-                //         }
-
-                //         res.writeHead(200, {'Content-Type': 'text/html'});
-                //         res.write(html);
-                //         res.end();
-                //     });
-                // });
-
+                var body=JSON.stringify(params);
+                var config={
+                    headers:{
+                        'Content-type': 'application/json'
+                    }
+                }
+                axios.post('https://securegw-stage.paytm.in/order/status',body,config)
+                    .then((response)=>{
+                        console.log('final call');
+                        console.log(response.data);
+                        res.render('../paytmlibrary/redirectPage.ejs',{response:response.data});
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                        res.json({
+                            err
+                        })
+                    })
                 // http.request(options, function(res) {
                 //     console.log('STATUS: ' + res.statusCode);
                 //     console.log('HEADERS: ' + JSON.stringify(res.headers));
