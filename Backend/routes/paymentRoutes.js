@@ -14,9 +14,9 @@ router.get('/',vendorAuth,function(req,res){
 			params['ORDER_ID']			= 'TEST_'  + new Date().getTime();
 			params['CUST_ID'] 			= 'Customer001';
 			params['TXN_AMOUNT']			= '1.00';
-			params['CALLBACK_URL']		= 'http://localhost:'+4000+'/payment/callback';
+			params['CALLBACK_URL']		= 'http://localhost:4000/payment/callback';
 			params['EMAIL']				= 'abc@mailinator.com';
-            params['MOBILE_NO']			= '7777777777';
+          //  params['MOBILE_NO']			= '7777777777';
 
             checksum_lib.genchecksum(params, PaytmConfig.PAYTM_MERCHANT_KEY, function (err, checksum){
                 if(err){

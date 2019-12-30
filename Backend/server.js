@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-const PORT=4000;
+const PORT = 4000;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -14,7 +14,8 @@ const connection=mongoose.connection;
 
 connection. once('open',function(){
   console.log("Mongoose database connected");
-})
+});
+
 app.use('/seller/login', require('./routes/sellerAuth.js'));
 app.use('/vendor/login', require('./routes/vendorAuth.js'));
 app.use('/seller',require('./routes/sellerRoutes.js'));
