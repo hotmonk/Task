@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
+import { connect } from 'react-redux';
+import { clearErrors } from '../../actions/errorActions';
+import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../config/constants.js';
 
 class vendorRequest extends Component {
 
     constructor(props) {
         super(props);
-
-        this.onChangecat_name = this.onChangecat_name.bind(this);
-        this.onChangesub_cat_name = this.onChangesub_cat_name.bind(this);
-        this.onChangequantity_type = this.onChangequantity_type.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
@@ -19,31 +19,16 @@ class vendorRequest extends Component {
         }
     }
 
-    onChangecat_name(e) {
-        this.setState({
-            cat_name: e.target.value
-        });
-    }
-
-    onChangesub_cat_name(e) {
-        this.setState({
-            sub_cat_name: e.target.value
-        });
-    }
-
-    onChangequantity_type(e) {
-        this.setState({
-            quantity_type: e.target.value
-        });
-    }
+    
+    // componentDidUpdate()
+    // {
+    //     if(!this.props.isAuthenticated){
+    //         this.props.history.push('vendorLogin');
+    //     }
+    // }
 
     onSubmit(e) {
         e.preventDefault();
-
-        console.log(`Form submitted:`);
-        console.log(`cat_name ${this.state.cat_name}`);
-        console.log(`sub_cat_name: ${this.state.sub_cat_name}`);
-        console.log(`quantity_type: ${this.state.quantity_type}`);
 
         const newTypeWaste = {
             cat_name: this.state.cat_name,
@@ -51,15 +36,21 @@ class vendorRequest extends Component {
             quantity_type: this.state.quantity_type,
             status: "Approved"
         }
+        const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
 
-        axios.post('http://localhost:4000/vendor/newWasteType', newTypeWaste)
-            .then(res => console.log("hii"));
-
-        this.setState({
-            cat_name: '',
-            sub_cat_name: '',
-            quantity_type: '',
-        })
+        const body=JSON.stringify(newTypeWaste);
+        axios.post(baseURL+'/vendor/newWasteType', body,config)
+            .then(res => 
+                console.log(done)
+                //this.props.history.push('vendorProfile')  
+            )
+            .catch(err=>{
+                console.log(err);
+            })
     }
 
     render() {
@@ -70,22 +61,22 @@ class vendorRequest extends Component {
                     <View>
                       <Text>Category Name: </Text>
                       <TextInput  type="text"
-                              value={this.state.name}
-                              onChange={this.onChangecat_name}
+                              value={this.state.cat_name}
+                              onChangeText={(cat_name) => this.setState({ cat_name })}
                               />
                     </View>
                     <View>
                       <Text>Sub-Category Name: </Text>
                       <TextInput  type="text"
-                              value={this.state.email}
-                              onChange={this.onChangesub_cat_name}
+                              value={this.state.sub_cat_name}
+                              onChangeText={(sub_cat_name) => this.setState({ sub_cat_name })}
                               />
                     </View>
                     <View>
                       <Text>Quantity-type: </Text>
                       <TextInput  type="text"
-                              value={this.state.contact}
-                              onChange={this.onChangequantity_type}
+                              value={this.state.quantity_type}
+                              onChangeText={(quantity_type) => this.setState({quantity_type })}
                               />
                     </View>
 

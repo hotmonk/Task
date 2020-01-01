@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Text, FlatList, StyleSheet } from 'react-native';
+import SellerLogout from './LogoutSeller';
+import {baseURL} from '../../config/constants.js';
 
 class ViewItem extends Component {
 
@@ -18,21 +20,16 @@ class ViewItem extends Component {
 
     componentDidMount(){
         if(this.props.isAuthenticated){
-            const token = this.props.token;
-
+  
             // Headers
             const config = {
                 headers: {
                 'Content-type': 'application/json'
                 }
             };
-
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-seller-token'] = token;
-            }
-            axios.get('http://localhost:4000/seller/'+this.props.seller.id+'/viewItem', config)
+            axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                 .then(response=>{
+                    console.log(response);
                     this.setState({
                         items:response.data
                     })
@@ -41,6 +38,13 @@ class ViewItem extends Component {
                     console.log(error);
                 })
           }
+    }
+
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/seller/login');
+        }
     }
 
       handleList(item){
@@ -54,7 +58,7 @@ class ViewItem extends Component {
               item:null
           })
       }
-
+      
     render() {
         return(
             <View>

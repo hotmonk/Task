@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Text, FlatList, StyleSheet } from 'react-native';
+import { Text, FlatList, StyleSheet,View } from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../config/constants.js';
 
 class NewsFeed extends Component {
 
@@ -14,24 +17,16 @@ class NewsFeed extends Component {
             item:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handlePurchase=this.handlePurchase.bind(this);
         if(this.props.isAuthenticated){
-            console.log(this.props.vendor);
-          const token = this.props.token;
-
           // Headers
           const config = {
               headers: {
               'Content-type': 'application/json'
               }
           };
-
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
-          axios.get('http://localhost:4000/vendor/newsfeed', config)
+          axios.get(baseURL+'/vendor/newsfeed', config)
               .then(response=>{
-                  console.log(response.data);
                   this.setState({
                       items:response.data
                   });
@@ -48,6 +43,27 @@ class NewsFeed extends Component {
         clearErrors: PropTypes.func.isRequired
       };
 
+      handlePurchase(){
+        const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
+
+          const body=JSON.stringify({
+              item_id:this.state.item.id,
+              price:100
+          })
+          axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+              .then(response=>{
+                  console.log(response.data);
+                  this.props.history.push('vendorPayments')
+              })
+              .catch(error=>{
+                  console.log(error);
+              })
+      }
+
       handleList(item){
           this.setState({
               item
@@ -59,6 +75,13 @@ class NewsFeed extends Component {
               item:null
           })
       }
+
+      componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('vendorLogin');
+        }
+    }
 
     render() {
         return(

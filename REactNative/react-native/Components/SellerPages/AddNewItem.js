@@ -26,13 +26,13 @@ class ItemForm extends Component
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
         if(this.props.isAuthenticated){
-            axios.get(process.env.REACT_APP_BASE_URL+'/categories')
+            axios.get(baseURL+'/categories')
                 .then((response)=>{
                     this.setState({
                         categories:response.data
                     });
                     if(this.state.categories && this.state.categories.length){
-                        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
+                        axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
                             .then((response2)=>{
                                 this.setState({
                                     subcategories:response2.data,
@@ -53,7 +53,7 @@ class ItemForm extends Component
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
-            this.props.history.push('sellerLogin');
+            this.props.history.push('/seller/login');
         }
     }
 
@@ -72,7 +72,7 @@ class ItemForm extends Component
                 sub_cat_id:this.state.subcat_id,
                 quantity:this.state.quantity
             })
-            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + this.props.seller._id + '/items', item ,config)
+            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
                 .then(res => {
                     console.log("Item added to the selling list")
                     this.props.history.push('/seller/items')
@@ -85,7 +85,7 @@ class ItemForm extends Component
 
     handleCategory(event){
         let curid=event.target.value;
-        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+curid+'/subcat')
+        axios.get(baseURL+'/categories/'+curid+'/subcat')
             .then((response)=>{
                 if(response.data&&response.data.length){
                     this.setState({
@@ -156,7 +156,7 @@ class ItemForm extends Component
                     </View>
 
                     <Text onPress={this.submitHandler}>Add new item</Text>
-                </View> ) : (<View>Sorry No vendor available</View>)
+                </View> ) : (<Text>Sorry No vendor available</Text>)
             }
                 <View>
                     <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>

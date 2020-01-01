@@ -4,174 +4,179 @@ import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import VendorLogout from './LogoutVendor';
 import axios from 'axios';
+import {baseURL} from '../../config/constants.js';
 
 class chooseCat extends Component {
-    constructor(props){
-        super(props);
-        this.state={
-            list:null,
-            category_id:null,
-            subcat_id:null,
-            formIsValid:false,
-            categories:null,
-            subcategories:null,
-            price:0,
-            present:false
-        }
-        this.handleCategory=this.handleCategory.bind(this);
-        this.handlePrice=this.handlePrice.bind(this);
-        this.handleSubcategory=this.handleSubcategory.bind(this);
-        this.submitHandler=this.submitHandler.bind(this);
-        if(this.props.isAuthenticated){
-          axios.get(process.env.REACT_APP_BASE_URL+'/categories')
-              .then((response)=>{
-                  this.setState({
-                      categories:response.data
-                  });
-                  if(this.state.categories && this.state.categories.length){
-                      axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
-                          .then((response)=>{
-                              this.setState({
-                                  subcategories:response.data,
-                                  category_id:this.state.categories[0].key,
-                                  subcat_id:response.data[0].key
-                              })
-                          })
-                          .then(()=>{
-                            // Headers
-                            const config = {
-                                headers: {
-                                'Content-type': 'application/json'
-                                }
-                            };
-                            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
-                                .then(res=>{
-                                    this.setState({
-                                        list:res.data
-                                    })
-                                })
-                                .catch(e=>{
-                                    console.log(e);
-                                })
-                          })
-                          .catch((error)=>{
-                              console.log(error);
-                          })
-                  }
-              })
-              .catch((error)=>{
-                  console.log(error);
-              })
+  constructor(props){
+      super(props);
+      this.state={
+          list:null,
+          category_id:null,
+          subcat_id:null,
+          formIsValid:false,
+          categories:null,
+          subcategories:null,
+          price:0,
+          present:false
       }
-    }
-    componentDidUpdate(prevProps) {
-        const { error } = this.props;
-        if (error !== prevProps.error) {
-          // Check for register error
-          if (error.id === 'VENDOR_REGISTER_FAIL') {
-            this.setState({ msg: error.msg.msg });
-          } else {
-            this.setState({ msg: null });
-          }
-        }
-        if(!this.props.isAuthenticated){
-          this.props.history.push('/vendor/login');
-        }
-      }
-
-    handleCategory(event){
-        let curid=event.target.value;
-        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+curid+'/subcat')
+      this.handleCategory=this.handleCategory.bind(this);
+      this.handlePrice=this.handlePrice.bind(this);
+      this.handleSubcategory=this.handleSubcategory.bind(this);
+      this.submitHandler=this.submitHandler.bind(this);
+      if(this.props.isAuthenticated){
+        axios.get(baseURL+'/categories')
             .then((response)=>{
-                if(response.data&&response.data.length){
-                    this.setState({
-                        subcategories:response.data ,
-                        category_id:curid,
-                        subcat_id:response.data[0].key
-                    });
-                }else{
-                    this.setState({
-                        subcategories:response.data ,
-                        category_id:curid,
-                        subcat_id:null
-                    });
+                this.setState({
+                    categories:response.data
+                });
+                if(this.state.categories && this.state.categories.length){
+                    axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
+                        .then((response)=>{
+                            this.setState({
+                                subcategories:response.data,
+                                category_id:this.state.categories[0].key,
+                                subcat_id:response.data[0].key
+                            })
+                        })
+                        .then(()=>{
+                          // Headers
+                          const config = {
+                              headers: {
+                              'Content-type': 'application/json'
+                              }
+                          };
+                          axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+                              .then(res=>{
+                                  this.setState({
+                                      list:res.data
+                                  })
+                              })
+                              .catch(e=>{
+                                  console.log(e);
+                              })
+                        })
+                        .catch((error)=>{
+                            console.log(error);
+                        })
                 }
             })
             .catch((error)=>{
                 console.log(error);
             })
     }
-
-    handleSubcategory(event){
-        let curid=event.target.value;
-        this.setState({
-            subcat_id:curid,
-        });
-        
-    }
-
-    handlePrice(event){
-        this.setState({
-            price:event.target.value
-        });
-    }
-
-    deleteHandler(id){
-      if(this.props.isAuthenticated){
-        // Headers
-        const config = {
-            headers: {
-            'Content-type': 'application/json'
-            }
-        };
-        axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config)
-            .then(res => {
-                this.setState({
-                  list:res.data,
-                  present:false
-                })
-            })
-            .catch(e=>{
-                console.log("category add request failed.retry later"+e)
-            });
+  }
+  componentDidUpdate(prevProps) {
+      const { error } = this.props;
+      if (error !== prevProps.error) {
+        // Check for register error
+        if (error.id === 'VENDOR_REGISTER_FAIL') {
+          this.setState({ msg: error.msg.msg });
+        } else {
+          this.setState({ msg: null });
+        }
+      }
+      if(!this.props.isAuthenticated){
+        this.props.history.push('vendorLogin');
       }
     }
 
-    submitHandler(event){
-      event.preventDefault();
-      var filtered=this.state.list.filter(subcat=>{
-        return subcat.subcat_id===this.state.subcat_id
+  handleCategory(event){
+      let curid=event.target.value;
+      axios.get(baseURL+'/categories/'+curid+'/subcat')
+          .then((response)=>{
+              if(response.data&&response.data.length){
+                  this.setState({
+                      subcategories:response.data ,
+                      category_id:curid,
+                      subcat_id:response.data[0].key,
+                      present:false
+                  });
+              }else{
+                  this.setState({
+                      subcategories:response.data ,
+                      category_id:curid,
+                      subcat_id:null,
+                      present:false
+                  });
+              }
+          })
+          .catch((error)=>{
+              console.log(error);
+          })
+  }
+
+  handleSubcategory(event){
+      let curid=event.target.value;
+      this.setState({
+          subcat_id:curid,
+          present:false
+      });
+      
+  }
+
+  handlePrice(event){
+      this.setState({
+          price:event.target.value
+      });
+  }
+
+  // deleteHandler(id){
+  //   if(this.props.isAuthenticated){
+  //     // Headers
+  //     const config = {
+  //         headers: {
+  //         'Content-type': 'application/json'
+  //         }
+  //     };
+  //     axios.delete( baseURL+'/vendor/selections/'+id,config)
+  //         .then(res => {
+  //             this.setState({
+  //               list:res.data,
+  //               present:false
+  //             })
+  //         })
+  //         .catch(e=>{
+  //             console.log("category add request failed.retry later"+e)
+  //         });
+  //   }
+  // }
+
+  submitHandler(event){
+    event.preventDefault();
+    var filtered=this.state.list.filter(subcat=>{
+      return subcat.subcat_id._id===this.state.subcat_id
+    })
+    if(filtered&&filtered.length){
+      this.setState({
+        present:true
       })
-      if(filtered&&filtered.length){
-        this.setState({
-          present:true
-        })
-        return ;
-      }
-      if(this.props.isAuthenticated){
-        // Headers
-        const config = {
-            headers: {
-            'Content-type': 'application/json'
-            }
-        };
-        const item = JSON.stringify({
-          vendorid:this.props.vendorData.id,
-          subcat_id:this.state.subcat_id,
-          price:this.state.price
-        });
-        axios.post( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
-            .then(res => {
-                this.setState({
-                  list:res.data,
-                  present:false
-                })
-            })
-            .catch(e=>{
-                console.log("category add request failed.retry later",e)
-            });
-      }
+      return ;
     }
+    if(this.props.isAuthenticated){
+      // Headers
+      const config = {
+          headers: {
+          'Content-type': 'application/json'
+          }
+      };
+      const item = JSON.stringify({
+        vendorid:this.props.vendorData._id,
+        subcat_id:this.state.subcat_id,
+        price:this.state.price
+      });
+      axios.post( baseURL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
+          .then(res => {
+              this.setState({
+                list:res.data,
+                present:false
+              })
+          })
+          .catch(e=>{
+              console.log("category add request failed.retry later",e)
+          });
+    }
+  }
+
 
       render(){
           return (
@@ -232,7 +237,7 @@ class chooseCat extends Component {
                           }
                         </View>
                       ):(
-                        <View>You have selected no prefered category</View>
+                        <Text>You have selected no prefered category</Text>
                       )
                     }
                 </View>

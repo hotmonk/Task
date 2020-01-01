@@ -37,6 +37,13 @@ class SignUpSeller extends Component {
       }
     }
   }
+  redirectit=()=>{
+    if(this.props.isAuthenticated)
+    {
+      Actions.sellerProfile()
+    }
+    
+}
     onSubmit=async()=> {
 
         console.log(`Form submitted:`);
@@ -66,6 +73,7 @@ class SignUpSeller extends Component {
     render() {
         return (
             <View>
+                { this.redirectit() }
                 <Text>Register Yourself as Seller!</Text>
                 <View>
                     <View>

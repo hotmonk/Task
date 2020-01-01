@@ -25,9 +25,9 @@ const Routes = (props) => {
                 <Scene key="sellerProfile" component = {sellerProfile} title='profile'/>
                 <Scene key="vendorProfile" component = { vendorProfile } title='vendorProfile'/>
                 <Scene key="sellerLogin"  component={ LoginSeller } title='loginseller'/>
-                <Scene key="sellerSignUp" component={ SignUpSeller } title='SignupSeller'/>
+                <Scene key="sellerSignUp" component={ SignUpSeller } initial={true} title='SignupSeller'/>
                 <Scene key="vendorLogin" component={ LoginVendor}  title='loginVendor' />
-                <Scene key="vendorSignUp" component={ SignUpVendor } initial={true} title='SignUpVendor'/>
+                <Scene key="vendorSignUp" component={ SignUpVendor }  title='SignUpVendor'/>
                 <Scene key='sellerItems' component={ViewItem} title='sellerItems' />
                 <Scene key='sellerNewItem' component={ItemForm} title='sellerNewItem'/>
                 <Scene key='vendorNewsfeed' component={newsFeed} title='vendorNewsfeed'/>

@@ -40,7 +40,7 @@ class vendorProfile extends Component {
                 <Text>Address:{this.props.vendorData.address}</Text>
                 <Text>Edit Details</Text>
                 <View>
-                      <Text onPress={() => Actions.newsfeed()}>View Items For Sale</Text>
+                      <Text onPress={() => Actions.vendorNewsfeed()}>View Items For Sale</Text>
                 </View>
                 <View>
                        <Text onPress={() => Actions.vendorViewBuyedItems()}>View All items purchased by you</Text>
