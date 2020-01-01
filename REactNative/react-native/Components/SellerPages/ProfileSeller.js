@@ -40,6 +40,9 @@ class sellerProfile extends Component {
                 <View>
                    <Text onPress={() => Actions.Item()}>View All items added by you</Text>
                 </View>
+                <View>
+                   <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>
+                </View>
             </View>
             </View>
               ) : (

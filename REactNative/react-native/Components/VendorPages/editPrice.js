@@ -126,9 +126,11 @@ class editPrice extends Component {
                           {
                             this.state.items.map((selected,index)=>(
                               <View key={selected._id}>
-                                <View>Category:{selected.subcat_id.cat_id.name}</View>
-                                <View>Sub-category:{selected.subcat_id.name}</View>
-                                <View>Price:<input type="text" onChange={(event)=>this.handlePriceChange(event,index)} value={selected.price}/>  {selected.subcat_id.quantity_type}</View>
+                                <Text>Category:{selected.subcat_id.cat_id.name}</Text>
+                                <Text>Sub-category:{selected.subcat_id.name}</Text>
+                                <Text>Price:<TextInput
+                                onChange={(event)=>this.handlePriceChange(event,index)} 
+                                value={selected.price}/>  {selected.subcat_id.quantity_type}</Text>
                                 <Text onPress={(event)=>this.deleteHandler(event,selected._id)}>Delete</Text>
                               </View>
                             ))

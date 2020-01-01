@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
 import axios from 'axios';
-import { Text,Picker,TextInput, View } from 'react-native';;
+import { Text,Picker,TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import { Actions } from 'react-native-router-flux';
 import SellerLogout from './LogoutSeller';
-
+import {baseURL} from '../../config/constants.js';
 
 class ItemForm extends Component
 {
