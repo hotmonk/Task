@@ -46,16 +46,16 @@ class ViewItem extends Component {
         }
     }
 
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
-
       handleBack(){
           this.setState({
               item:null
           })
+      }
+
+      handleList(item){
+          this.setState({
+              item
+          });
       }
 
     render() {

@@ -29,12 +29,14 @@ class Payment extends Component{
                 console.log(err);
             })
     }
+
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
     }
+
     purchase()
     {
         const config = {
@@ -56,6 +58,7 @@ class Payment extends Component{
                 console.log(error);
             })
     }
+    
     render(){
         return(
          <div>  

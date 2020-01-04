@@ -19,6 +19,7 @@ class sellerProfile extends Component {
           this.props.history.push('/seller/login');
         }
       }
+       
       render(){
           return (
             <div>

@@ -51,16 +51,6 @@ class SignUpVendor extends Component {
         }
       }
 
-      redirectit=()=>{
-        if(this.props.isAuthenticated)
-        {
-            return (
-                <Redirect to='./profile' />
-            )
-        }
-        
-    }
-
     onChangename(e) {
         this.setState({
             name: e.target.value
@@ -108,6 +98,16 @@ class SignUpVendor extends Component {
         };
 
         this.props.signupVendor(newVendor);
+    }
+
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
     }
 
     setCoord(long,lat){

@@ -2,7 +2,6 @@
 
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { Link } from 'react-router-dom';
@@ -39,6 +38,7 @@ class ViewBuyedItem extends Component {
                 })
           }
     }
+
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
@@ -46,16 +46,16 @@ class ViewBuyedItem extends Component {
         }
     }
 
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
-
       handleBack(){
           this.setState({
               item:null
           })
+      }
+
+      handleList(item){
+          this.setState({
+              item
+          });
       }
 
     render() {

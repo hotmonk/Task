@@ -27,48 +27,6 @@ class NewsFeed extends Component {
         clearErrors: PropTypes.func.isRequired
       };
 
-      handlePurchase(){
-          axios.get(baseURL+'/payment/')
-            .then(response=>{
-                this.setState({
-                    paymentInfo:response.data
-                })
-            })
-            .catch(err=>{
-                console.log(err);
-            })
-        // const config = {
-        //       headers: {
-        //       'Content-type': 'application/json'
-        //       }
-        //   };
-
-        //   const body=JSON.stringify({
-        //       item_id:this.state.item.id,
-        //       price:100
-        //   })
-        //   axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
-        //       .then(response=>{
-        //           console.log(response.data);
-        //           this.props.history.push('/vendor/payments')
-        //       })
-        //       .catch(error=>{
-        //           console.log(error);
-        //       })
-      }
-
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
-
-      handleBack(){
-          this.setState({
-              item:null
-          })
-      }
-
       componentDidMount(){
         setTimeout(()=>{
             if(this.props.isAuthenticated){
@@ -101,7 +59,48 @@ class NewsFeed extends Component {
             this.instance.submit();
         }
     }
+
+    handleBack(){
+        this.setState({
+            item:null
+        })
+    }
+
+    handleList(item){
+      this.setState({
+          item
+      });
+  }
     
+    handlePurchase(){
+        axios.get(baseURL+'/payment/')
+        .then(response=>{
+            this.setState({
+                paymentInfo:response.data
+            })
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    // const config = {
+    //       headers: {
+    //       'Content-type': 'application/json'
+    //       }
+    //   };
+
+    //   const body=JSON.stringify({
+    //       item_id:this.state.item.id,
+    //       price:100
+    //   })
+    //   axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+    //       .then(response=>{
+    //           console.log(response.data);
+    //           this.props.history.push('/vendor/payments')
+    //       })
+    //       .catch(error=>{
+    //           console.log(error);
+    //       })
+    }
 
     render() {
         return(

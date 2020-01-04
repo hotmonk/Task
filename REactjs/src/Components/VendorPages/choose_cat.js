@@ -108,6 +108,13 @@ class chooseCat extends Component {
             })
     }
 
+    
+    handlePrice(event){
+        this.setState({
+            price:event.target.value
+        });
+    }
+    
     handleSubcategory(event){
         let curid=event.target.value;
         this.setState({
@@ -115,12 +122,6 @@ class chooseCat extends Component {
             present:false
         });
         
-    }
-
-    handlePrice(event){
-        this.setState({
-            price:event.target.value
-        });
     }
 
     // deleteHandler(id){

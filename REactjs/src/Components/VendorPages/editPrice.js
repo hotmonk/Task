@@ -48,16 +48,6 @@ class editPrice extends Component {
         }
       }
 
-      handlePriceChange(event,index){
-          var items=this.state.items.map(item=>{
-              return {...item}
-          });
-          items[index].price=event.target.value;
-          this.setState({
-              items:items
-          })
-      }
-
       deleteHandler(event,id){
         event.preventDefault();
         if(this.props.isAuthenticated){
@@ -85,6 +75,17 @@ class editPrice extends Component {
               })
         }
       }
+
+      
+      handlePriceChange(event,index){
+        var items=this.state.items.map(item=>{
+            return {...item}
+        });
+        items[index].price=event.target.value;
+        this.setState({
+            items:items
+        })
+    }
 
       submitForm(event)
       {

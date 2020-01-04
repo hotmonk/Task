@@ -49,37 +49,12 @@ class ItemForm extends Component
                 })
         }
     }
+
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
             this.props.history.push('/seller/login');
         }
-    }
-
-    submitHandler(event){
-        event.preventDefault();
-        if(this.props.isAuthenticated){
-            // Headers
-            const config = {
-                headers: {
-                'Content-type': 'application/json'
-                }
-            };
-            const item =JSON.stringify ({
-                cust_id:this.props.seller._id,
-                cat_id:this.state.category_id,
-                sub_cat_id:this.state.subcat_id,
-                quantity:this.state.quantity
-            })
-            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
-                .then(res => {
-                    console.log("Item added to the selling list")
-                    this.props.history.push('/seller/items')
-                })
-                .catch(e=>{
-                    console.log("item add request failed.retry later")
-                });
-          }
     }
 
     handleCategory(event){
@@ -117,6 +92,32 @@ class ItemForm extends Component
         this.setState({
             quantity:event.target.value
         });
+    }
+
+    submitHandler(event){
+        event.preventDefault();
+        if(this.props.isAuthenticated){
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            const item =JSON.stringify ({
+                cust_id:this.props.seller._id,
+                cat_id:this.state.category_id,
+                sub_cat_id:this.state.subcat_id,
+                quantity:this.state.quantity
+            })
+            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
+                .then(res => {
+                    console.log("Item added to the selling list")
+                    this.props.history.push('/seller/items')
+                })
+                .catch(e=>{
+                    console.log("item add request failed.retry later")
+                });
+          }
     }
 
     render()

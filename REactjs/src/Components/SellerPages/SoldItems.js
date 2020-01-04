@@ -38,17 +38,13 @@ class ViewSelledItem extends Component {
                 })
           }
     }
+
     componentDidUpdate()
     {
       if(!this.props.isAuthenticated){
         this.props.history.push('/seller/login');
       }
     }
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
 
       handleBack(){
           this.setState({
@@ -80,6 +76,12 @@ class ViewSelledItem extends Component {
             return null;
         }
     }
+    
+    handleList(item){
+        this.setState({
+            item
+        });
+      }
 
       handleSaveBack(){
         const token = this.props.token;

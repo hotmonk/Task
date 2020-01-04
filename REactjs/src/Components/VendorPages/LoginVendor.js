@@ -45,16 +45,6 @@ class LoginVendor extends Component {
         });
     }
 
-    redirectit=()=>{
-        if(this.props.isAuthenticated)
-        {
-            return (
-                <Redirect to='./profile' />
-            )
-        }
-        
-    }
-
     onChangepassword(e) {
         this.setState({
             password: e.target.value
@@ -73,6 +63,16 @@ class LoginVendor extends Component {
 
         // Attempt to login
         this.props.vendorLogin(vendor);
+    }
+
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
     }
 
     render() {

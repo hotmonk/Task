@@ -20,6 +20,13 @@ class vendorRequest extends Component {
             quantity_type: ''
         }
     }
+    
+    componentDidUpdate()
+    {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
+    }
 
     onChangecat_name(e) {
         this.setState({
@@ -31,12 +38,6 @@ class vendorRequest extends Component {
         this.setState({
             sub_cat_name: e.target.value
         });
-    }
-    componentDidUpdate()
-    {
-        if(!this.props.isLoading&&!this.props.isAuthenticated){
-            this.props.history.push('/vendor/login');
-        }
     }
 
     onChangequantity_type(e) {

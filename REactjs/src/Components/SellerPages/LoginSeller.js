@@ -52,16 +52,6 @@ class LoginSeller extends Component {
         });
     }
 
-    redirectit=()=>{
-        if(this.props.isAuthenticated)
-        {
-            return (
-                <Redirect to='./profile' />
-            )
-        }
-        
-    }
-
     onSubmit(e) {
         e.preventDefault();
 
@@ -76,7 +66,15 @@ class LoginSeller extends Component {
         this.props.sellerLogin(seller);
     }
 
-    
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
+    }
 
     render() {
         return (

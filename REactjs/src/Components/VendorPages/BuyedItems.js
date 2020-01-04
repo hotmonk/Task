@@ -8,7 +8,7 @@ import {baseURL} from '../../../config/constants.js';
 
 class ViewBuyedItem extends Component {
 
-    constructor(props) {
+    constructor(props){
         super(props);
         this.state = {
             items:null,
@@ -36,24 +36,25 @@ class ViewBuyedItem extends Component {
                 })
           }
     }
-    componentDidUpdate()
-    {
+
+    componentDidUpdate(){
         if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
     }
 
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
+    
+    handleBack(){
+        this.setState({
+            item:null
+        })
+    }
 
-      handleBack(){
-          this.setState({
-              item:null
-          })
-      }
+    handleList(item){
+      this.setState({
+          item
+      });
+    }
 
     render() {
         return(

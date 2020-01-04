@@ -52,16 +52,6 @@ class SignUpSeller extends Component {
         }
       }
 
-      redirectit=()=>{
-        if(this.props.isAuthenticated)
-        {
-            return (
-                <Redirect to='./profile' />
-            )
-        }
-        
-    }
-
     onChangename(e) {
         this.setState({
             name: e.target.value
@@ -108,6 +98,16 @@ class SignUpSeller extends Component {
         };
 
         this.props.signupSeller(newSeller);
+    }
+ 
+    redirectit=()=>{
+        if(this.props.isAuthenticated)
+        {
+            return (
+                <Redirect to='./profile' />
+            )
+        }
+        
     }
 
     setCoord(long,lat){
