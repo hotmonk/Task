@@ -53,6 +53,7 @@ class sellerProfile extends Component {
 }
 
 const mapStateToProps = state => ({
+  isLoading:state.sellerAuth.isLoading,
     sellerData:state.sellerAuth.seller,
     isAuthenticated: state.sellerAuth.isAuthenticated,
     error: state.error

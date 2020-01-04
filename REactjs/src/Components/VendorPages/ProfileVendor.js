@@ -6,6 +6,9 @@ import VendorLogout from './LogoutVendor';
 class vendorProfile extends Component {
 
     componentDidUpdate(prevProps) {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
@@ -15,9 +18,6 @@ class vendorProfile extends Component {
             this.setState({ msg: null });
           }
         }
-        if(!this.props.isAuthenticated){
-          this.props.history.push('/vendor/login');
-      }
       }
     // static propTypes = {
     //     vendorData:PropTypes.isRequired,
@@ -68,6 +68,7 @@ class vendorProfile extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.vendorAuth.isLoading,
     vendorData:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,
     error: state.error

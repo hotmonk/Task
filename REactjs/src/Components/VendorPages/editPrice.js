@@ -12,8 +12,10 @@ class editPrice extends Component {
         this.state={
             items:[]
         }
-        if(this.props.isAuthenticated){
-            // Headers
+    }
+
+    componentDidMount(){
+        setTimeout(()=>{
             const config = {
                 headers: {
                 'Content-type': 'application/json'
@@ -28,10 +30,13 @@ class editPrice extends Component {
                 .catch(e=>{
                     console.log(e);
                 })
-        }
+        },500);
     }
 
     componentDidUpdate(prevProps) {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+            this.props.history.push('/vendor/login');
+        }
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
@@ -40,9 +45,6 @@ class editPrice extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }
-        if(!this.props.isAuthenticated){
-            this.props.history.push('/vendor/login');
         }
       }
 
@@ -151,6 +153,7 @@ class editPrice extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.vendorAuth.isLoading,
     token:state.vendorAuth.token,
     vendorData:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,

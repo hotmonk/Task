@@ -41,7 +41,7 @@ class ViewItem extends Component {
 
     componentDidUpdate()
     {
-        if(!this.props.isAuthenticated){
+        if(!this.state.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/seller/login');
         }
     }
@@ -108,6 +108,7 @@ class ViewItem extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.sellerAuth.isLoading,
     token:state.sellerAuth.token,
     seller:state.sellerAuth.seller,
     isAuthenticated: state.sellerAuth.isAuthenticated,

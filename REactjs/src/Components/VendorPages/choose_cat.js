@@ -22,49 +22,56 @@ class chooseCat extends Component {
         this.handlePrice=this.handlePrice.bind(this);
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
-        if(this.props.isAuthenticated){
-          axios.get(baseURL+'/categories')
-              .then((response)=>{
-                  this.setState({
-                      categories:response.data
-                  });
-                  if(this.state.categories && this.state.categories.length){
-                      axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
-                          .then((response)=>{
-                              this.setState({
-                                  subcategories:response.data,
-                                  category_id:this.state.categories[0].key,
-                                  subcat_id:response.data[0].key
-                              })
-                          })
-                          .then(()=>{
-                            // Headers
-                            const config = {
-                                headers: {
-                                'Content-type': 'application/json'
-                                }
-                            };
-                            axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
-                                .then(res=>{
-                                    this.setState({
-                                        list:res.data
-                                    })
-                                })
-                                .catch(e=>{
-                                    console.log(e);
-                                })
-                          })
-                          .catch((error)=>{
-                              console.log(error);
-                          })
-                  }
-              })
-              .catch((error)=>{
-                  console.log(error);
-              })
-      }
     }
+
+    componentDidMount(){
+        setTimeout(()=>{
+            axios.get(baseURL+'/categories')
+                .then((response)=>{
+                    this.setState({
+                        categories:response.data
+                    });
+                    if(this.state.categories && this.state.categories.length){
+                        axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
+                            .then((response)=>{
+                                this.setState({
+                                    subcategories:response.data,
+                                    category_id:this.state.categories[0].key,
+                                    subcat_id:response.data[0].key
+                                })
+                            })
+                            .then(()=>{
+                              // Headers
+                              const config = {
+                                  headers: {
+                                  'Content-type': 'application/json'
+                                  }
+                              };
+                              axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
+                                  .then(res=>{
+                                      this.setState({
+                                          list:res.data
+                                      })
+                                  })
+                                  .catch(e=>{
+                                      console.log(e);
+                                  })
+                            })
+                            .catch((error)=>{
+                                console.log(error);
+                            })
+                    }
+                })
+                .catch((error)=>{
+                    console.log(error);
+                })
+        },500);
+    }
+
     componentDidUpdate(prevProps) {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+          this.props.history.push('/vendor/login');
+        }
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
@@ -73,9 +80,6 @@ class chooseCat extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }
-        if(!this.props.isAuthenticated){
-          this.props.history.push('/vendor/login');
         }
       }
 
@@ -251,6 +255,7 @@ class chooseCat extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.vendorAuth.isLoading,
     token:state.vendorAuth.token,
     vendorData:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,
