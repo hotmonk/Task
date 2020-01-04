@@ -171,6 +171,7 @@ class ItemForm extends Component
 };
 
 const mapStateToProps = state => ({
+    isLoading:state.sellerAuth.isLoading,
     token:state.sellerAuth.token,
     seller:state.sellerAuth.seller,
     isAuthenticated: state.sellerAuth.isAuthenticated,

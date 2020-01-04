@@ -34,7 +34,7 @@ class vendorRequest extends Component {
     }
     componentDidUpdate()
     {
-        if(!this.props.isAuthenticated){
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
     }
@@ -112,6 +112,7 @@ class vendorRequest extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.vendorAuth.isLoading,
     token:state.vendorAuth.token,
     vendor:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,

@@ -19,23 +19,6 @@ class NewsFeed extends Component {
         }
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
-        if(this.props.isAuthenticated){
-          // Headers
-          const config = {
-              headers: {
-              'Content-type': 'application/json'
-              }
-          };
-          axios.get(baseURL+'/vendor/newsfeed', config)
-              .then(response=>{
-                  this.setState({
-                      items:response.data
-                  });
-              })
-              .catch(error=>{
-                  console.log(error);
-              })
-        }
     }
 
     static propTypes = {
@@ -86,9 +69,31 @@ class NewsFeed extends Component {
           })
       }
 
+      componentDidMount(){
+        setTimeout(()=>{
+            if(this.props.isAuthenticated){
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            axios.get(baseURL+'/vendor/newsfeed', config)
+                .then(response=>{
+                    this.setState({
+                        items:response.data
+                    });
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
+          }
+        },500);
+      }
+    
     componentDidUpdate()
     {
-        if(!this.props.isAuthenticated){
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
         if(this.state.paymentInfo){
@@ -163,6 +168,7 @@ class NewsFeed extends Component {
 }
 
 const mapStateToProps = state => ({
+    isLoading:state.vendorAuth.isLoading,
     token:state.vendorAuth.token,
     vendor:state.vendorAuth.vendor,
     isAuthenticated: state.vendorAuth.isAuthenticated,
