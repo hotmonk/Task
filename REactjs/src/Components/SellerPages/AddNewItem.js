@@ -24,35 +24,38 @@ class ItemForm extends Component
         this.handleQuantity=this.handleQuantity.bind(this);
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
-        if(this.props.isAuthenticated){
+    }
+
+    componentDidMount(){
+        setTimeout(()=>{
             axios.get(baseURL+'/categories')
-                .then((response)=>{
-                    this.setState({
-                        categories:response.data
-                    });
-                    if(this.state.categories && this.state.categories.length){
-                        axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
-                            .then((response2)=>{
-                                this.setState({
-                                    subcategories:response2.data,
-                                    category_id:this.state.categories[0].key,
-                                    subcat_id:response2.data[0].key
-                                })
+            .then((response)=>{
+                this.setState({
+                    categories:response.data
+                });
+                if(this.state.categories && this.state.categories.length){
+                    axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
+                        .then((response2)=>{
+                            this.setState({
+                                subcategories:response2.data,
+                                category_id:this.state.categories[0].key,
+                                subcat_id:response2.data[0].key
                             })
-                            .catch((error)=>{
-                                console.log(error);
-                            })
-                    }
-                })
-                .catch((error)=>{
-                    console.log(error);
-                })
-        }
+                        })
+                        .catch((error)=>{
+                            console.log(error);
+                        })
+                }
+            })
+            .catch((error)=>{
+                console.log(error);
+            })
+        },500);
     }
 
     componentDidUpdate()
     {
-        if(!this.props.isAuthenticated){
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/seller/login');
         }
     }

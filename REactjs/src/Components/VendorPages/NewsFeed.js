@@ -73,15 +73,27 @@ class NewsFeed extends Component {
   }
     
     handlePurchase(){
-        axios.get(baseURL+'/payment/')
-        .then(response=>{
-            this.setState({
-                paymentInfo:response.data
+
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        console.log(this.state);
+        const body=JSON.stringify({
+            vendor_id:this.props.vendor._id,
+            item_id:this.state.item.id
+        })
+        console.log(body);
+        axios.post(baseURL+'/payment/',body,config)
+            .then(response=>{
+                this.setState({
+                    paymentInfo:response.data
+                })
             })
-        })
-        .catch(err=>{
-            console.log(err);
-        })
+            .catch(err=>{
+                console.log(err);
+            })
     // const config = {
     //       headers: {
     //       'Content-type': 'application/json'

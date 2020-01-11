@@ -437,58 +437,63 @@ router.post('/signUp', function(req, res) {
   //vendor profile
   ///add new item to buy list
   ///checked
-  router.post('/:id/transaction',vendorAuth,function(req,res){
-      var vendor_id=req.params.id;
-      var item_id=req.body.item_id;
-      var price=req.body.price;
-      const transaction=new Transaction({
-        vendor:vendor_id,
-        item:item_id,
-        price:price
-      });
-      Item.findById(item_id,function(err1,res1){
-        if(err1){
-          res.status(400).json(err1);
-        }
-        if(res1.status!=='INBID'){
-          res.json({
-            msg:"item already sold"
-          })
-        }
-        res1.status='RATING';
-        res1.save(function(err2,res2){
-          if(err2){
-            res.status(400).json(err2);
-          }
-          transaction.save()
-            .then(trans=>{
-              res2.transaction_id=trans._id;
-              res2.save();
-              Vendor.findById(vendor_id,function(err4,res4){
-                if(err4){
-                  console.log('adding transaction failed');
-                  res.status(400).json({
-                    msg:"transaction failed"
-                  })
-                }
-                res4.transactions.push(trans._id);
-                res4.save()
-                  .then(res5=>{
-                    console.log("transaction added"),
-                    res.json({
-                      msg:"item added"
-                    })
-                  })
-                  .catch(error=>{
-                    res.status(400).json(error)
-                  })
-              })
-            })
-            .catch(err3=>{
-              res.status(400).json(err3);
-            })
+  router.post('/:id/transaction',function(req,res){
+    if(req.body.requestCode!=='Unbreakable69'){
+       res.send({
+         msg:'permission denied'
+       });
+    }
+    var vendor_id=req.params.id;
+    var item_id=req.body.item_id;
+    var price=req.body.price;
+    const transaction=new Transaction({
+      vendor:vendor_id,
+      item:item_id,
+      price:price
+    });
+    Item.findById(item_id,function(err1,res1){
+      if(err1){
+        res.status(400).json(err1);
+      }
+      if(res1.status!=='INBID'){
+        res.json({
+          msg:"item already sold"
         })
+      }
+      res1.status='RATING';
+      res1.save(function(err2,res2){
+        if(err2){
+          res.status(400).json(err2);
+        }
+        transaction.save()
+          .then(trans=>{
+            res2.transaction_id=trans._id;
+            res2.save();
+            Vendor.findById(vendor_id,function(err4,res4){
+              if(err4){
+                console.log('adding transaction failed');
+                res.status(400).json({
+                  msg:"transaction failed"
+                })
+              }
+              res4.transactions.push(trans._id);
+              res4.save()
+                .then(res5=>{
+                  console.log("transaction added"),
+                  res.json({
+                    msg:"item added"
+                  })
+                })
+                .catch(error=>{
+                  res.status(400).json(error)
+                })
+            })
+          })
+          .catch(err3=>{
+            res.status(400).json(err3);
+          })
       })
+    })
   })
   
   ///fetch all purchased items
