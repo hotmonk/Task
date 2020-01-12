@@ -3,18 +3,30 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import SellerLogout from './LogoutSeller';
 
 class sellerProfile extends Component {
 
-    static propTypes = {
-        sellerData:PropTypes.isRequired,
-        isAuthenticated: PropTypes.bool,
-        error: PropTypes.object.isRequired,
-        clearErrors: PropTypes.func.isRequired
-      };
-
+    componentDidUpdate(prevProps) {
+        const { error } = this.props;
+        if (error !== prevProps.error) {
+          // Check for register error
+          if (error.id === 'SELLER_REGISTER_FAIL' || error.id === 'SELLER_LOGIN_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
+        if(!this.props.isAuthenticated){
+          this.props.history.push('sellerLogin');
+        }
+      }
       render(){
           return (
+        <View>
+            {this.props.isAuthenticated ? (
+              <View>
+                <SellerLogout />
             <View>
                 <Text>welcome {this.props.sellerData.name}</Text>
                 <Text>Here are all the details you entered</Text>
@@ -24,11 +36,19 @@ class sellerProfile extends Component {
                 <Text>Address:{this.props.sellerData.address}</Text>
                 <Text>Edit Details</Text>
                 <View>
-                   <Text onPress={() => Actions.newItem()}>Add Items For Sale</Text>
+                   <Text onPress={() => Actions.sellerNewItem()}>Add Items For Sale</Text>
                 </View>
                 <View>
-                   <Text onPress={() => Actions.Item()}>View All items added by you</Text>
+                   <Text onPress={() => Actions.sellerItems()}>View All items added by you</Text>
                 </View>
+                <View>
+                   <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>
+                </View>
+            </View>
+            </View>
+              ) : (
+                <Text>Please Login First!</Text>
+              )}
             </View>
           );
       }

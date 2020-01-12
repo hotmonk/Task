@@ -1,5 +1,5 @@
 import { GET_ERRORS, CLEAR_ERRORS } from '../actions/types';
-
+import 'localstorage-polyfill';
 const initialState = {
   msg: {},
   status: null,

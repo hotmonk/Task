@@ -1,8 +1,11 @@
 import React,{Component} from 'react';
 import axios from 'axios';
-import { Text,Picker,TextInput, View } from 'react-native';;
+import { Text,Picker,TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
+import { Actions } from 'react-native-router-flux';
+import SellerLogout from './LogoutSeller';
+import {baseURL} from '../../config/constants.js';
 
 class ItemForm extends Component
 {
@@ -18,63 +21,83 @@ class ItemForm extends Component
             categories:null,
             subcategories:null
         }
-
         this.handleCategory=this.handleCategory.bind(this);
         this.handleQuantity=this.handleQuantity.bind(this);
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
         if(this.props.isAuthenticated){
-            axios.get('http://localhost:4000/categories')
+            axios.get(baseURL+'/categories')
                 .then((response)=>{
-                    console.log(response.data);
                     this.setState({
-                        categories:response.data,
+                        categories:response.data
                     });
+                    if(this.state.categories && this.state.categories.length){
+                        axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
+                            .then((response2)=>{
+                                this.setState({
+                                    subcategories:response2.data,
+                                    category_id:this.state.categories[0].key,
+                                    subcat_id:response2.data[0].key
+                                })
+                            })
+                            .catch((error)=>{
+                                console.log(error);
+                            })
+                    }
                 })
                 .catch((error)=>{
                     console.log(error);
                 })
         }
-        if(this.state.categories && this.state.categories.length){
-            axios.get('https://localhost:4000/categories/'+this.state.categories[0].key+'/subcat')
-                .then((response)=>{
-                    console.log(response);
-                    this.setState({
-                        subcategories:response.data,
-                        category_id:this.state.categories[0].key,
-                        subcat_id:response.data[0].key
-                    });
-                })
-                .catch((error)=>{
-                    console.log(error);
-                })
+    }
+    componentDidUpdate()
+    {
+        if(!this.props.isAuthenticated){
+            this.props.history.push('/seller/login');
         }
     }
 
     submitHandler(event){
         event.preventDefault();
-        const item = {
-            cust_id:this.props.seller.id,
-            cat_id:this.state.category_id,
-            sub_cat_id:this.state.subcat_id,
-            quantity:this.state.quantity,
-            status:'inBid'
-        }
-        axios.post( 'http://localhost:4000/seller/' + item.cust_id + '/items', item )
-            .then(res => console.log("Seller Logging In"));
+        if(this.props.isAuthenticated){
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            const item =JSON.stringify ({
+                cust_id:this.props.seller._id,
+                cat_id:this.state.category_id,
+                sub_cat_id:this.state.subcat_id,
+                quantity:this.state.quantity
+            })
+            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
+                .then(res => {
+                    console.log("Item added to the selling list")
+                    this.props.history.push('/seller/items')
+                })
+                .catch(e=>{
+                    console.log("item add request failed.retry later")
+                });
+          }
     }
 
     handleCategory(event){
         let curid=event.target.value;
-        axios.get('/categories/'+curid+'/subcat')
-            .then(function(response){
-                this.setState({
-                    subcategories:response ,
-                    category_id:curid,
-                });
-                if(response.length){
+        axios.get(baseURL+'/categories/'+curid+'/subcat')
+            .then((response)=>{
+                if(response.data&&response.data.length){
                     this.setState({
-                        subcat_id:response[0].key
+                        subcategories:response.data ,
+                        category_id:curid,
+                        subcat_id:response.data[0].key
+                    });
+                }else{
+                    this.setState({
+                        subcategories:response.data ,
+                        category_id:curid,
+                        subcat_id:null
                     });
                 }
             })
@@ -88,7 +111,7 @@ class ItemForm extends Component
         this.setState({
             subcat_id:curid,
         });
-
+        
     }
 
     handleQuantity(event){
@@ -101,6 +124,9 @@ class ItemForm extends Component
     {
         return (
             <View>
+              {this.props.isAuthenticated ? (
+                <View>
+                    <SellerLogout/>
             {
                 this.state.categories ? (
                 <View >
@@ -130,8 +156,15 @@ class ItemForm extends Component
                     </View>
 
                     <Text onPress={this.submitHandler}>Add new item</Text>
-                </View> ) : (<View>Sorry No vendor available</View>)
+                </View> ) : (<Text>Sorry No vendor available</Text>)
             }
+                <View>
+                    <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>
+                </View>
+            </View>
+            ) : (
+                <Text>Please Login First!</Text>
+              )}
             </View>
         );
     }

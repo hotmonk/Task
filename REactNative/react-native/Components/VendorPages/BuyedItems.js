@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { StyleSheet, Text, View,TextInput } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 import VendorLogout from './LogoutVendor';
+import { StyleSheet, Text, View } from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import {baseURL} from '../../config/constants.js';
 
 class ViewBuyedItem extends Component {
 
@@ -26,7 +26,7 @@ class ViewBuyedItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
+            axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -58,6 +58,7 @@ class ViewBuyedItem extends Component {
 
     render() {
         return(
+            
             <View>
               {this.props.isAuthenticated ? (
             <View>
@@ -70,18 +71,20 @@ class ViewBuyedItem extends Component {
                     <Text> category: {this.state.item.cat_id.name}</Text> 
                     <Text> subcategory: {this.state.item.sub_cat_id.name}</Text>
                     <Text> quantity: {this.state.item.quantity}</Text>
-                    <Text> {this.state.item.sub_cat_id.quantity_type}</Text>
+                      {this.state.item.sub_cat_id.quantity_type}
                     
                     </View>
                 ):(
                     <View>
-                    <Text>Here are all the items for sale</Text>
+                    <Text>Here are all the items you purchased</Text>
                     <View>
                     {
                         this.state.items? this.state.items.map(item=>{
-                                return (<Text key={item._id} onPress={()=>this.handleList(item)}>
-                                    category:{item.cat_id.name}  subcategory:{item.sub_cat_id.name}  quantity:{item.quantity}{item.sub_cat_id.quantity_type}
-                                </Text>)
+                           return (<View key={item._id} onClick={()=>this.handleList(item)}>
+                                    <Text>category:{item.cat_id.name}</Text>
+                                    <Text> subcategory:{item.sub_cat_id.name}</Text>
+                                    <Text>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</Text>
+                                  </View>)
                             }) : (<Text>No Items to display</Text>)
                         
                     }
@@ -90,9 +93,13 @@ class ViewBuyedItem extends Component {
                 )
                 }
                 <View>
-                    <Text onPress={() => Actions.newItem()}>Add new Item</Text>
+                    <Text onPress={() => Actions.vendorNewsfeed()}>Purchase new Item</Text>
+                </View>
+                <View>
+                    <Text onPress={() => Actions.vendorNewWasteType()}>Request for new category or sub-category</Text>
                 </View>
             </View>
+            
             ) : (
                 <Text>Please Login First!</Text>
               )}
@@ -111,4 +118,4 @@ const mapStateToProps = state => ({
   export default connect(
     mapStateToProps,
     { clearErrors }
-  )(ViewSelledItem);
+  )(ViewBuyedItem);

@@ -1,4 +1,3 @@
-import {AsyncStorage} from 'react-native';
 import {
   SELLER_LOADED,
   SELLER_LOADING,
@@ -9,9 +8,11 @@ import {
   SELLER_REGISTER_SUCCESS,
   SELLER_REGISTER_FAIL
 } from '../actions/types';
+import 'localstorage-polyfill';
+import setAuthToken from '../utils/setSellerAuthToken'
 
 const initialState = {
-  token: AsyncStorage.getItem('token'),
+  token: localStorage.getItem('x-auth-seller-token'),
   isAuthenticated: null,
   isLoading: false,
   seller: null
@@ -25,6 +26,7 @@ export default function(state = initialState, action) {
         isLoading: true
       };
     case SELLER_LOADED:
+    setAuthToken(localStorage.getItem('x-auth-seller-token'));
       return {
         ...state,
         isAuthenticated: true,
@@ -33,7 +35,8 @@ export default function(state = initialState, action) {
       };
     case SELLER_LOGIN_SUCCESS:
     case SELLER_REGISTER_SUCCESS:
-      AsyncStorage.setItem('token', action.payload.token);
+      localStorage.setItem('x-auth-seller-token', action.payload.token);
+      setAuthToken(localStorage.getItem('x-auth-seller-token'));
       return {
         ...state,
         ...action.payload,
@@ -44,7 +47,8 @@ export default function(state = initialState, action) {
     case SELLER_LOGIN_FAIL:
     case SELLER_LOGOUT_SUCCESS:
     case SELLER_REGISTER_FAIL:
-      AsyncStorage.removeItem('token');
+      localStorage.removeItem('x-auth-seller-token');
+      setAuthToken(null);
       return {
         ...state,
         token: null,
