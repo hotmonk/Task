@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
 class vendorProfile extends Component {
 
@@ -14,7 +15,7 @@ class vendorProfile extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }
+        }           
       }
 
     static propTypes = {
@@ -34,6 +35,21 @@ class vendorProfile extends Component {
                 <Text>Contact:{this.props.vendorData.contact}</Text>
                 <Text>Address:{this.props.vendorData.address}</Text>
                 <Text>Edit Details</Text>
+                <View>
+                   <Text onPress={() => Actions.vendorNewsfeed()}>View Items For Sale</Text>
+                </View>
+                <View>
+                    <Text onPress={() => Actions.vendorViewBuyedItems()}>View All items purchased by you</Text>
+                </View>
+                <View>
+                      <Text onPress={() => Actions.vendorNewWasteType()}>Request for new category or sub-category</Text>
+                </View>
+                <View>
+                      <Text onPress={() => Actions.vendorChooseCat()}>choose categories to quote for</Text>
+                </View>
+                <View>
+                      <Text onPress={() => Actions.vendorEditPrice()}>edit quoted price for items</Text>
+                </View>
             </View>
           );
       }

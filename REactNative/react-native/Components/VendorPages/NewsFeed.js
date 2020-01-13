@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Text, FlatList, StyleSheet } from 'react-native';
+import { Text, FlatList, StyleSheet,View, Button } from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../config/constants.js';
 
 class NewsFeed extends Component {
 
@@ -11,35 +14,11 @@ class NewsFeed extends Component {
         super(props);
         this.state = {
             items:null,
-            item:null
+            item:null,
+            paymentInfo:null
         }
         this.handleBack=this.handleBack.bind(this);
-        if(this.props.isAuthenticated){
-            console.log(this.props.vendor);
-          const token = this.props.token;
-
-          // Headers
-          const config = {
-              headers: {
-              'Content-type': 'application/json'
-              }
-          };
-
-          // If token, add to headers
-          if (token) {
-              config.headers['x-auth-vendor-token'] = token;
-          }
-          axios.get('http://localhost:4000/vendor/newsfeed', config)
-              .then(response=>{
-                  console.log(response.data);
-                  this.setState({
-                      items:response.data
-                  });
-              })
-              .catch(error=>{
-                  console.log(error);
-              })
-        }
+        this.handlePurchase=this.handlePurchase.bind(this);
     }
 
     static propTypes = {
@@ -48,17 +27,76 @@ class NewsFeed extends Component {
         clearErrors: PropTypes.func.isRequired
       };
 
-      handleList(item){
-          this.setState({
-              item
-          });
+      componentDidMount(){
+        setTimeout(()=>{
+            if(this.props.isAuthenticated){
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            axios.get(baseURL+'/vendor/newsfeed', config)
+                .then(response=>{
+                    this.setState({
+                        items:response.data
+                    });
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
+          }
+        },500);
       }
+    
+    componentDidUpdate()
+    {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+            Actions.vendorLogin()
+        }
+    }
 
-      handleBack(){
-          this.setState({
-              item:null
-          })
-      }
+    handleBack(){
+        this.setState({
+            item:null
+        })
+    }
+
+    handleList(item){
+      this.setState({
+          item
+      });
+  }
+    
+    handlePurchase(){
+        axios.get(baseURL+'/payment/')
+        .then(response=>{
+            this.setState({
+                paymentInfo:response.data
+            })
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    // const config = {
+    //       headers: {
+    //       'Content-type': 'application/json'
+    //       }
+    //   };
+
+    //   const body=JSON.stringify({
+    //       item_id:this.state.item.id,
+    //       price:100
+    //   })
+    //   axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+    //       .then(response=>{
+    //           console.log(response.data);
+    //           this.props.history.push('/vendor/payments')
+    //       })
+    //       .catch(error=>{
+    //           console.log(error);
+    //       })
+    }
 
     render() {
         return(
@@ -70,16 +108,24 @@ class NewsFeed extends Component {
                    <Text> Item Details:</Text>
                    <Text> category: {this.state.item.cat.name}</Text>
                    <Text> subcategory: {this.state.item.subcat.name}</Text>
-                   <Text> quantity: {this.state.item.quantity}</Text>{this.state.item.subcat.quantity_type}
-
+                   <Text> quantity: {this.state.item.quantity}
+                   {this.state.item.subcat.quantity_type}</Text>
+                  <Text onPress={this.handlePurchase}>Purchase it</Text>
                 </View>
             ):(
                 <View>
                 <Text>Here are all the items for sale</Text>
-                <FlatList
-                 data={this.state.items}
-                 renderItem={({item}) => <Text>category:{item.key.cat_id.name} subcategory:{item.key.sub_cat_id.name}  quantity:{item.key.quantity}{item.key.sub_cat_id.quantity_type}</Text>}
-                />
+                  {
+                      this.state.items? this.state.items.map(item=>{
+                              return (<View key={item.id}>
+                              <Text>category:{item.cat.name}</Text>
+                              <Text> subcategory:{item.subcat.name}</Text>
+                              <Text>quantity:{item.quantity}{item.subcat.quantity_type}{"\n"}</Text>
+                              <Text  onPress={()=>this.handleList(item)}>Click</Text>
+                              </View>)
+                          }) : (<Text>No Items to display</Text>)
+                      
+                  }
             </View>
             )
             }

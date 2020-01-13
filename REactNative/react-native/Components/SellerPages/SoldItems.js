@@ -6,6 +6,7 @@ import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import SellerLogout from './LogoutSeller';
 import StarRatingComponent from 'react-native-star-rating';
+import {baseURL} from '../../config/constants.js';
 
 class ViewSelledItem extends Component {
 
@@ -27,7 +28,7 @@ class ViewSelledItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller._id+'/viewSelledItem', config)
+            axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewSelledItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -38,6 +39,7 @@ class ViewSelledItem extends Component {
                 })
           }
     }
+
     componentDidUpdate()
     {
       if(!this.props.isAuthenticated){
@@ -106,16 +108,16 @@ class ViewSelledItem extends Component {
         if (token) {
             config.headers['x-auth-seller-token'] = token;
         }
-        axios.post(process.env.REACT_APP_BASE_URL+'/seller/'+this.props.seller._id+'/saveRating',sitem, config)
-            .then(response=>{
-                this.setState({
-                    item:null,
-                    rating:1
-                })
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/saveRating',sitem, config)
+        .then(response=>{
+            this.setState({
+                item:null,
+                rating:1
             })
-            .catch(error=>{
-                console.log(error);
-            })
+        })
+        .catch(error=>{
+            console.log(error);
+        })
     }
 
       onStarClick(nextValue, prevValue, name) {
@@ -158,7 +160,7 @@ class ViewSelledItem extends Component {
                 )
                 }
                 <View>
-                    <Text onPress={() => Actions.newItem()}>Add new Item</Text>
+                    <Text onPress={() => Actions.sellerNewItem()}>Add new Item</Text>
                 </View>
             </View>
             ) : (

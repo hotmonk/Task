@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
+import { clearErrors } from '../../actions/errorActions';
+import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../config/constants.js';
+import { Actions } from 'react-native-router-flux';
 
 class vendorRequest extends Component {
 
     constructor(props) {
         super(props);
-
         this.onChangecat_name = this.onChangecat_name.bind(this);
         this.onChangesub_cat_name = this.onChangesub_cat_name.bind(this);
         this.onChangequantity_type = this.onChangequantity_type.bind(this);
@@ -18,6 +22,13 @@ class vendorRequest extends Component {
             quantity_type: ''
         }
     }
+    
+    // componentDidUpdate()
+    // {
+    //     if(!this.props.isLoading&&!this.props.isAuthenticated){
+    //         this.props.history.push('/vendor/login');
+    //     }
+    // }
 
     onChangecat_name(e) {
         this.setState({
@@ -40,26 +51,26 @@ class vendorRequest extends Component {
     onSubmit(e) {
         e.preventDefault();
 
-        console.log(`Form submitted:`);
-        console.log(`cat_name ${this.state.cat_name}`);
-        console.log(`sub_cat_name: ${this.state.sub_cat_name}`);
-        console.log(`quantity_type: ${this.state.quantity_type}`);
-
         const newTypeWaste = {
             cat_name: this.state.cat_name,
             sub_cat_name: this.state.sub_cat_name,
             quantity_type: this.state.quantity_type,
             status: "Approved"
         }
+        const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
 
-        axios.post('http://localhost:4000/vendor/newWasteType', newTypeWaste)
-            .then(res => console.log("hii"));
-
-        this.setState({
-            cat_name: '',
-            sub_cat_name: '',
-            quantity_type: '',
-        })
+        const body=JSON.stringify(newTypeWaste);
+        axios.post(baseURL+'/vendor/newWasteType', body,config)
+            .then(res => 
+                Actions.vendorProfile() 
+            )
+            .catch(err=>{
+                console.log(err);
+            })
     }
 
     render() {
@@ -70,22 +81,22 @@ class vendorRequest extends Component {
                     <View>
                       <Text>Category Name: </Text>
                       <TextInput  type="text"
-                              value={this.state.name}
-                              onChange={this.onChangecat_name}
+                              value={this.state.cat_name}
+                              onChangeText={(cat_name) => this.setState({cat_name })}
                               />
                     </View>
                     <View>
                       <Text>Sub-Category Name: </Text>
                       <TextInput  type="text"
-                              value={this.state.email}
-                              onChange={this.onChangesub_cat_name}
+                             value={this.state.sub_cat_name}
+                             onChangeText={(sub_cat_name) => this.setState({ sub_cat_name })}
                               />
                     </View>
                     <View>
                       <Text>Quantity-type: </Text>
                       <TextInput  type="text"
-                              value={this.state.contact}
-                              onChange={this.onChangequantity_type}
+                              value={this.state.quantity_type}
+                              onChangeText={(quantity_type) => this.setState({ quantity_type })}
                               />
                     </View>
 

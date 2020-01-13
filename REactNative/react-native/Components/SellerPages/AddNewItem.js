@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
 import axios from 'axios';
-import { Text,Picker,TextInput, View } from 'react-native';;
+import { Text,Picker,TextInput, View, Button } from 'react-native';;
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
 import { Actions } from 'react-native-router-flux';
 import SellerLogout from './LogoutSeller';
-
+import {baseURL} from '../../config/constants.js';
 
 class ItemForm extends Component
 {
@@ -26,13 +26,13 @@ class ItemForm extends Component
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
         if(this.props.isAuthenticated){
-            axios.get(process.env.REACT_APP_BASE_URL+'/categories')
+            axios.get(baseURL+'/categories')
                 .then((response)=>{
                     this.setState({
                         categories:response.data
                     });
                     if(this.state.categories && this.state.categories.length){
-                        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+this.state.categories[0].key+'/subcat')
+                        axios.get(baseURL+'/categories/'+this.state.categories[0].key+'/subcat')
                             .then((response2)=>{
                                 this.setState({
                                     subcategories:response2.data,
@@ -50,6 +50,7 @@ class ItemForm extends Component
                 })
         }
     }
+
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
@@ -57,35 +58,9 @@ class ItemForm extends Component
         }
     }
 
-    submitHandler(event){
-        event.preventDefault();
-        if(this.props.isAuthenticated){
-            // Headers
-            const config = {
-                headers: {
-                'Content-type': 'application/json'
-                }
-            };
-            const item =JSON.stringify ({
-                cust_id:this.props.seller._id,
-                cat_id:this.state.category_id,
-                sub_cat_id:this.state.subcat_id,
-                quantity:this.state.quantity
-            })
-            axios.post( process.env.REACT_APP_BASE_URL+'/seller/' + this.props.seller._id + '/items', item ,config)
-                .then(res => {
-                    console.log("Item added to the selling list")
-                    this.props.history.push('/seller/items')
-                })
-                .catch(e=>{
-                    console.log("item add request failed.retry later")
-                });
-          }
-    }
-
-    handleCategory(event){
-        let curid=event.target.value;
-        axios.get(process.env.REACT_APP_BASE_URL+'/categories/'+curid+'/subcat')
+    handleCategory(){
+        let curid=this.state.category_id;
+        axios.get(baseURL+'/categories/'+curid+'/subcat')
             .then((response)=>{
                 if(response.data&&response.data.length){
                     this.setState({
@@ -106,8 +81,8 @@ class ItemForm extends Component
             })
     }
 
-    handleSubcategory(event){
-        let curid=event.target.value;
+    handleSubcategory(){
+        let curid=this.state.subcat_id;
         this.setState({
             subcat_id:curid,
         });
@@ -120,6 +95,32 @@ class ItemForm extends Component
         });
     }
 
+    submitHandler(event){
+        event.preventDefault();
+        if(this.props.isAuthenticated){
+            // Headers
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            const item =JSON.stringify ({
+                cust_id:this.props.seller._id,
+                cat_id:this.state.category_id,
+                sub_cat_id:this.state.subcat_id,
+                quantity:this.state.quantity
+            })
+            console.log(item)
+            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
+                .then(res => {
+                    console.log("Item added to the selling list")
+                })
+                .catch(e=>{
+                    console.log("item add request failed.retry later")
+                });
+          }
+    }
+
     render()
     {
         return (
@@ -130,33 +131,42 @@ class ItemForm extends Component
             {
                 this.state.categories ? (
                 <View >
-                    <Picker onValueChange={this.handleCategory} selectedValue={this.state.category_id} >
+                    <Picker 
+                     selectedValue={this.state.category_id} 
+                     onValueChange={(itemValue, itemIndex) => this.setState({category_id: itemValue})}>
                         {
                             this.state.categories.map(category=>{
-                                return (
-                                  <Picker.Item label={category.id} value={category.name}/>)
+                                return(
+                                <Picker.Item label={category.name} value={category.id} key={category.name}/>
+                                );
                             })
                         }
                     </Picker>
+                    <Button title="Click Here To Get Picker Selected Value" onPress={ this.handleCategory } />
                     {
                         this.state.subcategories ?(
-                        <Picker onValueChange={this.handleSubcategory} selectedValue={this.state.subcat_id}>
+                        <Picker 
+                        onValueChange={(itemValue, itemIndex) => this.setState({subcat_id: itemValue})} 
+                        selectedValue={this.state.subcat_id}>
                             {
                                 this.state.subcategories.map(subcategory=>{
-                                    return (
-                                      <Picker.Item label={subcategory.id} value={subcategory.name}/>)
+                                    return(
+                                    <Picker.Item label={subcategory.name} value={subcategory.id} key={subcategory.name}/>);
                                 })
                             }
                         </Picker>)
-                            :null
+                            :<Text>No sub-category</Text>
                     }
                     <View>
-                        <TextInput value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity"/>
-                        <Text>{this.state.quantity_type}</Text>
+                        <Text>Quantity:</Text>
+                        <TextInput
+                              value={this.state.quantity}
+                              onChangeText={(quantity) => this.setState({ quantity })}
+                              />
                     </View>
 
                     <Text onPress={this.submitHandler}>Add new item</Text>
-                </View> ) : (<View>Sorry No vendor available</View>)
+                </View> ) : (<Text>Sorry No vendor available</Text>)
             }
                 <View>
                     <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>

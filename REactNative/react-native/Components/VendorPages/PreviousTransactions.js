@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import VendorLogout from './LogoutVendor';
+import {baseURL} from '../../config/constants.js';
 
 class ViewBuyedItem extends Component {
 
@@ -26,7 +26,7 @@ class ViewBuyedItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
+            axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -37,23 +37,24 @@ class ViewBuyedItem extends Component {
                 })
           }
     }
+
     componentDidUpdate()
     {
         if(!this.props.isAuthenticated){
-            this.props.history.push('vendorLogin');
+            this.props.history.push('/vendor/login');
         }
     }
-
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
 
       handleBack(){
           this.setState({
               item:null
           })
+      }
+
+      handleList(item){
+          this.setState({
+              item
+          });
       }
 
     render() {
@@ -90,7 +91,7 @@ class ViewBuyedItem extends Component {
                 )
                 }
                 <View>
-                    <Text onPress={() => Actions.newItem()}>Add new Item</Text>
+                    <Text onPress={() => Actions.VendorNewItem()}>Add new Item</Text>
                 </View>
             </View>
             ) : (
