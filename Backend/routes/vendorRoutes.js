@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 var Vendor = require('../models/vendorModel.js');
 var Item = require('../models/itemModel.js');
+var Item_bid = require('../models/itemBidModel.js');
 var Transaction = require('../models/transactionModel.js');
 var Cat = require('../models/catModel.js');
 var Sub_cat = require('../models/sub_catModel.js');
@@ -13,6 +14,7 @@ var SelectionHandler=require('../models/selectionHandleModel.js');
 var Selection=require('../models/selectionModel.js');
 var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
+var News_feed=require('../models/newsFeedModel.js');
 
 ///VENDOR ROUTES
 ///checked
@@ -48,31 +50,41 @@ router.post('/signUp', function(req, res) {
                 var selection=new Selection({
                   vendor_id:vendor2._id
                 });
+                var newnewsfeed=new News_feed({	
+                  vendor_id:vendor2._id	
+                })
                 selection.save(function(err2,selected){
                   if(err2){
                     console.log(err2);
                   }else{
-                    vendor2.selection_id=selected._id
-                    vendor2.save();
-                    jwt.sign(
-                      { id: vendor2.id },
-                      config.get('jwtSecretvendor'),
-                      { expiresIn: 3600 },
-                      (err, token) => {
-                        if(err) throw err;
-                        res.json({
-                          token,
-                          vendor: {
-                            _id: vendor2.id,
-                            name: vendor2.name,
-                            email: vendor2.email,
-                            contact: vendor2.contact,
-                            address: vendor2.address,
-                            selection_id:selected._id
-                          }
-                        });
-                      }
-                    )
+                    newnewsfeed.save(function(err3,newsfeedsaved){	
+                      vendor2.selection_id=selected._id;	
+                      vendor2.newsFeed=newsfeedsaved._id;	
+                      vendor2.save(function(err4,savedVendor){	
+                          if(err4){	
+                            console.log(err4);	
+                          }else{	
+                            jwt.sign(	
+                              { id: vendor2.id },	
+                              config.get('jwtSecretvendor'),	
+                              { expiresIn: 3600 },	
+                              (err, token) => {	
+                                if(err) throw err;	
+                                res.json({	
+                                  token,	
+                                  vendor: {	
+                                    _id: vendor2.id,	
+                                    name: vendor2.name,	
+                                    email: vendor2.email,	
+                                    contact: vendor2.contact,	
+                                    address: vendor2.address,	
+                                    selection_id:selected._id	
+                                  }	
+                                });	
+                              });	
+                          }	
+                      });	
+                    })
                   }
                 });
               });
@@ -433,68 +445,117 @@ router.post('/signUp', function(req, res) {
   //   })
   // })
   
+  router.post('/:id/transaction',vendorAuth,function(req,res){
+      var vendor_id=req.params.id;
+      var item_id=req.body.item_id;
+      Item.findById(item_id).populate({
+        path:'sub_cat_id',
+        populate:{
+          path:'selectionHandle_id'
+        }
+      }).exec(function(err1,res1){
+        if(err1){
+          console.log(err1);
+        }else{
+          var arr=res1.sub_cat_id.selectionHandle_id;
+          arr=arr.filter(item=>{
+            return item.vendor_id===vendor_id;
+          })
+          var price=arr[0].price;
+          Item_bid.findById(res1.item_bid,function(err2,res2){
+            res2.interested_vendor_id.push({
+              id:vendor_id,
+              price
+            });
+            res2.counter=res2.counter+1;
+            res2.save();
+            Vendor.findById(vendor_id,function(err3,res3){
+              if(err3){
+                console.log(err3);
+              }else{
+                  News_feed.findById(res3.newsFeed,function(err4,res4){
+                    if(err4){
+                      console.log(err4);
+                    }else{
+                      var arr1=res4.items.filter(item=>{
+                        return !item.equals(item_id);
+                      });
+                      res4.items=arr1;
+                      res4.save();
+                      res.json({
+                        msg:'item suggessfully registered for interest'
+                      })
+                    }
+                })
+              }
+              
+            })
+          })
+        }
+      })
+  })
   
   //vendor profile
   ///add new item to buy list
   ///checked
-  router.post('/:id/transaction',function(req,res){
-    if(req.body.requestCode!=='Unbreakable69'){
-       res.send({
-         msg:'permission denied'
-       });
-    }
-    var vendor_id=req.params.id;
-    var item_id=req.body.item_id;
-    var price=req.body.price;
-    const transaction=new Transaction({
-      vendor:vendor_id,
-      item:item_id,
-      price:price
-    });
-    Item.findById(item_id,function(err1,res1){
-      if(err1){
-        res.status(400).json(err1);
-      }
-      if(res1.status!=='INBID'){
-        res.json({
-          msg:"item already sold"
-        })
-      }
-      res1.status='RATING';
-      res1.save(function(err2,res2){
-        if(err2){
-          res.status(400).json(err2);
-        }
-        transaction.save()
-          .then(trans=>{
-            res2.transaction_id=trans._id;
-            res2.save();
-            Vendor.findById(vendor_id,function(err4,res4){
-              if(err4){
-                console.log('adding transaction failed');
-                res.status(400).json({
-                  msg:"transaction failed"
-                })
-              }
-              res4.transactions.push(trans._id);
-              res4.save()
-                .then(res5=>{
-                  console.log("transaction added"),
-                  res.json({
-                    msg:"item added"
-                  })
-                })
-                .catch(error=>{
-                  res.status(400).json(error)
-                })
-            })
-          })
-          .catch(err3=>{
-            res.status(400).json(err3);
-          })
-      })
-    })
-  })
+  // router.post('/:id/transaction',function(req,res){
+  //   if(req.body.requestCode!=='Unbreakable69'){
+  //      res.send({
+  //        msg:'permission denied'
+  //      });
+  //   }
+  //   var vendor_id=req.params.id;
+  //   var item_id=req.body.item_id;
+  //   var price=req.body.price;
+  //   const transaction=new Transaction({
+  //     vendor:vendor_id,
+  //     item:item_id,
+  //     price:price
+  //   });
+  //   Item.findById(item_id,function(err1,res1){
+  //     if(err1){
+  //       res.status(400).json(err1);
+  //     }
+  //     if(res1.status!=='INBID'){
+  //       res.json({
+  //         msg:"item already sold"
+  //       })
+  //     }
+  //     res1.status='RATING';
+  //     res1.save(function(err2,res2){
+  //       if(err2){
+  //         res.status(400).json(err2);
+  //       }
+  //       transaction.save()
+  //         .then(trans=>{
+  //           res2.transaction_id=trans._id;
+  //           res2.save();
+  //           Vendor.findById(vendor_id,function(err4,res4){
+  //             if(err4){
+  //               console.log('adding transaction failed');
+  //               res.status(400).json({
+  //                 msg:"transaction failed"
+  //               })
+  //             }
+  //             res4.transactions.push(trans._id);
+  //             res4.save()
+  //               .then(res5=>{
+  //                 console.log("transaction added"),
+  //                 res.json({
+  //                   msg:"item added"
+  //                 })
+  //               })
+  //               .catch(error=>{
+  //                 res.status(400).json(error)
+  //               })
+  //           })
+  //         })
+  //         .catch(err3=>{
+  //           res.status(400).json(err3);
+  //         })
+  //     })
+  //   })
+  // })
   
   ///fetch all purchased items
   router.get('/:id/viewBuyedItem',vendorAuth,function(req,res){
@@ -547,21 +608,22 @@ router.post('/signUp', function(req, res) {
   })
   
   router.get('/newsfeed', vendorAuth, function(req, res){
-    Item.find({}).populate([{
-      path: 'cat_id',
-      model: 'Cat'
-    },{
-      path:'sub_cat_id',
-      model:'Sub_cat'
-    }])
-    .exec(function(err, allItems){
-      if(err)
-      {
-          console.log(err);
-      } 
-      else 
-      {
-        var filtered=allItems.map(item=>{
+    Vendor.findById(req.params.vendorId).populate({
+      path:'newsFeed',
+      model:'News_feed',
+      populate:{
+        path:'items',
+        model:'Item',
+        populate:[{
+          path: 'cat_id',
+          model: 'Cat'
+        },{
+          path:'sub_cat_id',
+          model:'Sub_cat'
+        }]
+      }
+    }).exec(function(err,vendor){
+        var filtered=vendor.newsFeed.items.map(item=>{
           return {
             id: item._id,
             cat: item.cat_id,
@@ -571,13 +633,40 @@ router.post('/signUp', function(req, res) {
             status:item.status
           }
         });
-        filtered=filtered.filter((item)=>{
-            return item.status==='INBID';
-        })
-        res.json(filtered);
-      }
-   });
+      res.json(filtered);
+    })
+  //   Item.find({}).populate([{
+  //     path: 'cat_id',
+  //     model: 'Cat'
+  //   },{
+  //     path:'sub_cat_id',
+  //     model:'Sub_cat'
+  //   }])
+  //   .exec(function(err, allItems){
+  //     if(err)
+  //     {
+  //         console.log(err);
+  //     } 
+  //     else 
+  //     {
+  //       var filtered=allItems.map(item=>{
+  //         return {
+  //           id: item._id,
+  //           cat: item.cat_id,
+  //           subcat: item.sub_cat_id,
+  //           quantity: item.quantity,
+  //           image: item.image,
+  //           status:item.status
+  //         }
+  //       });
+  //       filtered=filtered.filter((item)=>{
+  //           return item.status==='INBID';
+  //       })
+  //       res.json(filtered);
+  //     }
+  //  });
   })
+
   ///checked
   ///probably not used anywhere
   router.get('/:id', vendorAuth, function(req, res){

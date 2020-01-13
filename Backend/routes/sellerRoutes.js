@@ -11,6 +11,7 @@ var Item_bid=require('../models/itemBidModel');
 const sellerAuth = require('../middleware/sellerAuth.js');
 var Vendor=require('../models/vendorModel.js');
 var Transaction=require('../models/transactionModel.js');
+var News_feed=require('../models/newsFeedModel.js');
 
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -215,26 +216,49 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
                     arr=arr.filter(handle=>{
                       return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<config.get('allowedRadius');
                     })
-                    arr.sort((a,b)=>{
-                      if(a.price>b.price){
-                        return -1;
-                      }else if(a.price<b.price){
-                        return 1;
-                      }
-                      return 0;
-                    })
+                    if(arr.length===0){
+                      res.json({
+                        msg:"sorry no current vendor is available"
+                      });
+                    }
                     var vendor_id=arr.map((item)=>{
                       return item.vendor_id._id;
                     })
                     var itemBid=new Item_bid({
                       item_id:Item._id,
-                      vendor_id
+                      vendor_id,
+                      interested_vendor_id:[]
                     })
-                    itemBid.save();
-                    console.log(arr);
+                    itemBid.save(function(err3,savedbid){
+                      if(err3){
+                        console.log(err3);
+                      }else{
+                        Item.item_bid=savedbid._id;
+                        Item.save(function(err4,saveditem){
+                          if(err4){
+                            console.log(err4);
+                          }else{
+                            arr=arr.map(item=>{
+                                News_feed.findById(item.vendor_id.newsFeed,function(err5,newsfeed){
+                                  if(err5){
+                                    console.log(err5);
+                                  }else{
+                                    newsfeed.items.push(Item._id);
+                                    newsfeed.save();
+                                  }
+                                })
+                                return newsfeed;
+                            })
+                            res.status(200).json({
+                              msg:"your item is added for sale and a vendor will soon contact you"
+                            })
+                          }
+                        });
+                      }
+                    });
                   }
                 })
-                res.status(200).json({newItem: 'Item added successfully by Customer'});            })
+              })
               .catch(err=>{
                 console.log(err)
                 res.status(400).send('adding new item failed');
