@@ -18,13 +18,6 @@ class vendorProfile extends Component {
         }           
       }
 
-    static propTypes = {
-        vendorData:PropTypes.isRequired,
-        isAuthenticated: PropTypes.bool,
-        error: PropTypes.object.isRequired,
-        clearErrors: PropTypes.func.isRequired
-      };
-
       render(){
           return (
             <View>

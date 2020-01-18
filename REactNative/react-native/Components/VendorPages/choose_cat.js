@@ -169,6 +169,7 @@ class chooseCat extends Component {
         subcat_id:this.state.subcat_id,
         price:this.state.price
       });
+      console.log(item)
       axios.post( baseURL+'/vendor/selections/'+this.props.vendorData.selection_id, item ,config)
           .then(res => {
               this.setState({

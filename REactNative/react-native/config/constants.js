@@ -1,6 +1,6 @@
 const CONSTANTS = {};
 
-CONSTANTS.baseURL="http://10.60.123.33:4000";
+CONSTANTS.baseURL="http://10.60.211.8:4000";
 CONSTANTS.distanceRadius=5;
 
 

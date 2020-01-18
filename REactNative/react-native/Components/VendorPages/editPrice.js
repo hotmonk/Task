@@ -11,6 +11,7 @@ class editPrice extends Component {
   {
       super(props);
       this.state={
+          price:0,
           items:[]
       }
   }
@@ -25,7 +26,7 @@ class editPrice extends Component {
           axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
               .then(res=>{
                   this.setState({
-                      items:res.data
+                      items:res.data,
                   })
               })
               .catch(e=>{
@@ -36,7 +37,7 @@ class editPrice extends Component {
 
   componentDidUpdate(prevProps) {
       if(!this.props.isLoading&&!this.props.isAuthenticated){
-          this.props.history.push('/vendor/login');
+        Actions.vendorProfile()
       }
       const { error } = this.props;
       if (error !== prevProps.error) {
@@ -82,7 +83,7 @@ class editPrice extends Component {
       var items=this.state.items.map(item=>{
           return {...item}
       });
-      items[index].price=event.target.value;
+      items[index].price=this.state.price;
       this.setState({
           items:items
       })
@@ -103,7 +104,7 @@ class editPrice extends Component {
           };
         axios.put(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
           .then(res=>{
-              this.props.history.push('/vendor/profile');
+              Actions.vendorProfile()
           })
           .catch(err=>{
               console.log(err);
@@ -130,9 +131,12 @@ class editPrice extends Component {
                               <View key={selected._id}>
                                 <Text>Category:{selected.subcat_id.cat_id.name}</Text>
                                 <Text>Sub-category:{selected.subcat_id.name}</Text>
-                                <Text>Price:<TextInput 
-                                onChange={(event)=>this.handlePriceChange(event,index)} 
-                                value={selected.price}/>  {selected.subcat_id.quantity_type}</Text>
+                                <Text>Price:{selected.price} {selected.subcat_id.quantity_type}</Text>
+                                <Text>Enter New Price:</Text>
+                                <TextInput 
+                                onChangeText={(price) => this.setState({ price })}
+                                >{selected.price}</TextInput>
+                                <Text onPress={(event)=>this.handlePriceChange(event,index)} >Change</Text>
                                 <Text onPress={(event)=>this.deleteHandler(event,selected._id)}>Delete</Text>
                               </View>
                             ))

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Text, FlatList, StyleSheet,View, Button } from 'react-native';
+import { Text, FlatList, StyleSheet,View, Button,Form,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../config/constants.js';
@@ -54,6 +54,10 @@ class NewsFeed extends Component {
         if(!this.props.isLoading&&!this.props.isAuthenticated){
             Actions.vendorLogin()
         }
+        if(this.state.paymentInfo){
+            console.log(this.instance);
+            //this.instance.submit();
+        }
     }
 
     handleBack(){
@@ -67,7 +71,25 @@ class NewsFeed extends Component {
           item
       });
   }
-    
+    handleclick(payment){
+        const config = {
+                  headers: {
+                  'Content-type': 'application/json'
+                  }
+              };
+        const body=JSON.stringify({
+          name:payment,
+      })
+      axios.post(this.state.paymentInfo.TXN_URL,body,config)
+            .then(response=>{
+                {
+                    this.instance=response
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
     handlePurchase(){
         axios.get(baseURL+'/payment/')
         .then(response=>{
@@ -101,6 +123,32 @@ class NewsFeed extends Component {
     render() {
         return(
             <View>
+            { this.state.paymentInfo? (
+                   <View>
+                    {/* <Form 
+                    ref={el=>{this.instance=el } } method='POST' 
+                    action={this.state.paymentInfo.TXN_URL}>
+                      </Form> 
+                        {
+                            //this.findFields()
+                            Object.keys(this.state.paymentInfo).map(key=>{
+                                return <Text name={key}>{this.state.paymentInfo[key]}</Text>
+                            })
+                        } */}
+                      {
+                        Object.keys(this.state.paymentInfo).map(key=>{
+                            return(
+                           <View>
+                                <Text name={key}>{this.state.paymentInfo[key]}</Text>
+                            </View>
+                            )
+                            })
+                      }
+                    <Text onPress={()=>this.handleclick(this.state.paymentInfo)}>click</Text>
+                   </View>
+                ) : <View>
+                {this.props.isAuthenticated ? (
+            <View>
             {
                 this.state.item?(
                 <View>
@@ -129,6 +177,11 @@ class NewsFeed extends Component {
             </View>
             )
             }
+            </View>
+            ) : (
+                <Text>Please Login First!</Text>
+              )}
+            </View>}
             </View>
         )
     }
