@@ -3,7 +3,6 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
-const async = require('async');
 
 var Seller = require('../models/sellerModel.js');
 var Item = require('../models/itemModel.js');
