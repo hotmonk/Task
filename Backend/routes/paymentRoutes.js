@@ -6,18 +6,18 @@ const axios=require('axios');
 
 const vendorAuth = require('../middleware/vendorAuth.js');
 
-router.get('/',vendorAuth,function(req,res){
+router.post('/',vendorAuth,function(req,res){
     var params 						= {};
 			params['MID'] 					= PaytmConfig.MID;
 			params['WEBSITE']				= PaytmConfig.WEBSITE;
 			params['CHANNEL_ID']			= PaytmConfig.CHANNEL_ID;
-			params['INDUSTRY_TYPE_ID']	= PaytmConfig.INDUSTRY_TYPE_ID;
-			params['ORDER_ID']			= 'TEST_'  + new Date().getTime();
-			params['CUST_ID'] 			= 'Customer001';
+			params['INDUSTRY_TYPE_ID']	=  PaytmConfig.INDUSTRY_TYPE_ID;
+			params['ORDER_ID']			= ''+req.body.vendor_id+'_'+new Date().getTime();
+			params['CUST_ID'] 			=  req.body.vendor_id;
 			params['TXN_AMOUNT']			= '1.00';
-			params['CALLBACK_URL']		= 'http://localhost:4000/payment/callback';
-			params['EMAIL']				= 'abc@mailinator.com';
-          //  params['MOBILE_NO']			= '7777777777';
+			params['CALLBACK_URL']		= 'http://localhost:4000/payment/callback/'+req.body.item_id;
+            params['EMAIL']				= 'abc@mailinator.com';
+          //  params['MOBILE_NO']	    = '7777777777';
 
             checksum_lib.genchecksum(params, PaytmConfig.PAYTM_MERCHANT_KEY, function (err, checksum){
                 if(err){
@@ -34,7 +34,7 @@ router.get('/',vendorAuth,function(req,res){
     
   })
 
-  router.post('/callback',function(req,res){
+  router.post('/callback/:item_id',function(req,res){
         var post_data=req.body;
         // received params in callback
         console.log('Callback Response: ', post_data, "\n");
@@ -43,7 +43,6 @@ router.get('/',vendorAuth,function(req,res){
         var checksumhash = post_data.CHECKSUMHASH;
         // delete post_data.CHECKSUMHASH;
         var result = checksum_lib.verifychecksum(post_data, PaytmConfig.PAYTM_MERCHANT_KEY, checksumhash);
-        console.log("Checksum Result => ", result, "\n");
 
         if(!result){
             res.json({
@@ -68,8 +67,33 @@ router.get('/',vendorAuth,function(req,res){
                 axios.post('https://securegw-stage.paytm.in/order/status',body,config)
                     .then((response)=>{
                         console.log('final call');
-                        console.log(response.data);
-                        res.render('../paytmlibrary/redirectPage.ejs',{response:response.data});
+                        var vendor_id=response.data.ORDERID.split('_')[0];
+                        if(response.data.RESPCODE==='01'){
+                            const config = {
+                                headers: {
+                                    'Content-type': 'application/json'
+                                }
+                            };
+                            const body=JSON.stringify({
+                                item_id:req.params.item_id,
+                                price:100,
+                                requestCode:'Unbreakable69'
+                            })
+                            axios.post('http://localhost:4000/vendor/'+vendor_id+'/transaction',body,config)
+                                .then((response2)=>{
+                                    console.log(response2.data);
+                                    res.render('../paytmlibrary/redirectPage.ejs',{response:response.data});
+                                })
+                                .catch(err=>{
+                                    console.log("=======================================================",'error occured','=========================================================');
+                                    console.log(err);
+                                })
+                        }else{
+                            res.send({
+                                msg:'unsuccessful'
+                            })
+                        }
+                        
                     })
                     .catch(err=>{
                         console.log(err);

@@ -44,7 +44,6 @@ router.post('/', (req, res) => {
                   }
               });
             })
-            console.log('seller.id: ' + seller.id);
         })
     })
 });

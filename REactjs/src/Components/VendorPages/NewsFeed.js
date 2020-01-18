@@ -15,7 +15,7 @@ class NewsFeed extends Component {
         this.state = {
             items:null,
             item:null,
-            paymentInfo:null
+            //paymentInfo:null
         }
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
@@ -36,7 +36,7 @@ class NewsFeed extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(baseURL+'/vendor/newsfeed', config)
+            axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
                 .then(response=>{
                     this.setState({
                         items:response.data
@@ -54,10 +54,10 @@ class NewsFeed extends Component {
         if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
-        if(this.state.paymentInfo){
-            console.log(this.instance);
-            this.instance.submit();
-        }
+        // if(this.state.paymentInfo){
+        //     console.log(this.instance);
+        //     this.instance.submit();
+        // }
     }
 
     handleBack(){
@@ -73,37 +73,60 @@ class NewsFeed extends Component {
   }
     
     handlePurchase(){
-        axios.get(baseURL+'/payment/')
-        .then(response=>{
-            this.setState({
-                paymentInfo:response.data
-            })
-        })
-        .catch(err=>{
-            console.log(err);
-        })
-    // const config = {
-    //       headers: {
-    //       'Content-type': 'application/json'
-    //       }
-    //   };
 
-    //   const body=JSON.stringify({
-    //       item_id:this.state.item.id,
-    //       price:100
-    //   })
-    //   axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
-    //       .then(response=>{
-    //           console.log(response.data);
-    //           this.props.history.push('/vendor/payments')
-    //       })
-    //       .catch(error=>{
-    //           console.log(error);
-    //       })
+        // const config = {
+        //     headers: {
+        //     'Content-type': 'application/json'
+        //     }
+        // };
+        // const body=JSON.stringify({
+        //     vendor_id:this.props.vendor._id,
+        //     item_id:this.state.item.id
+        // })
+        // axios.post(baseURL+'/payment/',body,config)
+        //     .then(response=>{
+        //         this.setState({
+        //             paymentInfo:response.data
+        //         })
+        //     })
+        //     .catch(err=>{
+        //         console.log(err);
+        //     })
+    const config = {
+          headers: {
+          'Content-type': 'application/json'
+          }
+      };
+
+      const body=JSON.stringify({
+          item_id:this.state.item.id
+      })
+      axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
+          .then(response=>{
+              console.log(response.data);
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
+                .then(response=>{
+                    this.setState({
+                        items:response.data,
+                        item:null
+                    });
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
+          })
+          .catch(error=>{
+              console.log(error);
+          })
     }
 
     render() {
-        return(
+        return (
             <div>
             { this.state.paymentInfo? (
                     <form ref={el=>{this.instance=el } } method='POST' action={this.state.paymentInfo.TXN_URL}>

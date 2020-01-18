@@ -45,7 +45,6 @@ router.post('/', (req, res) => {
                 }
               });
             });
-            console.log(vendor.id);
         })
     })
 });

@@ -15,7 +15,7 @@ class chooseCat extends Component {
             formIsValid:false,
             categories:null,
             subcategories:null,
-            price:0,
+            price:null,
             present:false
         }
         this.handleCategory=this.handleCategory.bind(this);
@@ -152,6 +152,7 @@ class chooseCat extends Component {
       })
       if(filtered&&filtered.length){
         this.setState({
+            price:null,
           present:true
         })
         return ;
@@ -172,7 +173,8 @@ class chooseCat extends Component {
             .then(res => {
                 this.setState({
                   list:res.data,
-                  present:false
+                  present:false,
+                  price:null
                 })
             })
             .catch(e=>{
@@ -217,7 +219,7 @@ class chooseCat extends Component {
                                             :null
                                     }
                                     <div>
-                                        <div><strong>Rs.</strong><input type="text" value={this.props.price} onChange={this.handlePrice} placeholder="enter price" /></div>
+                                        <div><strong>Rs.</strong><input type="text" value={this.state.price} onChange={this.handlePrice} placeholder="enter price" /></div>
                                     </div>
                                 
                                 <button>ADD</button>

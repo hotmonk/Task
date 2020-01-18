@@ -27,6 +27,10 @@ var Item = new mongoose.Schema({
     transaction_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Transaction"
+    },
+    item_bid:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Item_bid"
     }
 },{
     timestamps:true

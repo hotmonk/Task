@@ -6,6 +6,9 @@ import SellerLogout from './LogoutSeller';
 class sellerProfile extends Component {
 
     componentDidUpdate(prevProps) {
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
+          this.props.history.push('/seller/login');
+        }
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
@@ -14,9 +17,6 @@ class sellerProfile extends Component {
           } else {
             this.setState({ msg: null });
           }
-        }
-        if(!this.props.isAuthenticated){
-          this.props.history.push('/seller/login');
         }
       }
        

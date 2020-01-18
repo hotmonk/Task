@@ -12,14 +12,15 @@ class ViewItem extends Component {
         super(props);
         this.state = {
             items:null,
-            item:null
+            item:null,
+            vendor:null,
+            msg:null
         }
         this.handleBack=this.handleBack.bind(this);
     }
 
     componentDidMount(){
-        if(this.props.isAuthenticated){
-  
+        setTimeout(()=>{
             // Headers
             const config = {
                 headers: {
@@ -36,27 +37,106 @@ class ViewItem extends Component {
                 .catch(error=>{
                     console.log(error);
                 })
-          }
+        },500)
     }
 
-    componentDidUpdate()
+    componentDidUpdate(prevProps,prevState)
     {
-        if(!this.state.isLoading&&!this.props.isAuthenticated){
+        if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/seller/login');
+        }
+        if(prevState.item!==this.state.item&&this.state.item!==null){
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            const body=JSON.stringify({
+                item_id:this.state.item._id
+            })
+            axios.post(baseURL+'/seller/'+this.props.seller._id+'/getVendor',body, config)
+                .then(response=>{
+                    var body=response.data;
+                    if(body.status&&body.status==='fail'){
+                        this.setState({
+                            msg:body.msg,
+                            vendor:null
+                        })
+                    }else{
+                        this.setState({
+                            vendor:body,
+                            msg:null
+                        })
+                    }
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
         }
     }
 
-      handleBack(){
-          this.setState({
-              item:null
-          })
-      }
+    handleAccept(){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        const body=JSON.stringify({
+            item_id:this.state.item._id
+        })
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorAccept',body, config)
+            .then(response=>{
+                var body=response.data;
+                this.setState({
+                    msg:body.msg,
+                    vendor:null
+                })
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
 
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
+    handleReject(){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        const body=JSON.stringify({
+            item_id:this.state.item._id
+        })
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorReject',body, config)
+            .then(response=>{
+                var body=response.data;
+                if(body.status&&body.status==='fail'){
+                    this.setState({
+                        msg:body.msg,
+                        vendor:null
+                    })
+                }else{
+                    this.setState({
+                        vendor:body,
+                        msg:null
+                    })
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
+
+    handleBack(){
+        this.setState({
+            item:null
+        })
+    }
+
+    handleList(item){
+        this.setState({
+            item
+        });
+    }
 
     render() {
         return(
@@ -73,7 +153,19 @@ class ViewItem extends Component {
                     <h2> category: {this.state.item.cat_id.name}</h2> 
                     <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                     <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                    
+                    {
+                        this.state.vendor?(
+                            <div>
+                                <p><strong>Name : </strong>{this.state.vendor.name}</p>
+                                <p><strong>Quoted price : </strong>{this.state.vendor.price} {this.state.item.sub_cat_id.quantity_type}</p>
+                                <p><small><strong>Distance : </strong>{this.state.vendor.distance}</small></p>
+                                <button onClick={this.handleAccept.bind(this)}>Accept</button>
+                                <button onClick={this.handleReject.bind(this)}>Reject</button>
+                            </div>
+                        ):(
+                            <h3>{this.state.msg}</h3>
+                        )
+                    }
                     </div>
                 ):(
                     <div>

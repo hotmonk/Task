@@ -20,7 +20,7 @@ class ViewSelledItem extends Component {
     }
 
     componentDidMount(){
-        if(this.props.isAuthenticated){
+        setTimeout(()=>{
             // Headers
             const config = {
                 headers: {
@@ -36,12 +36,13 @@ class ViewSelledItem extends Component {
                 .catch(error=>{
                     console.log(error);
                 })
-          }
+        },500);
+            
     }
 
     componentDidUpdate()
     {
-      if(!this.props.isAuthenticated){
+      if(!this.props.isLoading&&!this.props.isAuthenticated){
         this.props.history.push('/seller/login');
       }
     }
