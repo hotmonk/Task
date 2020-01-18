@@ -15,7 +15,7 @@ import ViewSelledItem from '../Components/SellerPages/SoldItems';
 import ViewBuyedItem from '../Components/VendorPages/BuyedItems';
 import chooseCat from '../Components/VendorPages/choose_cat';
 import editPrice from '../Components/VendorPages/editPrice';
-import Payment from '../Components/VendorPages/Payment';
+//import Payment from '../Components/VendorPages/Payment';
 
 const Routes = (props) => {
         return(
@@ -35,7 +35,7 @@ const Routes = (props) => {
                 <Route path='/vendor/viewBuyedItems' component={ViewBuyedItem}/>
                 <Route path='/vendor/editPrice' component={editPrice}/>
                 <Route path='/vendor/chooseCat' component={chooseCat}/>
-                <Route path='/vendor/payments' component={Payment} />
+                {/* <Route path='/vendor/payments' component={Payment} /> */}
                 <Route path='/' component={LoginSeller} />
              </Switch>
         )

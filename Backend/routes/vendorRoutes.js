@@ -19,7 +19,7 @@ var News_feed=require('../models/newsFeedModel.js');
 ///VENDOR ROUTES
 ///checked
 router.post('/signUp', function(req, res) {
-    const { name, email, contact, address, password } = req.body;
+    const { name, email, contact, address, password ,longitude,latitude} = req.body;
   
     if(!name || !email || !contact || !address || !password) 
     {
@@ -37,7 +37,9 @@ router.post('/signUp', function(req, res) {
           email,
           contact,
           address,
-          password
+          password,
+          longitude,
+          latitude
         });
   
         // Create salt & hash
@@ -250,7 +252,6 @@ router.post('/signUp', function(req, res) {
             }
           })
         }else{
-          console.log(req.body);
             var newhandle=new SelectionHandler({
               vendor_id:req.body.vendorid,
               price:req.body.price,
@@ -261,7 +262,6 @@ router.post('/signUp', function(req, res) {
               if(err3){
                 console.log("finding of selection failed" + err3);
               }else{
-                console.log(newhandler);
                 Sub_cat.findById(req.body.subcat_id,function(err4,subcat){
                   if(err4){
                     console.log(err4);
@@ -455,41 +455,57 @@ router.post('/signUp', function(req, res) {
         }
       }).exec(function(err1,res1){
         if(err1){
-          console.log(err1);
+          console.log(err1); 
         }else{
           var arr=res1.sub_cat_id.selectionHandle_id;
           arr=arr.filter(item=>{
-            return item.vendor_id===vendor_id;
+            return item.vendor_id.equals(vendor_id);
           })
           var price=arr[0].price;
           Item_bid.findById(res1.item_bid,function(err2,res2){
-            res2.interested_vendor_id.push({
-              id:vendor_id,
-              price
-            });
-            res2.counter=res2.counter+1;
-            res2.save();
-            Vendor.findById(vendor_id,function(err3,res3){
-              if(err3){
-                console.log(err3);
-              }else{
-                  News_feed.findById(res3.newsFeed,function(err4,res4){
-                    if(err4){
-                      console.log(err4);
+            if(err2){
+              console.log(err2);
+            }else{
+              res2.interested_vendor_id.push({
+                id:vendor_id,
+                price
+              });
+              res2.counter=res2.counter+1;
+              res2.save(function(err3,res3){
+                if(err3){
+                  console.log(err3);
+                }else{
+                  Vendor.findById(vendor_id,function(err3,res3){
+                    if(err3){
+                      console.log(err3);
                     }else{
-                      var arr1=res4.items.filter(item=>{
-                        return !item.equals(item_id);
-                      });
-                      res4.items=arr1;
-                      res4.save();
-                      res.json({
-                        msg:'item suggessfully registered for interest'
+                        News_feed.findById(res3.newsFeed,function(err4,res4){
+                          if(err4){
+                            console.log(err4);
+                          }else{
+                            var arr1=res4.items.filter(item=>{
+                              return !item.equals(item_id);
+                            });
+                            res4.items=arr1;
+                            res4.save(function(err5,res5){
+                              if(err5){
+                                console.log(err5);
+                              }else{
+                                res.json({
+                                  msg:'item suggessfully registered for interest'
+                                })
+                              }
+                            });
+                            
+                          }
                       })
                     }
-                })
-              }
-              
-            })
+                    
+                  })
+                }
+              });
+            }
+            
           })
         }
       })
@@ -607,8 +623,8 @@ router.post('/signUp', function(req, res) {
     })
   })
   
-  router.get('/newsfeed', vendorAuth, function(req, res){
-    Vendor.findById(req.params.vendorId).populate({
+  router.get('/newsfeed/:id', vendorAuth, function(req, res){
+    Vendor.findById(req.params.id).populate({
       path:'newsFeed',
       model:'News_feed',
       populate:{
