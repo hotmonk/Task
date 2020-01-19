@@ -12,7 +12,7 @@ export class VendorLogout extends Component {
   render() {
     return (
       <Fragment>
-        <Text onClick={this.props.vendorLogout}>
+        <Text onPress={this.props.vendorLogout}>
           Logout Vendor
         </Text>
       </Fragment>

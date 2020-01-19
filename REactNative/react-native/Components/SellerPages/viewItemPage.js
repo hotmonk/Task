@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Text, FlatList, StyleSheet } from 'react-native';
+import { Text, FlatList, StyleSheet,View } from 'react-native';
+import SellerLogout from './LogoutSeller';
+import {baseURL} from '../../config/constants.js';
+import { Actions } from 'react-native-router-flux';
 
 class ViewItem extends Component {
 
@@ -18,21 +20,16 @@ class ViewItem extends Component {
 
     componentDidMount(){
         if(this.props.isAuthenticated){
-            const token = this.props.token;
-
+  
             // Headers
             const config = {
                 headers: {
                 'Content-type': 'application/json'
                 }
             };
-
-            // If token, add to headers
-            if (token) {
-                config.headers['x-auth-seller-token'] = token;
-            }
-            axios.get('http://localhost:4000/seller/'+this.props.seller.id+'/viewItem', config)
+            axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                 .then(response=>{
+                    console.log(response);
                     this.setState({
                         items:response.data
                     })
@@ -43,17 +40,25 @@ class ViewItem extends Component {
           }
     }
 
-      handleList(item){
-          this.setState({
-              item
-          });
-      }
+    componentDidUpdate()
+    {
+        if(!this.state.isLoading&&!this.props.isAuthenticated){
+            this.props.history.push('sellerLogin');
+        }
+    }
 
       handleBack(){
           this.setState({
               item:null
           })
       }
+
+      handleList(item){
+          this.setState({
+              item
+          });
+      }
+
 
     render() {
         return(
@@ -71,10 +76,13 @@ class ViewItem extends Component {
             ):(
             <View>
                 <Text>Here are all the items for sale</Text>
-                <FlatList
-                 data={this.state.items}
-                 renderItem={({item}) => <Text>category:{item.key.cat_id.name} subcategory:{item.key.sub_cat_id.name}  quantity:{item.key.quantity}{item.key.sub_cat_id.quantity_type}</Text>}
-                />
+               {this.state.items? this.state.items.map(item=>{
+                                return (<View key={item._id} onPress={()=>this.handleList(item)}>
+                                    <Text>category:{item.cat_id.name}</Text>
+                                    <Text> subcategory:{item.sub_cat_id.name}</Text>
+                                    <Text>quantity:{item.quantity}{item.sub_cat_id.quantity_type} {"\n"}</Text>
+                                </View>)
+                            }) : (<Text>No Items to display</Text>)}
             </View>
             )
             }

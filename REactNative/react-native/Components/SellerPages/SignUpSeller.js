@@ -1,22 +1,29 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import { Actions } from 'react-native-router-flux';
-import { StyleSheet, Text, View,TextInput } from 'react-native';
 
 class SignUpSeller extends Component {
 
     constructor(props) {
         super(props);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.redirectit = this.redirectit.bind(this);
+
         this.state = {
             name: '',
             email: '',
             contact: '',
             address: '',
             password: '',
-            msg: null
+            place: null,
+            msg: null,
+            latitude:null,
+            longitude:null,
+            locationEnabled:false
         }
     }
 
@@ -25,47 +32,57 @@ class SignUpSeller extends Component {
         error: PropTypes.object.isRequired,
         signupSeller: PropTypes.func.isRequired,
         clearErrors: PropTypes.func.isRequired
-   };
-   componentDidUpdate(prevProps) {
-    const { error } = this.props;
-    if (error !== prevProps.error) {
-      // Check for register error
-      if (error.id === 'SELLER_REGISTER_FAIL') {
-        this.setState({ msg: error.msg.msg });
-      } else {
-        this.setState({ msg: null });
+      };
+    
+      componentDidUpdate(prevProps) {
+        const { error } = this.props;
+        if (error !== prevProps.error) {
+          // Check for register error
+          if (error.id === 'SELLER_REGISTER_FAIL') {
+            this.setState({ msg: error.msg.msg });
+          } else {
+            this.setState({ msg: null });
+          }
+        }
       }
-    }
-  }
-    onSubmit=async()=> {
 
-        console.log(`Form submitted:`);
-        console.log(`name ${this.state.name}`);
-        console.log(`Email: ${this.state.email}`);
-        console.log(`Contact: ${this.state.contact}`);
-        console.log(`Address: ${this.state.address}`);
+    onSubmit(e) {
+        e.preventDefault();
 
-        const { name, email, contact, address, password } = this.state;
-
+        const { name, email, contact, address, password, latitude, longitude } = this.state;
         // Create user object
         const newSeller = {
         name,
         email,
         contact,
         address,
-        password
+        password,
+        latitude,
+        longitude
         };
-        this.props.signupSeller(newSeller);
 
+        this.props.signupSeller(newSeller);
+    }
+ 
+    redirectit=()=>{
         if(this.props.isAuthenticated)
         {
-            console.log('Authenticated:');
+          Actions.sellerProfile()
         }
+        
+    }
+
+    setCoord(long,lat){
+        this.setState({
+            longitude:long,
+            latitude:lat
+        });
     }
 
     render() {
         return (
             <View>
+              {this.redirectit()}
                 <Text>Register Yourself as Seller!</Text>
                 <View>
                     <View>
@@ -105,6 +122,8 @@ class SignUpSeller extends Component {
                     </View>
 
                     <Text onPress={this.onSubmit}>Register</Text>
+                    <Text>Already have an account?</Text>
+                    <Text onPress={() => Actions.sellerLogin()}>Login!</Text>
                 </View>
             </View>
         );

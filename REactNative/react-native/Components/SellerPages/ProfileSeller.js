@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import SellerLogout from './LogoutSeller';
 
 class sellerProfile extends Component {
 
@@ -33,12 +34,12 @@ class sellerProfile extends Component {
                 <Text>Email:{this.props.sellerData.email}</Text>
                 <Text>Contact:{this.props.sellerData.contact}</Text>
                 <Text>Address:{this.props.sellerData.address}</Text>
-                <Text>Edit Details</Text>
+                <Text>Edit Details </Text>
                 <View>
-                   <Text onPress={() => Actions.newItem()}>Add Items For Sale</Text>
+                   <Text onPress={() => Actions.sellerNewItem()}>Add Items For Sale</Text>
                 </View>
                 <View>
-                   <Text onPress={() => Actions.Item()}>View All items added by you</Text>
+                   <Text onPress={() => Actions.sellerItems()}>View All items added by you</Text>
                 </View>
             </View>
             </View>

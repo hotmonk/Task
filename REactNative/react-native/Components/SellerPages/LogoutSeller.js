@@ -12,7 +12,7 @@ export class SellerLogout extends Component {
   render() {
     return (
       <Fragment>
-        <Text onClick={this.props.sellerLogout}>
+        <Text onPress={this.props.sellerLogout}>
           Logout Seller
         </Text>
       </Fragment>
