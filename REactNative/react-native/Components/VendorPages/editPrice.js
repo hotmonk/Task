@@ -4,89 +4,55 @@ import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 import VendorLogout from './LogoutVendor';
 import axios from 'axios';
+import {baseURL} from '../../config/constants.js';
 
 class editPrice extends Component {
-    constructor(props)
-    {
-        super(props);
-        this.state={
-            items:[]
-        }
-        if(this.props.isAuthenticated){
-            // Headers
-            const config = {
-                headers: {
-                'Content-type': 'application/json'
-                }
-            };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
-                .then(res=>{
-                    this.setState({
-                        items:res.data
-                    })
-                })
-                .catch(e=>{
-                    console.log(e);
-                })
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        const { error } = this.props;
-        if (error !== prevProps.error) {
-          // Check for register error
-          if (error.id === 'VENDOR_REGISTER_FAIL') {
-            this.setState({ msg: error.msg.msg });
-          } else {
-            this.setState({ msg: null });
-          }
-        }
-        if(!this.props.isAuthenticated){
-            this.props.history.push('/vendor/login');
-        }
+  constructor(props)
+  {
+      super(props);
+      this.state={
+          price:0,
+          items:[]
       }
+  }
 
-      handlePriceChange(event,index){
-          var items=this.state.items.map(item=>{
-              return {...item}
-          });
-          items[index].price=event.target.value;
-          this.setState({
-              items:items
-          })
-      }
-
-      deleteHandler(event,id){
-        event.preventDefault();
-        if(this.props.isAuthenticated){
-
-            var body=JSON.stringify({
-                ...this.state
-            })
-              // Headers
-              const config = {
-                  headers: {
-                  'Content-type': 'application/json'
-                  }
-              };
-            axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+  componentDidMount(){
+      setTimeout(()=>{
+          const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
+          axios.get(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,config)
               .then(res=>{
-                  return axios.delete( process.env.REACT_APP_BASE_URL+'/vendor/selections/'+id,config);
-              })
-              .then(res => {
                   this.setState({
-                    items:res.data
+                      items:res.data,
                   })
               })
-              .catch(err=>{
-                console.log("category add request failed.retry later",err)
+              .catch(e=>{
+                  console.log(e);
               })
+      },500);
+  }
+
+  componentDidUpdate(prevProps) {
+      if(!this.props.isLoading&&!this.props.isAuthenticated){
+        Actions.vendorProfile()
+      }
+      const { error } = this.props;
+      if (error !== prevProps.error) {
+        // Check for register error
+        if (error.id === 'VENDOR_REGISTER_FAIL') {
+          this.setState({ msg: error.msg.msg });
+        } else {
+          this.setState({ msg: null });
         }
       }
+    }
 
-      submitForm(event)
-      {
-          event.preventDefault();
+    deleteHandler(event,id){
+      event.preventDefault();
+      if(this.props.isAuthenticated){
 
           var body=JSON.stringify({
               ...this.state
@@ -97,21 +63,58 @@ class editPrice extends Component {
                 'Content-type': 'application/json'
                 }
             };
-          axios.put(process.env.REACT_APP_BASE_URL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+          axios.put(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
             .then(res=>{
-                this.props.history.push('/vendor/profile');
+                return axios.delete( baseURL+'/vendor/selections/'+id,config);
+            })
+            .then(res => {
+                this.setState({
+                  items:res.data
+                })
             })
             .catch(err=>{
-                console.log(err);
+              console.log("category add request failed.retry later",err)
             })
       }
-  
-    // static propTypes = {
-    //     vendorData:PropTypes.isRequired,
-    //     isAuthenticated: PropTypes.bool,
-    //     error: PropTypes.object.isRequired,
-    //     clearErrors: PropTypes.func.isRequired
-    //   };
+    }
+
+    
+    handlePriceChange(event,index){
+      var items=this.state.items.map(item=>{
+          return {...item}
+      });
+      items[index].price=this.state.price;
+      this.setState({
+          items:items
+      })
+  }
+
+    submitForm(event)
+    {
+        event.preventDefault();
+
+        var body=JSON.stringify({
+            ...this.state
+        })
+          // Headers
+          const config = {
+              headers: {
+              'Content-type': 'application/json'
+              }
+          };
+        axios.put(baseURL+'/vendor/selections/'+this.props.vendorData.selection_id,body,config)
+          .then(res=>{
+              Actions.vendorProfile()
+          })
+          .catch(err=>{
+              console.log(err);
+          })
+    }
+
+  // static propTypes = {
+  //     vendorData:PropTypes.isRequired,
+  //     isAuthenticated: PropTypes.bool,
+
 
       render(){
           return (
@@ -126,16 +129,21 @@ class editPrice extends Component {
                           {
                             this.state.items.map((selected,index)=>(
                               <View key={selected._id}>
-                                <View>Category:{selected.subcat_id.cat_id.name}</View>
-                                <View>Sub-category:{selected.subcat_id.name}</View>
-                                <View>Price:<input type="text" onChange={(event)=>this.handlePriceChange(event,index)} value={selected.price}/>  {selected.subcat_id.quantity_type}</View>
+                                <Text>Category:{selected.subcat_id.cat_id.name}</Text>
+                                <Text>Sub-category:{selected.subcat_id.name}</Text>
+                                <Text>Price:{selected.price} {selected.subcat_id.quantity_type}</Text>
+                                <Text>Enter New Price:</Text>
+                                <TextInput 
+                                onChangeText={(price) => this.setState({ price })}
+                                >{selected.price}</TextInput>
+                                <Text onPress={(event)=>this.handlePriceChange(event,index)} >Change</Text>
                                 <Text onPress={(event)=>this.deleteHandler(event,selected._id)}>Delete</Text>
                               </View>
                             ))
                           }
                         </View>
                       ):(
-                        <View>You have selected no prefered category</View>
+                        <Text>You have selected no prefered category</Text>
                       )
                     }
                 </View>

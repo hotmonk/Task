@@ -5,6 +5,7 @@ import { clearErrors } from '../../actions/errorActions';
 import VendorLogout from './LogoutVendor';
 import { StyleSheet, Text, View } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import {baseURL} from '../../config/constants.js';
 
 class ViewBuyedItem extends Component {
 
@@ -25,7 +26,7 @@ class ViewBuyedItem extends Component {
                 'Content-type': 'application/json'
                 }
             };
-            axios.get(process.env.REACT_APP_BASE_URL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
+            axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                 .then(response=>{
                     this.setState({
                         items:response.data
