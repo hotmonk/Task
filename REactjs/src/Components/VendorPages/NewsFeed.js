@@ -18,6 +18,7 @@ class NewsFeed extends Component {
         }
         this.handleBack=this.handleBack.bind(this);
         this.handleAcceptance=this.handleAcceptance.bind(this);
+        this.handleRejection=this.handleRejection.bind(this);
     }
 
     static propTypes = {
@@ -111,7 +112,7 @@ class NewsFeed extends Component {
         };
 
         const body=JSON.stringify({
-            item_id:this.state.item.id
+            item_id:this.state.item._id
         })
 
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/rejectOffer', body ,config)

@@ -86,14 +86,35 @@ class ViewItem extends Component {
         axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorAccept',body, config)
             .then(response=>{
                 var body=response.data;
-                this.setState({
-                    msg:body.msg,
-                    vendor:null
-                })
+
+                axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
+                    .then(response2=>{
+                        this.setState({
+                            items:response2.data,
+                            item:null,
+                            vendor:null
+                        })
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
             })
             .catch(error=>{
                 console.log(error);
             })
+    }
+
+
+    handleBack(){
+        this.setState({
+            item:null
+        })
+    }
+
+    handleList(item){
+        this.setState({
+            item
+        });
     }
 
     handleReject(){
@@ -123,18 +144,6 @@ class ViewItem extends Component {
             .catch(error=>{
                 console.log(error);
             })
-    }
-
-    handleBack(){
-        this.setState({
-            item:null
-        })
-    }
-
-    handleList(item){
-        this.setState({
-            item
-        });
     }
 
     render() {
@@ -168,7 +177,7 @@ class ViewItem extends Component {
                     </div>
                 ):(
                     <div>
-                    <h1>Here are all the items for sale</h1>
+                    <h1>Here are all the items added by you for sale</h1>
                     <ul>
                     {
                         this.state.items? this.state.items.map(item=>{

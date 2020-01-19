@@ -65,6 +65,12 @@ router.post('/:id/getVendor',sellerAuth,function(req,res){
         return;
       }
       var itembid=res1.item_bid;
+      if(itembid===null){
+        res.json({
+          msg:'item already sold'
+        })
+        return;
+      }
       if(itembid.interested_vendor_id.length===0&&itembid.counter===itembid.vendor_id.length){
         res.json({
           status:'fail',

@@ -541,7 +541,7 @@ router.post('/signUp', function(req, res) {
                           console.log(err5);
                         }else{
                           res.json({
-                            msg:'item suggessfully registered for interest'
+                            msg:'item suggessfully removed for interest'
                           })
                         }
                       });   
