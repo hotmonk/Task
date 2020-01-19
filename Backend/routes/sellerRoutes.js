@@ -411,19 +411,19 @@ router.post('/signUp', function(req, res) {
                     console.log(err2);
                   }else{
                     var arr=subcats.selectionHandle_id;
-                    if(!arr||arr.length===0){
-                      res.json({
-                        msg:"sorry no current vendor is available"
-                      });
-                    }else{
+                    // if(!arr||arr.length===0){
+                    //   res.json({
+                    //     msg:"sorry no current vendor is available"
+                    //   });
+                    // }else{
                       arr=arr.filter(handle=>{
                         return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<config.get('allowedRadius');
                       })
-                      if(arr.length===0){
-                        res.json({
-                          msg:"sorry no current vendor is available"
-                        });
-                      }else{
+                      // if(arr.length===0){
+                      //   res.json({
+                      //     msg:"sorry no current vendor is available"
+                      //   });
+                      // }else{
                         var vendor_id=arr.map((item)=>{
                           return item.vendor_id._id;
                         })
@@ -464,8 +464,8 @@ router.post('/signUp', function(req, res) {
                             });
                           }
                         });
-                      }
-                    }
+                    //  }
+                    //}
                     
                   }
                 })

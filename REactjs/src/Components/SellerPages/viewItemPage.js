@@ -29,7 +29,6 @@ class ViewItem extends Component {
             };
             axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                 .then(response=>{
-                    console.log(response);
                     this.setState({
                         items:response.data
                     })

@@ -190,11 +190,11 @@ class chooseCat extends Component {
                     {this.state.present? (<h1>Item already present in the list</h1>):null}
                 </div>
                 <div>
-                {this.props.isAuthenticated ? (
+                    {this.props.isAuthenticated ? (
                         <div>
                             <VendorLogout/>
                             <Link to='/vendor/profile'>Done Adding!</Link>
-                        {   this.state.categories ? (
+                            {   this.state.categories&&this.state.categories.length ? (
                                 <form onSubmit={this.submitHandler}>
                                     <select onChange={this.handleCategory} value={this.state.cat_id} >
                                         {
@@ -219,30 +219,47 @@ class chooseCat extends Component {
                                             :null
                                     }
                                     <div>
-                                        <div><strong>Rs.</strong><input type="text" value={this.state.price} onChange={this.handlePrice} placeholder="enter price" /></div>
+                                        {
+                                            this.state.price?(
+                                                <div><strong>Rs.</strong><input type="text" value={this.state.price} onChange={this.handlePrice} placeholder="enter price" /></div>
+                                            ):(
+                                                <div><strong>Rs.</strong><input type="text" value='' onChange={this.handlePrice} placeholder="enter price" /></div>
+                                            )
+                                        }
+                                        
                                     </div>
                                 
                                 <button>ADD</button>
-                            </form> ) : null
+                            </form> ) : (
+                                <div>
+                                    <h3>No category is present in the list</h3>
+                                </div>
+                            )
                         }
                         <div>
                             {
-                            this.state.list&&this.state.list.length ?(
-                                <ul>
-                                {
-                                    this.state.list.map(selected=>(
-                                    <li key={selected._id}>
-                                        <div>Category:{selected.subcat_id.cat_id.name}</div>
-                                        <div>Sub-category:{selected.subcat_id.name}</div>
-                                        <div>Price:{selected.price}  {selected.subcat_id.quantity_type}</div>
-                                        {/* <button onClick={()=>this.deleteHandler(selected._id)}>Delete</button> */}
-                                    </li>
-                                    ))
-                                }
-                                </ul>
-                            ):(
-                                <div><strong>You have selected no prefered category</strong></div>
-                            )
+                                this.state.categories&&this.state.categories.length?(
+                                    <div>
+                                        {
+                                            this.state.list&&this.state.list.length ?(
+                                                <ul>
+                                                {
+                                                    this.state.list.map(selected=>(
+                                                    <li key={selected._id}>
+                                                        <div>Category:{selected.subcat_id.cat_id.name}</div>
+                                                        <div>Sub-category:{selected.subcat_id.name}</div>
+                                                        <div>Price:{selected.price}  {selected.subcat_id.quantity_type}</div>
+                                                        {/* <button onClick={()=>this.deleteHandler(selected._id)}>Delete</button> */}
+                                                    </li>
+                                                    ))
+                                                }
+                                                </ul>
+                                            ):(
+                                                <div><strong>You have selected no prefered category</strong></div>
+                                            )
+                                        }
+                                    </div>
+                                ):null
                             }
                         </div>
                         <Link to='/vendor/profile'>Done!</Link>

@@ -445,7 +445,7 @@ router.post('/signUp', function(req, res) {
   //   })
   // })
   
-  router.post('/:id/transaction',vendorAuth,function(req,res){
+  router.post('/:id/acceptOffer',vendorAuth,function(req,res){
       var vendor_id=req.params.id;
       var item_id=req.body.item_id;
       Item.findById(item_id).populate({
@@ -510,6 +510,50 @@ router.post('/signUp', function(req, res) {
         }
       })
   })
+
+  router.post('/:id/rejectOffer',vendorAuth,function(req,res){
+    var vendor_id=req.params.id;
+    var item_id=req.body.item_id;
+    Item.findById(item_id).populate('item_bid').exec(function(err1,res1){
+      if(err1){
+        console.log(err1); 
+      }else{
+        var res2=res1.item_bid;
+        res2.counter=res2.counter+1;
+        res2.save(function(err3,res3){
+          if(err3){
+            console.log(err3);
+          }else{
+            Vendor.findById(vendor_id,function(err3,res3){
+              if(err3){
+                console.log(err3);
+              }else{
+                News_feed.findById(res3.newsFeed,function(err4,res4){
+                  if(err4){
+                    console.log(err4);
+                  }else{
+                      var arr1=res4.items.filter(item=>{
+                        return !item.equals(item_id);
+                      });
+                      res4.items=arr1;
+                      res4.save(function(err5,res5){
+                        if(err5){
+                          console.log(err5);
+                        }else{
+                          res.json({
+                            msg:'item suggessfully registered for interest'
+                          })
+                        }
+                      });   
+                  }
+                })
+              }
+            });
+          }
+        })
+      }
+    })
+})
   
   //vendor profile
   ///add new item to buy list
@@ -639,16 +683,7 @@ router.post('/signUp', function(req, res) {
         }]
       }
     }).exec(function(err,vendor){
-        var filtered=vendor.newsFeed.items.map(item=>{
-          return {
-            id: item._id,
-            cat: item.cat_id,
-            subcat: item.sub_cat_id,
-            quantity: item.quantity,
-            image: item.image,
-            status:item.status
-          }
-        });
+        var filtered=vendor.newsFeed.items
       res.json(filtered);
     })
   //   Item.find({}).populate([{

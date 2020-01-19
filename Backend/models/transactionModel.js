@@ -16,6 +16,7 @@ var Transaction = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item"
     },
+    order_id: String,
     ///PRICE QUOTED BY VENDOR
     price: Number,
     rating:Number

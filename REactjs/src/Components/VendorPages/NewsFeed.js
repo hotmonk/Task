@@ -15,10 +15,9 @@ class NewsFeed extends Component {
         this.state = {
             items:null,
             item:null,
-            //paymentInfo:null
         }
         this.handleBack=this.handleBack.bind(this);
-        this.handlePurchase=this.handlePurchase.bind(this);
+        this.handleAcceptance=this.handleAcceptance.bind(this);
     }
 
     static propTypes = {
@@ -36,6 +35,7 @@ class NewsFeed extends Component {
                 'Content-type': 'application/json'
                 }
             };
+
             axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
                 .then(response=>{
                     this.setState({
@@ -54,10 +54,6 @@ class NewsFeed extends Component {
         if(!this.props.isLoading&&!this.props.isAuthenticated){
             this.props.history.push('/vendor/login');
         }
-        // if(this.state.paymentInfo){
-        //     console.log(this.instance);
-        //     this.instance.submit();
-        // }
     }
 
     handleBack(){
@@ -72,122 +68,126 @@ class NewsFeed extends Component {
       });
   }
     
-    handlePurchase(){
+    handleAcceptance(){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
 
-        // const config = {
-        //     headers: {
-        //     'Content-type': 'application/json'
-        //     }
-        // };
-        // const body=JSON.stringify({
-        //     vendor_id:this.props.vendor._id,
-        //     item_id:this.state.item.id
-        // })
-        // axios.post(baseURL+'/payment/',body,config)
-        //     .then(response=>{
-        //         this.setState({
-        //             paymentInfo:response.data
-        //         })
-        //     })
-        //     .catch(err=>{
-        //         console.log(err);
-        //     })
-    const config = {
-          headers: {
-          'Content-type': 'application/json'
-          }
-      };
+        const body=JSON.stringify({
+            item_id:this.state.item._id
+        })
 
-      const body=JSON.stringify({
-          item_id:this.state.item.id
-      })
-      axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/transaction', body ,config)
-          .then(response=>{
-              console.log(response.data);
-            const config = {
-                headers: {
-                'Content-type': 'application/json'
-                }
-            };
-            axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
-                .then(response=>{
-                    this.setState({
-                        items:response.data,
-                        item:null
-                    });
-                })
-                .catch(error=>{
-                    console.log(error);
-                })
-          })
-          .catch(error=>{
-              console.log(error);
-          })
+        axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/acceptOffer', body ,config)
+            .then(response=>{
+                console.log(response.data);
+                const config = {
+                    headers: {
+                    'Content-type': 'application/json'
+                    }
+                };
+                axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
+                    .then(response=>{
+                        this.setState({
+                            items:response.data,
+                            item:null
+                        });
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
+
+    handleRejection(){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+
+        const body=JSON.stringify({
+            item_id:this.state.item.id
+        })
+
+        axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/rejectOffer', body ,config)
+            .then(response=>{
+                console.log(response.data);
+                const config = {
+                    headers: {
+                    'Content-type': 'application/json'
+                    }
+                };
+                axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
+                    .then(response=>{
+                        this.setState({
+                            items:response.data,
+                            item:null
+                        });
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
+            })
+            .catch(error=>{
+                console.log(error);
+            })
     }
 
     render() {
         return (
             <div>
-            { this.state.paymentInfo? (
-                    <form ref={el=>{this.instance=el } } method='POST' action={this.state.paymentInfo.TXN_URL}>
-                        {
-                            //this.findFields()
-                            Object.keys(this.state.paymentInfo).map(key=>{
-                                return <input type='hidden' name={key} value={this.state.paymentInfo[key]} />
-                            })
-                        }
-                    </form>
-
-                ) : <div>
-                {this.props.isAuthenticated ? (
-              <div>
-                <VendorLogout/>
-                {
-                  this.state.item?(
-                  <div>
-                     <button onClick={this.handleBack}>Go Back</button>
-                     <h1> Item Details:</h1>
-                     <h2> category: {this.state.item.cat.name}</h2> 
-                     <h2> subcategory: {this.state.item.subcat.name}</h2>
-                     <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.subcat.quantity_type}
-                     <div>
-                          <button onClick={this.handlePurchase}>Purchase it</button>
-                     </div>
-                  </div>
-                  
-              ):(
-              <div>
-                  <h1>Here are all the items for sale</h1>
-                  <ul>
-                  {
-                      this.state.items? this.state.items.map(item=>{
-                              return (<li key={item.id} onClick={()=>this.handleList(item)}>
-                              <div>category:{item.cat.name}</div><div> subcategory:{item.subcat.name}</div>
-                                      <div>quantity:{item.quantity}{item.subcat.quantity_type}</div>
-                              </li>)
-                          }) : (<h1>No Items to display</h1>)
-                      
-                  }
-                  </ul>
-                  <div>
-                          <Link to='/vendor/viewBuyedItems'>View all purchased items</Link>
-                  </div>
-                  <div>
-                          <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
-                  </div>
-              </div>
-              )
-              }
-              </div>
-              
-              ) : (
-                  <h4>Please Login First!</h4>
-                )}
-              </div>}
-              </div>
+              {this.props.isAuthenticated ? (
+                <div>
+                    <VendorLogout/>
+                    {
+                        this.state.item?(
+                        <div>
+                            <button onClick={this.handleBack}>Go Back</button>
+                            <h1> Item Details:</h1>
+                            <h2> category: {this.state.item.cat_id.name}</h2> 
+                            <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
+                            <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
+                            <button onClick={this.handleAcceptance}>Bid for it</button>
+                            <button onClick={this.handleRejection}>Reject it</button>
+                        </div>
+                    ):(
+                        <div>
+                            <h1>Here are all the items for offer</h1>
+                            <ul>
+                            {
+                                this.state.items? this.state.items.map(item=>{
+                                        return (<li key={item._id} onClick={()=>this.handleList(item)}>
+                                            <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
+                                            <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
+                                        </li>)
+                                    }) : (<h1>No Items to display</h1>)
+                                
+                            }
+                            </ul>
+                        </div>
+                    )
+                    }
+                    <div>
+                            <Link to='/vendor/viewBuyedItems'>View all purchased items</Link>
+                    </div>
+                    <div>
+                            <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
+                    </div>
+                </div>
+            ) : (
+                <h4>Please Login First!</h4>
+              )}
+            </div>
         )
     }
 }
+
+
 
 const mapStateToProps = state => ({
     isLoading:state.vendorAuth.isLoading,
