@@ -15,6 +15,7 @@ var Selection=require('../models/selectionModel.js');
 var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
 var News_feed=require('../models/newsFeedModel.js');
+var Quote=require('../models/quoteModel.js');
 
 ///VENDOR ROUTES
 ///checked
@@ -453,59 +454,63 @@ router.post('/signUp', function(req, res) {
         populate:{
           path:'selectionHandle_id'
         }
-      }).exec(function(err1,res1){
-        if(err1){
-          console.log(err1); 
+      }).exec(function(err0,res0){
+        if(err0){
+          console.log(err0); 
         }else{
-          var arr=res1.sub_cat_id.selectionHandle_id;
+          var arr=res0.sub_cat_id.selectionHandle_id;
           arr=arr.filter(item=>{
             return item.vendor_id.equals(vendor_id);
           })
           var price=arr[0].price;
-          Item_bid.findById(res1.item_bid,function(err2,res2){
-            if(err2){
-              console.log(err2);
+          var newQuote=new Quote({
+            vendor_id,
+            price
+          });
+          newQuote.save(function(err1,res1){
+            if(err1){
+              console.log(err1);
             }else{
-              res2.interested_vendor_id.push({
-                id:vendor_id,
-                price
-              });
-              res2.counter=res2.counter+1;
-              res2.save(function(err3,res3){
-                if(err3){
-                  console.log(err3);
+              Item_bid.findById(res0.item_bid,function(err2,res2){
+                if(err2){
+                  console.log(err2);
                 }else{
-                  Vendor.findById(vendor_id,function(err3,res3){
+                  res2.interested_vendor_id.push(newQuote._id);
+                  res2.counter=res2.counter+1;
+                  res2.save(function(err3,res3){
                     if(err3){
                       console.log(err3);
                     }else{
-                        News_feed.findById(res3.newsFeed,function(err4,res4){
-                          if(err4){
-                            console.log(err4);
-                          }else{
-                            var arr1=res4.items.filter(item=>{
-                              return !item.equals(item_id);
-                            });
-                            res4.items=arr1;
-                            res4.save(function(err5,res5){
-                              if(err5){
-                                console.log(err5);
+                      Vendor.findById(vendor_id,function(err3,res3){
+                        if(err3){
+                          console.log(err3);
+                        }else{
+                            News_feed.findById(res3.newsFeed,function(err4,res4){
+                              if(err4){
+                                console.log(err4);
                               }else{
-                                res.json({
-                                  msg:'item suggessfully registered for interest'
-                                })
+                                var arr1=res4.items.filter(item=>{
+                                  return !item.equals(item_id);
+                                });
+                                res4.items=arr1;
+                                res4.save(function(err5,res5){
+                                  if(err5){
+                                    console.log(err5);
+                                  }else{
+                                    res.json({
+                                      msg:'item suggessfully registered for interest'
+                                    })
+                                  }
+                                });
                               }
-                            });
-                            
-                          }
+                          })
+                        }
                       })
                     }
-                    
-                  })
+                  });
                 }
-              });
+              })
             }
-            
           })
         }
       })

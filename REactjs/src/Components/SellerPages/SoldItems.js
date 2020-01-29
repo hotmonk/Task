@@ -139,12 +139,12 @@ class ViewSelledItem extends Component {
                     <h1>Here are all your items that are sold</h1>
                     <ul>
                     {
-                        this.state.items? this.state.items.map(item=>{
+                        this.state.items&&this.state.items.length? this.state.items.map(item=>{
                                 return (<li key={item._id} onClick={()=>this.handleList(item)}>
                                     <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
                                     <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
                                 </li>)
-                            }) : (<h1>No Items to display</h1>)
+                            }) : (<h1>No Items yet added to the category</h1>)
                         
                     }
                     </ul>
