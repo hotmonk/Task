@@ -17,6 +17,8 @@ class ViewItem extends Component {
             msg:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handleAccept=this.handleAccept.bind(this);
+        this.handleReject=this.handleReject.bind(this);
     }
 
     componentDidMount(){
@@ -75,6 +77,7 @@ class ViewItem extends Component {
     }
 
     handleAccept(quote_id){
+        console.log('hrer');
         const config = {
             headers: {
             'Content-type': 'application/json'
@@ -86,8 +89,6 @@ class ViewItem extends Component {
         })
         axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorAccept',body, config)
             .then(response=>{
-                var body=response.data;
-
                 axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                     .then(response2=>{
                         this.setState({
@@ -173,8 +174,8 @@ class ViewItem extends Component {
                                                 <p><strong>Name : </strong>{vendor.name}</p>
                                                 <p><strong>Quoted price : </strong>{vendor.price} {this.state.item.sub_cat_id.quantity_type}</p>
                                                 <p><small><strong>Distance : </strong>{vendor.distance}</small></p>
-                                                <button onClick={this.handleAccept.bind(this,vendor.id)}>Accept</button>
-                                                <button onClick={this.handleReject.bind(this,vendor.id)}>Reject</button>
+                                                <button onClick={()=>{this.handleAccept(vendor.quote_id)}}>Accept</button>
+                                                <button onClick={()=>{this.handleReject(vendor.quote_id)}}>Reject</button>
                                             </div>
                                         )
                                     })
@@ -196,7 +197,6 @@ class ViewItem extends Component {
                                     <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
                                 </li>)
                             }) : (<h1>No Items yet added</h1>)
-                        
                     }
                     </ul>
                 </div>

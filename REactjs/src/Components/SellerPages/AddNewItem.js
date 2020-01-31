@@ -18,12 +18,16 @@ class ItemForm extends Component
             quantity_type:null,
             formIsValid:false,
             categories:null,
-            subcategories:null
+            subcategories:null,
+            selectedImage:null,
+            description:null
         }
         this.handleCategory=this.handleCategory.bind(this);
         this.handleQuantity=this.handleQuantity.bind(this);
         this.handleSubcategory=this.handleSubcategory.bind(this);
         this.submitHandler=this.submitHandler.bind(this);
+        this.handleImageSelect=this.handleImageSelect.bind(this);
+        this.handleDescription=this.handleDescription.bind(this);
     }
 
     componentDidMount(){
@@ -97,22 +101,56 @@ class ItemForm extends Component
         });
     }
 
+    handleDescription(event){
+        this.setState({
+            description:event.target.value
+        });
+    }
+
+    handleImageSelect(e){
+        e.preventDefault();
+        let selectedImage;
+        try{
+            // Select single file
+            selectedImage = e.target.files[0];
+            if(selectedImage === undefined)
+                selectedImage = null;
+        }catch(err){ // Any error
+            selectedImage = null;
+        }
+        // Update state
+        this.setState({
+            selectedImage: selectedImage
+        });
+    }; 
+
     submitHandler(event){
         event.preventDefault();
         if(this.props.isAuthenticated){
             // Headers
+            // const config = {
+            //     headers: {
+            //     'Content-type': 'application/json'
+            //     }
+            // };
             const config = {
                 headers: {
-                'Content-type': 'application/json'
+                    'content-type': 'multipart/form-data'
                 }
             };
-            const item =JSON.stringify ({
-                cust_id:this.props.seller._id,
-                cat_id:this.state.category_id,
-                sub_cat_id:this.state.subcat_id,
-                quantity:this.state.quantity
-            })
-            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', item ,config)
+            let data = new FormData();
+            if(this.state.selectedImage){
+                data.append('imageFile', this.state.selectedImage)
+            }
+            // Create user object
+            data.append('cust_id',this.props.seller._id);
+            data.append('cat_id',this.state.category_id);
+            data.append('sub_cat_id',this.state.subcat_id);
+            data.append('quantity',this.state.quantity);
+            data.append('description',this.state.description);
+
+
+            axios.post( baseURL+'/seller/' + this.props.seller._id + '/items', data,config)
                 .then(res => {
                     console.log("Item added to the selling list")
                     this.props.history.push('/seller/items')
@@ -157,6 +195,20 @@ class ItemForm extends Component
                             <div>
                                 <input type="text" value={this.props.quantity} onChange={this.handleQuantity} placeholder="quantity" />
                                 <p><strong>{this.state.quantity_type}</strong></p>
+                            </div>
+
+                            <div>
+                                <textarea onChange={this.handleDescription} rows='25' cols='50' placeholder="Describe Your Item To the Vendor" >{this.props.description}</textarea>
+                            </div>
+
+                            <div>
+                                <input type="file" name='imageFile' onChange={this.handleImageSelect} id="customImageSelector"/>
+                                {!this.state.selectedFile
+                                ?
+                                (<label htmlFor="customImageSelector">Select an Image</label>)
+                                :
+                                (<label htmlFor="customImageSelector">{this.state.selectedFile.name}</label>)
+                                }
                             </div>
                         
                         <input type="submit" />

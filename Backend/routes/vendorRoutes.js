@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 var Vendor = require('../models/vendorModel.js');
 var Item = require('../models/itemModel.js');
@@ -16,6 +17,13 @@ var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
 var News_feed=require('../models/newsFeedModel.js');
 var Quote=require('../models/quoteModel.js');
+
+function arrayBufferToBase64(buffer) {
+  var binary = '';
+  var bytes = [].slice.call(new Uint8Array(buffer));
+  bytes.forEach((b) => binary += String.fromCharCode(b));
+  return window.btoa(binary);
+};
 
 ///VENDOR ROUTES
 ///checked
@@ -40,7 +48,9 @@ router.post('/signUp', function(req, res) {
           address,
           password,
           longitude,
-          latitude
+          latitude,
+          defaulter:false,
+          defaulterAmount:0
         });
   
         // Create salt & hash
@@ -621,10 +631,45 @@ router.post('/signUp', function(req, res) {
   //     })
   //   })
   // })
+
+  ///select payment method for an item
+  /// to be sent item_id and method
+  router.post('/:id/paymentMethod',vendorAuth,function(req,res){
+    var item_id=req.body.item_id;
+    var method=req.body.method;
+    Item.findById(item_id).populate('transaction_id').exec(function(err1,res1){
+      if(err1){
+        console.log(err1);
+      }else{
+        if(!res1.transaction_id.vendor.equals(req.params.id)){
+          res.status(400).json({
+            msg:'Invalid user request'
+          })
+          return;
+        }
+        if(method!=='COD'&&method!=='ONLINE'){
+          res.status(400).json({
+            msg:'Invalid method type'
+          })
+          return;
+        }
+        var transaction=res1.transaction_id;
+        transaction.method=method;
+        transaction.save(function(err2,res2){
+          if(err2){
+            console.log(err2);
+          }else{
+            res.json({
+              msg:'method saved to the list'
+            });
+          }
+        })
+      }
+    })
+  })
   
   ///fetch all purchased items
   router.get('/:id/viewBuyedItem',vendorAuth,function(req,res){
-    
     Vendor.findById(req.params.id).populate({ 
       path: 'transactions',
       populate: {
@@ -636,6 +681,8 @@ router.post('/signUp', function(req, res) {
         },{
           path:'sub_cat_id',
           model:'Sub_cat'
+        },{
+          path:'transaction_id'
         }]
       },
     })
@@ -689,6 +736,29 @@ router.post('/signUp', function(req, res) {
       }
     }).exec(function(err,vendor){
         var filtered=vendor.newsFeed.items
+        filtered=filtered.map(item=>{
+          if(item.image){
+              return{
+              ...item,
+              imageData:fs.readFileSync('C:/Users/sambh/Desktop/webdev/Task/Backend/public/uploads/'+item.image)
+            }
+          }else{
+            return item;
+          }
+        })
+        filtered=filtered.map(item=>{
+          if(item.image){
+              return{
+              ...item,
+              imageData:{
+                ...item.imageData,
+                data:arrayBufferToBase64(item.imageData.data)
+              }
+            }
+          }else{
+            return item;
+          }
+        })
       res.json(filtered);
     })
   //   Item.find({}).populate([{

@@ -13,10 +13,12 @@ class ViewBuyedItem extends Component {
         this.state = {
             items:null,
             item:null,
-            paymentInfo:null
+            paymentInfo:null,
+            msg:null
         }
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
+        this.handlePaymentMethod=this.handlePaymentMethod.bind(this);
     }
 
     componentDidMount(){
@@ -85,9 +87,43 @@ class ViewBuyedItem extends Component {
             })
     }
 
+    handlePaymentMethod(method){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        const body=JSON.stringify({
+            item_id:this.state.item._id,
+            method
+        })
+        axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/paymentMethod',body,config)
+            .then(response=>{
+                console.log(response.data);
+                this.setState({
+                    msg:response.data
+                })
+                axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
+                    .then(response=>{
+                        this.setState({
+                            items:response.data
+                        })
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+    }
+
     render() {
         return (
             <div>
+                {
+                    this.state.msg?(<h1>{this.state.msg}</h1>):null
+                }
                 { this.state.paymentInfo? (
                     <form ref={el=>{this.instance=el } } method='POST' action={this.state.paymentInfo.TXN_URL}>
                         {
@@ -110,12 +146,21 @@ class ViewBuyedItem extends Component {
                                 <h2> category: {this.state.item.cat_id.name}</h2> 
                                 <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                                 <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                                {
-                                    this.state.item.status==='PAYMENT'?(
+                                {   
+                                    this.state.item.status==='PAYMENT'? !this.state.item.transaction_id.method?(
                                         <div>
-                                            <button onClick={this.handlePurchase}>Purchase it</button>
+                                            <h5>Choose a payment Method</h5>
+                                            <button onClick={()=>{this.handlePaymentMethod('COD')}}>Cash On Delivery</button>
+                                            <button onClick={()=>{this.handlePaymentMethod('ONLINE')}}>Online Methods</button>
+                                        </div>
+                                    ): this.state.item.transaction_id.method==='ONLINE'?(
+                                        <div>
+                                            <button onClick={this.handlePurchase}>Make Online Payment</button>
                                         </div>
                                     ):(
+                                        <div>Cash On Delivery Payment Method Selected</div>
+                                    )
+                                    :(
                                         <h3>Item Purchased</h3>
                                     )
                                 }

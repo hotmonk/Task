@@ -15,6 +15,7 @@ class NewsFeed extends Component {
         this.state = {
             items:null,
             item:null,
+            base64Flag : 'data:image/jpeg;base64,'
         }
         this.handleBack=this.handleBack.bind(this);
         this.handleAcceptance=this.handleAcceptance.bind(this);
@@ -39,6 +40,7 @@ class NewsFeed extends Component {
 
             axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
                 .then(response=>{
+                    //console.log(response.data);
                     this.setState({
                         items:response.data
                     });
@@ -69,15 +71,14 @@ class NewsFeed extends Component {
       });
   }
     
-    handleAcceptance(){
+    handleAcceptance(item_id){
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
-
         const body=JSON.stringify({
-            item_id:this.state.item._id
+            item_id
         })
 
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/acceptOffer', body ,config)
@@ -104,7 +105,7 @@ class NewsFeed extends Component {
             })
     }
 
-    handleRejection(){
+    handleRejection(item_id){
         const config = {
             headers: {
             'Content-type': 'application/json'
@@ -112,7 +113,7 @@ class NewsFeed extends Component {
         };
 
         const body=JSON.stringify({
-            item_id:this.state.item._id
+            item_id
         })
 
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/rejectOffer', body ,config)
@@ -146,27 +147,46 @@ class NewsFeed extends Component {
                 <div>
                     <VendorLogout/>
                     {
-                        this.state.item?(
+                        this.state.item? this.state.item.imageData? (
+                        <div>
+                            <button onClick={this.handleBack}>Go Back</button>
+                            <h1> Item Details:</h1>
+                            <h2> category: {this.state.item._doc.cat_id.name}</h2> 
+                            <h2> subcategory: {this.state.item._doc.sub_cat_id.name}</h2>
+                            <h2> quantity: {this.state.item._doc.quantity}</h2>{this.state.item._doc.sub_cat_id.quantity_type}
+                             {/* <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item image"></img> */}
+                            <button onClick={()=>{this.handleAcceptance(this.state.item._doc._id)}}>Bid for it</button>
+                            <button onClick={()=>{this.handleRejection(this.state.item._doc._id)}}>Reject it</button>
+                        </div>
+                    ) : (
                         <div>
                             <button onClick={this.handleBack}>Go Back</button>
                             <h1> Item Details:</h1>
                             <h2> category: {this.state.item.cat_id.name}</h2> 
                             <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                             <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                            <button onClick={this.handleAcceptance}>Bid for it</button>
-                            <button onClick={this.handleRejection}>Reject it</button>
+                            <button onClick={()=>{this.handleAcceptance(this.state.item._id)}}>Bid for it</button>
+                            <button onClick={()=>{this.handleRejection(this.state.item._id)}}>Reject it</button>
                         </div>
-                    ):(
+                    )
+                    :(
                         <div>
                             <h1>Here are all the items for offer</h1>
                             <ul>
                             {
                                 this.state.items? this.state.items.map(item=>{
+                                    if(!item.imageData){
                                         return (<li key={item._id} onClick={()=>this.handleList(item)}>
                                             <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
                                             <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
                                         </li>)
-                                    }) : (<h1>No Items to display</h1>)
+                                    }else{
+                                        return (<li key={item._doc._id} onClick={()=>this.handleList(item)}>
+                                            <div>category:{item._doc.cat_id.name}</div><div> subcategory:{item._doc.sub_cat_id.name}</div>
+                                            <div>quantity:{item._doc.quantity}{item._doc.sub_cat_id.quantity_type}</div>
+                                        </li>)
+                                    }
+                                }) : (<h1>No Items to display</h1>)
                                 
                             }
                             </ul>

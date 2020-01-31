@@ -6,7 +6,7 @@ var Transaction = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Seller"
     },
-    ///VENDOR ID INVILVED IN DEAL
+    ///VENDOR ID INVOLVED IN DEAL
     vendor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vendor"
@@ -19,7 +19,9 @@ var Transaction = new mongoose.Schema({
     order_id: String,
     ///PRICE QUOTED BY VENDOR
     price: Number,
-    rating:Number
+    rating:Number,
+    ///either COD or ONLINE
+    method:String
 });
 
 module.exports = mongoose.model("Transaction", Transaction);
