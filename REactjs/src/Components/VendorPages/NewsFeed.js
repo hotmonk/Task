@@ -15,9 +15,14 @@ class NewsFeed extends Component {
         this.state = {
             items:null,
             item:null,
-            base64Flag : 'data:image/jpeg;base64,'
+            base64Flag : 'data:image/png/jpeg/jpg;base64,',
+            date:null,
+            time:null,
+            error:null,
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handleDate=this.handleDate.bind(this);
+        this.handleTime=this.handleTime.bind(this);
         this.handleAcceptance=this.handleAcceptance.bind(this);
         this.handleRejection=this.handleRejection.bind(this);
     }
@@ -40,7 +45,6 @@ class NewsFeed extends Component {
 
             axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
                 .then(response=>{
-                    //console.log(response.data);
                     this.setState({
                         items:response.data
                     });
@@ -61,29 +65,59 @@ class NewsFeed extends Component {
 
     handleBack(){
         this.setState({
-            item:null
+            item:null,
+            time:null,
+            date:null,
+            error:null
         })
     }
 
+    handleDate(event){
+        this.setState({
+            date:event.target.value
+        });
+    }
+
+    handleTime(event){
+        this.setState({
+            time:event.target.value
+        });
+    }
+
     handleList(item){
+        if(item.imageData){
+            var binary = '';
+            var bytes = [].slice.call(new Uint8Array(item.imageData.data));
+            bytes.forEach((b) => binary += String.fromCharCode(b));
+            item.imageData.data= window.btoa(binary);
+        }
       this.setState({
           item
       });
   }
     
     handleAcceptance(item_id){
+
+        if(this.state.date===""||this.state.time===""||this.state.time===null||this.state.date===null){
+            this.setState({
+                error:"enter valid date as well as time"
+            })
+            return;
+        }
+
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
         const body=JSON.stringify({
-            item_id
+            item_id,
+            date:this.state.date,
+            time:this.state.time
         })
 
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/acceptOffer', body ,config)
             .then(response=>{
-                console.log(response.data);
                 const config = {
                     headers: {
                     'Content-type': 'application/json'
@@ -118,7 +152,6 @@ class NewsFeed extends Component {
 
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/rejectOffer', body ,config)
             .then(response=>{
-                console.log(response.data);
                 const config = {
                     headers: {
                     'Content-type': 'application/json'
@@ -154,7 +187,11 @@ class NewsFeed extends Component {
                             <h2> category: {this.state.item._doc.cat_id.name}</h2> 
                             <h2> subcategory: {this.state.item._doc.sub_cat_id.name}</h2>
                             <h2> quantity: {this.state.item._doc.quantity}</h2>{this.state.item._doc.sub_cat_id.quantity_type}
-                             {/* <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item image"></img> */}
+                             <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item image"></img>
+                             <br/>
+
+                             <input type="date" onChange={this.handleDate} />
+                             <input type="time" onChange={this.handleTime} />
                             <button onClick={()=>{this.handleAcceptance(this.state.item._doc._id)}}>Bid for it</button>
                             <button onClick={()=>{this.handleRejection(this.state.item._doc._id)}}>Reject it</button>
                         </div>
@@ -165,6 +202,9 @@ class NewsFeed extends Component {
                             <h2> category: {this.state.item.cat_id.name}</h2> 
                             <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                             <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
+                            <br/>
+                            <input type="date" onChange={this.handleDate} />
+                             <input type="time" onChange={this.handleTime} />
                             <button onClick={()=>{this.handleAcceptance(this.state.item._id)}}>Bid for it</button>
                             <button onClick={()=>{this.handleRejection(this.state.item._id)}}>Reject it</button>
                         </div>

@@ -47,15 +47,24 @@ class ViewSelledItem extends Component {
       }
     }
 
-      handleBack(){
-          this.setState({
-              item:null,
-              rating:1
-          })
-      }
-
-      handleByStatus(){
-        if(this.state.item.status==="RATING"){
+    handleBack(){
+        this.setState({
+            item:null,
+            rating:1
+        })
+    }
+    
+    handleByStatus(){
+        if(this.state.item.status==='PAYMENT'){
+            return(
+                <div>
+                    <h3>Data of the Vendor selected for the current bid is</h3>
+                    <p><strong>Name</strong>{this.state.item.transaction_id.vendor.name}</p>
+                    <p><strong>Phone no</strong>{this.state.item.transaction_id.vendor.contact}</p>
+                    <button onClick={ this.vendorReport.bind(this) }>Report the vendor for the item</button>
+                </div>
+            )
+        }else if(this.state.item.status==="RATING"){
             return (
                     <div>
                         <StarRatingComponent 
@@ -82,9 +91,44 @@ class ViewSelledItem extends Component {
         this.setState({
             item
         });
+    }
+
+      vendorReport(){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+
+        const body=JSON.stringify({
+            item_id:this.state.item._id
+        })
+
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorReport',body, config)
+            .then(response=>{
+                console.log(response.data);
+                const config = {
+                    headers: {
+                    'Content-type': 'application/json'
+                    }
+                };
+                axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewSelledItem', config)
+                    .then(response=>{
+                        this.setState({
+                            items:response.data,
+                            item:null
+                        })
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
+            })
+            .catch(error=>{
+                console.log(error);
+            })
       }
 
-      handleSaveBack(){
+    handleSaveBack(){
         const token = this.props.token;
   
         // Headers
@@ -114,9 +158,9 @@ class ViewSelledItem extends Component {
             })
     }
 
-      onStarClick(nextValue, prevValue, name) {
+    onStarClick(nextValue, prevValue, name) {
         this.setState({rating: nextValue});
-      }
+    }
 
     render() {
         return(

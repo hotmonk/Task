@@ -134,6 +134,8 @@ router.post('/:id/getVendors',sellerAuth,function(req,res){
                     quote_id:eachVendor._id,
                     vendor_id:eachVendor.vendor_id._id,
                     price:eachVendor.price,
+                    date:eachVendor.date,
+                    time:eachVendor.time,
                     name:eachVendor.vendor_id.name,
                     distance:distance(res2.latitude,res2.longitude,eachVendor.vendor_id.latitude,eachVendor.vendor_id.longitude)
                   }
@@ -218,7 +220,6 @@ router.post('/:id/vendorReject',sellerAuth,function(req,res){
   })
 })
 
-  //unchecked
 router.post('/:id/vendorAccept',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
@@ -264,7 +265,7 @@ router.post('/:id/vendorAccept',sellerAuth,function(req,res){
               transaction.save()
                 .then(trans=>{
                   res2.transaction_id=trans._id;
-                  res2.item_bid=null;
+                  // res2.item_bid=null;
                   res2.save(function(err3,res3){
                     if(err3){
                       console.log(err3);
@@ -274,29 +275,51 @@ router.post('/:id/vendorAccept',sellerAuth,function(req,res){
                           console.log('adding transaction failed');
                           res.status(400).json({
                             status:'fail',
-                            msg:"transaction failed"
+                            msg:"transaction addition to vendor failed"
                           })
+                          return;
                         }
                         res4.transactions.push(trans._id);
                         res4.save()
                           .then(res5=>{
-                            itembid.interested_vendor_id.map(quote=>{
-                              Quote.findByIdAndDelete(quote,function(err6){
-                                if(err6){
-                                  console.log(err6);
-                                }
-                              })
-                              return null;
+                            itembid.interested_vendor_id=itembid.interested_vendor_id.filter(id=>{
+                              return !id.equals(quote_id)
                             })
-                            Item_bid.findByIdAndDelete(itembid._id,function(err6){
+                            itembid.save(function(err6,res6){
                               if(err6){
-                                console.log(err);
+                                console.log(err6);
                               }else{
-                                res.json({
-                                msg:"vendor successfully selected"
-                              })
-                            }
-                          })
+                                Quote.findByIdAndDelete(quote_id,function(err7){
+                                    if(err7){
+                                      console.log(err7);
+                                    }else{
+                                      res.json({
+                                        msg:'vendor selected'
+                                      })
+                                    }
+                                  })
+                              }
+                            })
+                          //   itembid.interested_vendor_id.map(quote=>{
+                          //     Quote.findByIdAndDelete(quote,function(err6){
+                          //       if(err6){
+                          //         console.log(err6);
+                          //       }
+                          //     })
+                          //     return null;
+                          //   })
+                          //   Item_bid.findByIdAndDelete(itembid._id,function(err6){
+                          //     if(err6){
+                          //       console.log(err);
+                          //     }else{
+                          //       res.json({
+                          //       msg:"vendor successfully selected"
+                          //     })
+                          //   }
+                          // })
+                          // res.json({
+                          //     msg:"vendor successfully selected"
+                          // })
                         })
                         .catch(error=>{
                           res.status(400).json(error)
@@ -315,6 +338,38 @@ router.post('/:id/vendorAccept',sellerAuth,function(req,res){
     }
   })
 })
+
+// route to remove current selected vendor and select another one
+router.post('/:id/vendorReport',sellerAuth,function(req,res){
+  var item_id=req.body.item_id;
+  var seller_id=req.params.id;
+  Item.findById(item_id).populate({
+        path:'item_bid',
+      }).exec(function(err1,res1){
+    if(err1){
+      console.log(err1);
+    }else{
+      if(!res1.cust_id.equals(seller_id)){
+        res.json({
+          status:'fail',
+          msg:'the item doesn\'t belong to you'
+        })
+        return;
+      }
+        res1.status='INBID';
+        res1.transaction_id=null;
+        res1.save(function(err1,res1){
+          if(err1){
+            console.log(err1);
+            return;
+          }
+        res.json({
+          msg:'please select the vendor again'
+        })
+      });
+    }
+  })
+})
   
   ///checked
 router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
@@ -328,7 +383,10 @@ router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
         model:'Sub_cat'
       },{
         path:'transaction_id',
-        model:'Transaction'
+        model:'Transaction',
+        populate:{
+          path:'vendor'
+        }
       }]
   })
   .exec(function(err, response) {
