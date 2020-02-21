@@ -18,13 +18,6 @@ const vendorAuth = require('../middleware/vendorAuth.js');
 var News_feed=require('../models/newsFeedModel.js');
 var Quote=require('../models/quoteModel.js');
 
-function arrayBufferToBase64(buffer) {
-  var binary = '';
-  var bytes = [].slice.call(new Uint8Array(buffer));
-  bytes.forEach((b) => binary += String.fromCharCode(b));
-  return window.btoa(binary);
-};
-
 ///VENDOR ROUTES
 ///checked
 router.post('/signUp', function(req, res) {
@@ -459,6 +452,8 @@ router.post('/signUp', function(req, res) {
   router.post('/:id/acceptOffer',vendorAuth,function(req,res){
       var vendor_id=req.params.id;
       var item_id=req.body.item_id;
+      var date=req.body.date;
+      var time=req.body.time;
       Item.findById(item_id).populate({
         path:'sub_cat_id',
         populate:{
@@ -475,7 +470,9 @@ router.post('/signUp', function(req, res) {
           var price=arr[0].price;
           var newQuote=new Quote({
             vendor_id,
-            price
+            price,
+            date,
+            time
           });
           newQuote.save(function(err1,res1){
             if(err1){
@@ -735,25 +732,12 @@ router.post('/signUp', function(req, res) {
         }]
       }
     }).exec(function(err,vendor){
-        var filtered=vendor.newsFeed.items
+        var filtered=vendor.newsFeed.items;
         filtered=filtered.map(item=>{
           if(item.image){
               return{
               ...item,
               imageData:fs.readFileSync('C:/Users/Pratik/Desktop/GitHub Projects/Task/Backend/public/uploads/'+item.image)
-            }
-          }else{
-            return item;
-          }
-        })
-        filtered=filtered.map(item=>{
-          if(item.image){
-              return{
-              ...item,
-              imageData:{
-                ...item.imageData,
-                data:arrayBufferToBase64(item.imageData.data)
-              }
             }
           }else{
             return item;

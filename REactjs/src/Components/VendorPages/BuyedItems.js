@@ -56,13 +56,15 @@ class ViewBuyedItem extends Component {
     
     handleBack(){
         this.setState({
-            item:null
+            item:null,
+            msg:null
         })
     }
 
     handleList(item){
       this.setState({
-          item
+          item,
+          msg:null
       });
     }
 
@@ -79,7 +81,8 @@ class ViewBuyedItem extends Component {
         axios.post(baseURL+'/payment/',body,config)
             .then(response=>{
                 this.setState({
-                    paymentInfo:response.data
+                    paymentInfo:response.data,
+                    msg:null
                 })
             })
             .catch(err=>{
@@ -106,7 +109,8 @@ class ViewBuyedItem extends Component {
                 axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                     .then(response=>{
                         this.setState({
-                            items:response.data
+                            items:response.data,
+                            item:null
                         })
                     })
                     .catch(error=>{

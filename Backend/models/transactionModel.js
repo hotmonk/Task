@@ -21,7 +21,11 @@ var Transaction = new mongoose.Schema({
     price: Number,
     rating:Number,
     ///either COD or ONLINE
-    method:String
+    method:String,
+    status:{
+        type:Boolean,
+        Default: false
+    }
 });
 
 module.exports = mongoose.model("Transaction", Transaction);

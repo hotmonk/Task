@@ -170,10 +170,12 @@ class ViewItem extends Component {
                                 {
                                     this.state.vendors.map(vendor=>{
                                         return (
-                                            <div>
+                                            <div key={vendor.quote_id}>
                                                 <p><strong>Name : </strong>{vendor.name}</p>
                                                 <p><strong>Quoted price : </strong>{vendor.price} {this.state.item.sub_cat_id.quantity_type}</p>
                                                 <p><small><strong>Distance : </strong>{vendor.distance}</small></p>
+                                                <p><strong>Approximate date of arrival: </strong>{vendor.date}</p>
+                                                <p><strong>Approximate time of arrival: </strong>{vendor.time}</p>
                                                 <button onClick={()=>{this.handleAccept(vendor.quote_id)}}>Accept</button>
                                                 <button onClick={()=>{this.handleReject(vendor.quote_id)}}>Reject</button>
                                             </div>
