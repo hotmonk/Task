@@ -11,11 +11,8 @@ var Item_bid = new mongoose.Schema({
         ref: "Vendor"
     }],
     interested_vendor_id:[{
-        id:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Vendor"
-        },
-        price:Number
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Quote"
     }],
     counter:{
         type:Number,

@@ -13,10 +13,12 @@ class ViewItem extends Component {
         this.state = {
             items:null,
             item:null,
-            vendor:null,
+            vendors:null,
             msg:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handleAccept=this.handleAccept.bind(this);
+        this.handleReject=this.handleReject.bind(this);
     }
 
     componentDidMount(){
@@ -29,7 +31,6 @@ class ViewItem extends Component {
             };
             axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
                 .then(response=>{
-                    console.log(response);
                     this.setState({
                         items:response.data
                     })
@@ -54,7 +55,7 @@ class ViewItem extends Component {
             const body=JSON.stringify({
                 item_id:this.state.item._id
             })
-            axios.post(baseURL+'/seller/'+this.props.seller._id+'/getVendor',body, config)
+            axios.post(baseURL+'/seller/'+this.props.seller._id+'/getVendors',body, config)
                 .then(response=>{
                     var body=response.data;
                     if(body.status&&body.status==='fail'){
@@ -64,7 +65,7 @@ class ViewItem extends Component {
                         })
                     }else{
                         this.setState({
-                            vendor:body,
+                            vendors:body,
                             msg:null
                         })
                     }
@@ -75,56 +76,36 @@ class ViewItem extends Component {
         }
     }
 
-    handleAccept(){
+    handleAccept(quote_id){
+        console.log('hrer');
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
         const body=JSON.stringify({
-            item_id:this.state.item._id
+            item_id:this.state.item._id,
+            quote_id
         })
         axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorAccept',body, config)
             .then(response=>{
-                var body=response.data;
-                this.setState({
-                    msg:body.msg,
-                    vendor:null
-                })
+                axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
+                    .then(response2=>{
+                        this.setState({
+                            items:response2.data,
+                            item:null,
+                            vendor:null
+                        })
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
             })
             .catch(error=>{
                 console.log(error);
             })
     }
 
-    handleReject(){
-        const config = {
-            headers: {
-            'Content-type': 'application/json'
-            }
-        };
-        const body=JSON.stringify({
-            item_id:this.state.item._id
-        })
-        axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorReject',body, config)
-            .then(response=>{
-                var body=response.data;
-                if(body.status&&body.status==='fail'){
-                    this.setState({
-                        msg:body.msg,
-                        vendor:null
-                    })
-                }else{
-                    this.setState({
-                        vendor:body,
-                        msg:null
-                    })
-                }
-            })
-            .catch(error=>{
-                console.log(error);
-            })
-    }
 
     handleBack(){
         this.setState({
@@ -136,6 +117,36 @@ class ViewItem extends Component {
         this.setState({
             item
         });
+    }
+
+    handleReject(quote_id){
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        const body=JSON.stringify({
+            item_id:this.state.item._id,
+            quote_id
+        })
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorReject',body, config)
+            .then(response=>{
+                var body=response.data;
+                if(body.status&&body.status==='fail'){
+                    this.setState({
+                        msg:body.msg,
+                        vendors:null
+                    })
+                }else{
+                    this.setState({
+                        vendors:body,
+                        msg:null
+                    })
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+            })
     }
 
     render() {
@@ -154,13 +165,23 @@ class ViewItem extends Component {
                     <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                     <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
                     {
-                        this.state.vendor?(
+                        this.state.vendors?(
                             <div>
-                                <p><strong>Name : </strong>{this.state.vendor.name}</p>
-                                <p><strong>Quoted price : </strong>{this.state.vendor.price} {this.state.item.sub_cat_id.quantity_type}</p>
-                                <p><small><strong>Distance : </strong>{this.state.vendor.distance}</small></p>
-                                <button onClick={this.handleAccept.bind(this)}>Accept</button>
-                                <button onClick={this.handleReject.bind(this)}>Reject</button>
+                                {
+                                    this.state.vendors.map(vendor=>{
+                                        return (
+                                            <div key={vendor.quote_id}>
+                                                <p><strong>Name : </strong>{vendor.name}</p>
+                                                <p><strong>Quoted price : </strong>{vendor.price} {this.state.item.sub_cat_id.quantity_type}</p>
+                                                <p><small><strong>Distance : </strong>{vendor.distance}</small></p>
+                                                <p><strong>Approximate date of arrival: </strong>{vendor.date}</p>
+                                                <p><strong>Approximate time of arrival: </strong>{vendor.time}</p>
+                                                <button onClick={()=>{this.handleAccept(vendor.quote_id)}}>Accept</button>
+                                                <button onClick={()=>{this.handleReject(vendor.quote_id)}}>Reject</button>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
                         ):(
                             <h3>{this.state.msg}</h3>
@@ -169,16 +190,15 @@ class ViewItem extends Component {
                     </div>
                 ):(
                     <div>
-                    <h1>Here are all the items for sale</h1>
+                    <h1>Here are all the items added by you for sale</h1>
                     <ul>
                     {
-                        this.state.items? this.state.items.map(item=>{
+                        this.state.items&&this.state.items.length? this.state.items.map(item=>{
                                 return (<li key={item._id} onClick={()=>this.handleList(item)}>
                                     <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
                                     <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
                                 </li>)
-                            }) : (<h1>No Items to display</h1>)
-                        
+                            }) : (<h1>No Items yet added</h1>)
                     }
                     </ul>
                 </div>

@@ -31,7 +31,8 @@ var Item = new mongoose.Schema({
     item_bid:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item_bid"
-    }
+    },
+    description:String
 },{
     timestamps:true
 });

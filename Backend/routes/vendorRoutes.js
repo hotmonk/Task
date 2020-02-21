@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 var Vendor = require('../models/vendorModel.js');
 var Item = require('../models/itemModel.js');
@@ -15,6 +16,7 @@ var Selection=require('../models/selectionModel.js');
 var Cat_request = require('../models/cat_requestModel.js');
 const vendorAuth = require('../middleware/vendorAuth.js');
 var News_feed=require('../models/newsFeedModel.js');
+var Quote=require('../models/quoteModel.js');
 
 ///VENDOR ROUTES
 ///checked
@@ -39,7 +41,9 @@ router.post('/signUp', function(req, res) {
           address,
           password,
           longitude,
-          latitude
+          latitude,
+          defaulter:false,
+          defaulterAmount:0
         });
   
         // Create salt & hash
@@ -445,71 +449,123 @@ router.post('/signUp', function(req, res) {
   //   })
   // })
   
-  router.post('/:id/transaction',vendorAuth,function(req,res){
+  router.post('/:id/acceptOffer',vendorAuth,function(req,res){
       var vendor_id=req.params.id;
       var item_id=req.body.item_id;
+      var date=req.body.date;
+      var time=req.body.time;
       Item.findById(item_id).populate({
         path:'sub_cat_id',
         populate:{
           path:'selectionHandle_id'
         }
-      }).exec(function(err1,res1){
-        if(err1){
-          console.log(err1); 
+      }).exec(function(err0,res0){
+        if(err0){
+          console.log(err0); 
         }else{
-          var arr=res1.sub_cat_id.selectionHandle_id;
+          var arr=res0.sub_cat_id.selectionHandle_id;
           arr=arr.filter(item=>{
             return item.vendor_id.equals(vendor_id);
           })
           var price=arr[0].price;
-          Item_bid.findById(res1.item_bid,function(err2,res2){
-            if(err2){
-              console.log(err2);
+          var newQuote=new Quote({
+            vendor_id,
+            price,
+            date,
+            time
+          });
+          newQuote.save(function(err1,res1){
+            if(err1){
+              console.log(err1);
             }else{
-              res2.interested_vendor_id.push({
-                id:vendor_id,
-                price
-              });
-              res2.counter=res2.counter+1;
-              res2.save(function(err3,res3){
-                if(err3){
-                  console.log(err3);
+              Item_bid.findById(res0.item_bid,function(err2,res2){
+                if(err2){
+                  console.log(err2);
                 }else{
-                  Vendor.findById(vendor_id,function(err3,res3){
+                  res2.interested_vendor_id.push(newQuote._id);
+                  res2.counter=res2.counter+1;
+                  res2.save(function(err3,res3){
                     if(err3){
                       console.log(err3);
                     }else{
-                        News_feed.findById(res3.newsFeed,function(err4,res4){
-                          if(err4){
-                            console.log(err4);
-                          }else{
-                            var arr1=res4.items.filter(item=>{
-                              return !item.equals(item_id);
-                            });
-                            res4.items=arr1;
-                            res4.save(function(err5,res5){
-                              if(err5){
-                                console.log(err5);
+                      Vendor.findById(vendor_id,function(err3,res3){
+                        if(err3){
+                          console.log(err3);
+                        }else{
+                            News_feed.findById(res3.newsFeed,function(err4,res4){
+                              if(err4){
+                                console.log(err4);
                               }else{
-                                res.json({
-                                  msg:'item suggessfully registered for interest'
-                                })
+                                var arr1=res4.items.filter(item=>{
+                                  return !item.equals(item_id);
+                                });
+                                res4.items=arr1;
+                                res4.save(function(err5,res5){
+                                  if(err5){
+                                    console.log(err5);
+                                  }else{
+                                    res.json({
+                                      msg:'item suggessfully registered for interest'
+                                    })
+                                  }
+                                });
                               }
-                            });
-                            
-                          }
+                          })
+                        }
                       })
                     }
-                    
-                  })
+                  });
                 }
-              });
+              })
             }
-            
           })
         }
       })
   })
+
+  router.post('/:id/rejectOffer',vendorAuth,function(req,res){
+    var vendor_id=req.params.id;
+    var item_id=req.body.item_id;
+    Item.findById(item_id).populate('item_bid').exec(function(err1,res1){
+      if(err1){
+        console.log(err1); 
+      }else{
+        var res2=res1.item_bid;
+        res2.counter=res2.counter+1;
+        res2.save(function(err3,res3){
+          if(err3){
+            console.log(err3);
+          }else{
+            Vendor.findById(vendor_id,function(err3,res3){
+              if(err3){
+                console.log(err3);
+              }else{
+                News_feed.findById(res3.newsFeed,function(err4,res4){
+                  if(err4){
+                    console.log(err4);
+                  }else{
+                      var arr1=res4.items.filter(item=>{
+                        return !item.equals(item_id);
+                      });
+                      res4.items=arr1;
+                      res4.save(function(err5,res5){
+                        if(err5){
+                          console.log(err5);
+                        }else{
+                          res.json({
+                            msg:'item suggessfully removed for interest'
+                          })
+                        }
+                      });   
+                  }
+                })
+              }
+            });
+          }
+        })
+      }
+    })
+})
   
   //vendor profile
   ///add new item to buy list
@@ -572,10 +628,45 @@ router.post('/signUp', function(req, res) {
   //     })
   //   })
   // })
+
+  ///select payment method for an item
+  /// to be sent item_id and method
+  router.post('/:id/paymentMethod',vendorAuth,function(req,res){
+    var item_id=req.body.item_id;
+    var method=req.body.method;
+    Item.findById(item_id).populate('transaction_id').exec(function(err1,res1){
+      if(err1){
+        console.log(err1);
+      }else{
+        if(!res1.transaction_id.vendor.equals(req.params.id)){
+          res.status(400).json({
+            msg:'Invalid user request'
+          })
+          return;
+        }
+        if(method!=='COD'&&method!=='ONLINE'){
+          res.status(400).json({
+            msg:'Invalid method type'
+          })
+          return;
+        }
+        var transaction=res1.transaction_id;
+        transaction.method=method;
+        transaction.save(function(err2,res2){
+          if(err2){
+            console.log(err2);
+          }else{
+            res.json({
+              msg:'method saved to the list'
+            });
+          }
+        })
+      }
+    })
+  })
   
   ///fetch all purchased items
   router.get('/:id/viewBuyedItem',vendorAuth,function(req,res){
-    
     Vendor.findById(req.params.id).populate({ 
       path: 'transactions',
       populate: {
@@ -587,6 +678,8 @@ router.post('/signUp', function(req, res) {
         },{
           path:'sub_cat_id',
           model:'Sub_cat'
+        },{
+          path:'transaction_id'
         }]
       },
     })
@@ -639,16 +732,17 @@ router.post('/signUp', function(req, res) {
         }]
       }
     }).exec(function(err,vendor){
-        var filtered=vendor.newsFeed.items.map(item=>{
-          return {
-            id: item._id,
-            cat: item.cat_id,
-            subcat: item.sub_cat_id,
-            quantity: item.quantity,
-            image: item.image,
-            status:item.status
+        var filtered=vendor.newsFeed.items;
+        filtered=filtered.map(item=>{
+          if(item.image){
+              return{
+              ...item,
+              imageData:fs.readFileSync('C:/Users/sambh/Desktop/webdev/Task/Backend/public/uploads/'+item.image)
+            }
+          }else{
+            return item;
           }
-        });
+        })
       res.json(filtered);
     })
   //   Item.find({}).populate([{

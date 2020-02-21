@@ -50,6 +50,8 @@ var Vendor = new mongoose.Schema({
     ///LOCATION COORDINATES OF VENDOR
     latitude:Number,
     longitude:Number,
+    defaulter:Boolean,
+    defaulterAmount:Number
 });
 
 module.exports = mongoose.model("Vendor", Vendor);

@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const multer=require('multer');
 
 var Seller = require('../models/sellerModel.js');
 var Item = require('../models/itemModel.js');
@@ -12,6 +14,8 @@ const sellerAuth = require('../middleware/sellerAuth.js');
 var Vendor=require('../models/vendorModel.js');
 var Transaction=require('../models/transactionModel.js');
 var News_feed=require('../models/newsFeedModel.js');
+var Quote=require('../models/quoteModel.js');
+
 
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -22,6 +26,36 @@ function distance(lat1, lon1, lat2, lon2) {
 
   var dist= 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
   return dist;
+}
+
+const storage = multer.diskStorage({
+  destination: "./public/uploads/",
+  filename: function(req, file, cb){
+     cb(null,new Date().toISOString().replace(/:/g, '-')+'_' +file.originalname);
+  }
+});
+
+const uploadImage = multer({
+  storage: storage,
+  limits:{fileSize: 1000000},
+  fileFilter: function(req, file, cb){
+    checkFileType(file, cb);
+  }
+});
+
+function checkFileType(file, cb){
+  // Allowed ext
+  const filetypes = /jpeg|jpg|png|gif/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname){
+    return cb(null,true);
+  } else {
+    cb('Error: Images Only!');
+  }
 }
 
 router.get('/:id/viewItem',sellerAuth,function(req,res){
@@ -50,10 +84,18 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
   });
 });
 
-router.post('/:id/getVendor',sellerAuth,function(req,res){
+router.post('/:id/getVendors',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
-  Item.findById(item_id).populate('item_bid').exec(function(err1,res1){
+  Item.findById(item_id).populate({
+      path:'item_bid',
+      populate:{
+        path:'interested_vendor_id',
+        populate:{
+          path:'vendor_id'
+        }
+      }
+    }).exec(function(err1,res1){
     if(err1){
       console.log(err1);
     }else{
@@ -65,6 +107,12 @@ router.post('/:id/getVendor',sellerAuth,function(req,res){
         return;
       }
       var itembid=res1.item_bid;
+      if(itembid===null){
+        res.json({
+          msg:'item already sold'
+        })
+        return;
+      }
       if(itembid.interested_vendor_id.length===0&&itembid.counter===itembid.vendor_id.length){
         res.json({
           status:'fail',
@@ -76,23 +124,23 @@ router.post('/:id/getVendor',sellerAuth,function(req,res){
           msg:'we will contact you as soon as we find more interested vendors'
         });
       }else{
-        var price=itembid.interested_vendor_id[0].price;
-        var vendor_id=itembid.interested_vendor_id[0].id;
         Seller.findById(seller_id,function(err2,res2){
           if(err2){
             console.log(err2);
           }else{
-            Vendor.findById(vendor_id,function(err3,res3){
-              if(err3){
-                console.log(err3);
-              }else{
-                res.json({
-                  price,
-                  name:res3.name,
-                  distance:distance(res2.latitude,res2.longitude,res3.latitude,res3.longitude)
-                })
-              }
+            var quotes=itembid.interested_vendor_id;
+            vendors=quotes.map(eachVendor=>{
+                  return {
+                    quote_id:eachVendor._id,
+                    vendor_id:eachVendor.vendor_id._id,
+                    price:eachVendor.price,
+                    date:eachVendor.date,
+                    time:eachVendor.time,
+                    name:eachVendor.vendor_id.name,
+                    distance:distance(res2.latitude,res2.longitude,eachVendor.vendor_id.latitude,eachVendor.vendor_id.longitude)
+                  }
             })
+            res.json(vendors);
           }
         })
       }
@@ -103,7 +151,13 @@ router.post('/:id/getVendor',sellerAuth,function(req,res){
 router.post('/:id/vendorReject',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
-  Item.findById(item_id).populate('item_bid').exec(function(err1,res1){
+  var quote_id=req.body.quote_id;
+  Item.findById(item_id).populate({
+        path:'item_bid',
+        populate:{
+          path:'interested_vendor_id'
+        }
+      }).exec(function(err1,res1){
     if(err1){
       console.log(err1);
     }else{
@@ -115,59 +169,61 @@ router.post('/:id/vendorReject',sellerAuth,function(req,res){
         return;
       }
       var newitembid=res1.item_bid;
-      if(newitembid.interested_vendor_id.length===0){
-        res.json({
-          status:'fail',
-          msg:'Invalid API Call'
-        });
-      }
-      newitembid.interested_vendor_id.shift();
+      newitembid.interested_vendor_id=newitembid.interested_vendor_id.filter(interested_vendor=>{
+        return !interested_vendor.equals(quote_id);
+      });
       newitembid.save(function(err0,res0){
         if(err0){
           console.log(err0);
         }else{
-          var itembid=res0;
-          if(itembid.interested_vendor_id.length===0&&itembid.counter===itembid.vendor_id.length){
-            res.json({
-              status:'fail',
-              msg:'No more vendors available.Please request again.'
-            });
-          }else if(itembid.interested_vendor_id.length===0){
-            res.json({
-              status:'fail',
-              msg:'we will contact you as soon as we find more interested vendors'
-            });
-          }else{
-            var price=itembid.interested_vendor_id[0].price;
-            var vendor_id=itembid.interested_vendor_id[0].id;
-            Seller.findById(seller_id,function(err2,res2){
-              if(err2){
-                console.log(err2);
+          Quote.findByIdAndDelete(quote_id,function(err00){
+            if(err00){
+              console.log(err00);
+            }else{
+              var itembid=res0;
+              if(itembid.interested_vendor_id.length===0&&itembid.counter===itembid.vendor_id.length){
+                res.json({
+                  status:'fail',
+                  msg:'No more vendors available.Please request again.'
+                });
+              }else if(itembid.interested_vendor_id.length===0){
+                res.json({
+                  status:'fail',
+                  msg:'we will contact you as soon as we find more interested vendors'
+                });
               }else{
-                Vendor.findById(vendor_id,function(err3,res3){
-                  if(err3){
-                    console.log(err3);
+                var vendors=itembid.interested_vendor_id;
+                Seller.findById(seller_id,function(err2,res2){
+                  if(err2){
+                    console.log(err2);
                   }else{
-                    res.json({
-                      price,
-                      name:res3.name,
-                      distance:distance(res2.latitude,res2.longitude,res3.latitude,res3.longitude)
+                    var quotes=itembid.interested_vendor_id;
+                    vendors=quotes.map(eachVendor=>{
+                          return {
+                            quote_id:eachVendor._id,
+                            vendor_id:eachVendor.vendor_id._id,
+                            price:eachVendor.price,
+                            name:eachVendor.vendor_id.name,
+                            distance:distance(res2.latitude,res2.longitude,eachVendor.vendor_id.latitude,eachVendor.vendor_id.longitude)
+                          }
                     })
+                    res.json(vendors);
                   }
                 })
               }
-            })
-          }
+            }
+          })
+          
         }
       })
     }
   })
 })
 
-  //unchecked
 router.post('/:id/vendorAccept',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
+  var quote_id=req.body.quote_id;
   Item.findById(item_id).populate('item_bid').exec(function(err1,res1){
     if(err1){
       console.log(err1);
@@ -197,54 +253,120 @@ router.post('/:id/vendorAccept',sellerAuth,function(req,res){
         if(err2){
           console.log(err2);
         }else{
-          var price=itembid.interested_vendor_id[0].price;
-          var vendor_id=itembid.interested_vendor_id[0].id;
-          const transaction=new Transaction({
-            vendor:vendor_id,
-            item:item_id,
-            price:price
-          });
-          transaction.save()
-            .then(trans=>{
-              res2.transaction_id=trans._id;
-              res2.item_bid=null;
-              res2.save(function(err3,res3){
-                if(err3){
-                  console.log(err3);
-                }else{
-                  Vendor.findById(vendor_id,function(err4,res4){
-                    if(err4){
-                      console.log('adding transaction failed');
-                      res.status(400).json({
-                        status:'fail',
-                        msg:"transaction failed"
+          Quote.findById(quote_id,function(err20,res20){
+            if(err20){
+              console.log(err20);
+            }else{
+              const transaction=new Transaction({
+                vendor:res20.vendor_id,
+                item:item_id,
+                price:res20.price
+              });
+              transaction.save()
+                .then(trans=>{
+                  res2.transaction_id=trans._id;
+                  // res2.item_bid=null;
+                  res2.save(function(err3,res3){
+                    if(err3){
+                      console.log(err3);
+                    }else{
+                      Vendor.findById(res20.vendor_id,function(err4,res4){
+                        if(err4){
+                          console.log('adding transaction failed');
+                          res.status(400).json({
+                            status:'fail',
+                            msg:"transaction addition to vendor failed"
+                          })
+                          return;
+                        }
+                        res4.transactions.push(trans._id);
+                        res4.save()
+                          .then(res5=>{
+                            itembid.interested_vendor_id=itembid.interested_vendor_id.filter(id=>{
+                              return !id.equals(quote_id)
+                            })
+                            itembid.save(function(err6,res6){
+                              if(err6){
+                                console.log(err6);
+                              }else{
+                                Quote.findByIdAndDelete(quote_id,function(err7){
+                                    if(err7){
+                                      console.log(err7);
+                                    }else{
+                                      res.json({
+                                        msg:'vendor selected'
+                                      })
+                                    }
+                                  })
+                              }
+                            })
+                          //   itembid.interested_vendor_id.map(quote=>{
+                          //     Quote.findByIdAndDelete(quote,function(err6){
+                          //       if(err6){
+                          //         console.log(err6);
+                          //       }
+                          //     })
+                          //     return null;
+                          //   })
+                          //   Item_bid.findByIdAndDelete(itembid._id,function(err6){
+                          //     if(err6){
+                          //       console.log(err);
+                          //     }else{
+                          //       res.json({
+                          //       msg:"vendor successfully selected"
+                          //     })
+                          //   }
+                          // })
+                          // res.json({
+                          //     msg:"vendor successfully selected"
+                          // })
+                        })
+                        .catch(error=>{
+                          res.status(400).json(error)
+                        })
                       })
                     }
-                    res4.transactions.push(trans._id);
-                    res4.save()
-                      .then(res5=>{
-                        Item_bid.findByIdAndDelete(itembid._id,function(err6){
-                          if(err6){
-                            console.log(err);
-                          }else{
-                            res.json({
-                            msg:"vendor successfully selected"
-                          })
-                        }
-                      })
-                    })
-                    .catch(error=>{
-                      res.status(400).json(error)
-                    })
-                  })
-                }
-              });
-            })
-            .catch(err3=>{
-              res.status(400).json(err3);
+                  });
+                })
+                .catch(err3=>{
+                  res.status(400).json(err3);
+              })
+            }
           })
         }          
       })
+    }
+  })
+})
+
+// route to remove current selected vendor and select another one
+router.post('/:id/vendorReport',sellerAuth,function(req,res){
+  var item_id=req.body.item_id;
+  var seller_id=req.params.id;
+  Item.findById(item_id).populate({
+        path:'item_bid',
+      }).exec(function(err1,res1){
+    if(err1){
+      console.log(err1);
+    }else{
+      if(!res1.cust_id.equals(seller_id)){
+        res.json({
+          status:'fail',
+          msg:'the item doesn\'t belong to you'
+        })
+        return;
+      }
+        res1.status='INBID';
+        res1.transaction_id=null;
+        res1.save(function(err1,res1){
+          if(err1){
+            console.log(err1);
+            return;
+          }
+        res.json({
+          msg:'please select the vendor again'
+        })
+      });
     }
   })
 })
@@ -261,7 +383,10 @@ router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
         model:'Sub_cat'
       },{
         path:'transaction_id',
-        model:'Transaction'
+        model:'Transaction',
+        populate:{
+          path:'vendor'
+        }
       }]
   })
   .exec(function(err, response) {
@@ -391,10 +516,14 @@ router.post('/signUp', function(req, res) {
   //upload new item by customer
   ///checked
   ///change required
-  router.post('/:id/items',sellerAuth, function(req, res){
+  router.post('/:id/items',[sellerAuth,uploadImage.single("imageFile")], function(req, res){
     let newItem = new Item(req.body);
     newItem['cust_id']=req.params.id;
     newItem['status']="INBID";
+    if(req.file){
+      newItem['image']=req.file.filename;
+    }
+    
     newItem.save()
         .then(savedItem => {
           Seller.findById(req.params.id,function(err,response){
@@ -411,19 +540,19 @@ router.post('/signUp', function(req, res) {
                     console.log(err2);
                   }else{
                     var arr=subcats.selectionHandle_id;
-                    if(!arr||arr.length===0){
-                      res.json({
-                        msg:"sorry no current vendor is available"
-                      });
-                    }else{
+                    // if(!arr||arr.length===0){
+                    //   res.json({
+                    //     msg:"sorry no current vendor is available"
+                    //   });
+                    // }else{
                       arr=arr.filter(handle=>{
                         return distance(seller.latitude,seller.longitude,handle.vendor_id.latitude,handle.vendor_id.longitude)<config.get('allowedRadius');
                       })
-                      if(arr.length===0){
-                        res.json({
-                          msg:"sorry no current vendor is available"
-                        });
-                      }else{
+                      // if(arr.length===0){
+                      //   res.json({
+                      //     msg:"sorry no current vendor is available"
+                      //   });
+                      // }else{
                         var vendor_id=arr.map((item)=>{
                           return item.vendor_id._id;
                         })
@@ -464,8 +593,8 @@ router.post('/signUp', function(req, res) {
                             });
                           }
                         });
-                      }
-                    }
+                    //  }
+                    //}
                     
                   }
                 })
