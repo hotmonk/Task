@@ -79,6 +79,7 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
       var filtered=response.items.filter((item)=>{
           return (item.status==='INBID');
       });
+      filtered.reverse();
       res.json(filtered);
     }
   });
@@ -399,6 +400,7 @@ router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
       var filtered=response.items.filter((item)=>{
           return (item.status!=='INBID');
       });
+      filtered.reverse();
       res.json(filtered);
     }
   });

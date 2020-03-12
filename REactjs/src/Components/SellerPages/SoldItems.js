@@ -61,6 +61,16 @@ class ViewSelledItem extends Component {
                     <h3>Data of the Vendor selected for the current bid is</h3>
                     <p><strong>Name</strong>{this.state.item.transaction_id.vendor.name}</p>
                     <p><strong>Phone no</strong>{this.state.item.transaction_id.vendor.contact}</p>
+                    {
+                        this.state.item.transaction_id.quantity_taken?(
+                            <p><strong>Quantity collected by vendor</strong>{this.state.item.transaction_id.quantity_taken}</p>
+                        ):( <p>quantity taken by vendor not yet updated</p>)
+                    }
+                    {
+                        this.state.item.transaction_id.method?this.state.item.transaction_id.method==='COD'?(
+                            <p><strong>Method of payment selected</strong> Cash on delivery</p>
+                        ):(<p><strong>Method of payment selected</strong> Online</p>): (<p>method of payment not yet updated not yet updated</p>)
+                    }
                     <button onClick={ this.vendorReport.bind(this) }>Report the vendor for the item</button>
                 </div>
             )

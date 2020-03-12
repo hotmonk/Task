@@ -777,6 +777,39 @@ router.post('/signUp', function(req, res) {
   //  });
   })
 
+  router.post('/:id/quantityTaken',vendorAuth,function(req,res){
+    var item_id=req.body.item_id;
+    Item.findById(item_id).populate([{
+        path: 'cat_id',
+        model: 'Cat'
+      },{
+        path:'sub_cat_id',
+        model:'Sub_cat'
+      },{
+        path:'transaction_id',
+        model:'Transaction'
+      }])
+    .exec(function(err1,res1){
+      if(err1){
+        console.log(err1);
+      }else{
+        var transaction=res1.transaction_id;
+        transaction.quantity_taken=req.body.quantity_taken;
+        if(req.body.reason){
+          transaction.reason=req.body.reason;
+        }
+        transaction.save(function(err2,res2){
+          if(err2){
+            console.log(err2);
+          }else{
+            res1.transaction_id=res2;
+            res.json(res1);
+          }
+        })
+      }
+    })
+  })
+
   ///checked
   ///probably not used anywhere
   router.get('/:id', vendorAuth, function(req, res){

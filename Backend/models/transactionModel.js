@@ -17,6 +17,8 @@ var Transaction = new mongoose.Schema({
         ref: "Item"
     },
     order_id: String,
+    quantity_taken: Number,
+    reason:String,
     ///PRICE QUOTED BY VENDOR
     price: Number,
     rating:Number,
