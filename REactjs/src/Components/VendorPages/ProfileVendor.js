@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
+import Navbar from './Navbar';
 
 class vendorProfile extends Component {
 
@@ -31,6 +31,7 @@ class vendorProfile extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+              <Navbar />
               <VendorLogout/>
                 <h1>welcome {this.props.vendorData.name}</h1>
                 <p>Here are all the details you entered</p>
@@ -39,28 +40,16 @@ class vendorProfile extends Component {
                 <h3>Contact:{this.props.vendorData.contact}</h3>
                 <h3>Address:{this.props.vendorData.address}</h3>
                 <button>Edit Details</button>
-                <div>
-                <Link to={"/vendor/newsfeed"}>View Items For Sale</Link>
-              </div>
-              <div>
-                <Link to={"/vendor/viewBuyedItems"}>View All items purchased by you</Link>
-              </div>
-              <div>
-                        <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
-                </div>
-                <div>
-                        <Link to='/vendor/chooseCat'>choose categories to quote for</Link>
-                </div>
-                <div>
-                        <Link to='/vendor/editPrice'>edit quoted price for items</Link>
-                </div>
+                
               
               {/* <div>
                 <Link to={"/vendor/soldItems"}>View All requests and their status</Link>
               </div> */}
             </div>
             ) : (
-                <h4>Please Login First!</h4>
+                <div class="alert alert-danger" role="alert">
+                  Please Login First!
+                </div>
               )}
             </div>
           );

@@ -6,7 +6,7 @@ import { clearErrors } from '../../actions/errorActions';
 import {Link} from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
-import {Route} from 'react-router-dom';
+import Navbar from './Navbar';
 
 class NewsFeed extends Component {
 
@@ -178,6 +178,7 @@ class NewsFeed extends Component {
             <div>
               {this.props.isAuthenticated ? (
                 <div>
+                    <Navbar />
                     <VendorLogout/>
                     {
                         this.state.item? this.state.item.imageData? (
@@ -233,12 +234,6 @@ class NewsFeed extends Component {
                         </div>
                     )
                     }
-                    <div>
-                            <Link to='/vendor/viewBuyedItems'>View all purchased items</Link>
-                    </div>
-                    <div>
-                            <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
-                    </div>
                 </div>
             ) : (
                 <h4>Please Login First!</h4>

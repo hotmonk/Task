@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Link } from 'react-router-dom';
 import SellerLogout from './LogoutSeller';
 import StarRatingComponent from 'react-star-rating-component';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class ViewSelledItem extends Component {
 
@@ -167,6 +167,7 @@ class ViewSelledItem extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
+                <Navbar />
                 <SellerLogout/>
                 {
                     this.state.item?(
@@ -195,9 +196,6 @@ class ViewSelledItem extends Component {
                 </div>
                 )
                 }
-                <div>
-                    <Link to="./newItem">Add new Item</Link>
-                </div>
             </div>
             ) : (
                 <h4>Please Login First!</h4>

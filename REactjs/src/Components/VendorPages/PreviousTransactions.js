@@ -4,9 +4,9 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class ViewBuyedItem extends Component {
 
@@ -64,6 +64,7 @@ class ViewBuyedItem extends Component {
               {this.props.isAuthenticated ? (
             <div>
                 <VendorLogout/>
+                <Navbar />
                 {
                     this.state.item?(
                     <div>
@@ -90,9 +91,6 @@ class ViewBuyedItem extends Component {
                 </div>
                 )
                 }
-                <div>
-                    <Link to="./newItem">Add new Item</Link>
-                </div>
             </div>
             ) : (
                 <h4>Please Login First!</h4>

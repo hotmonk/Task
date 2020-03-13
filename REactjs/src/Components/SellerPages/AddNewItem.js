@@ -2,9 +2,9 @@ import React,{Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
-import { Link } from 'react-router-dom';
 import SellerLogout from './LogoutSeller';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class ItemForm extends Component
 {
@@ -167,6 +167,7 @@ class ItemForm extends Component
             <div>
               {this.props.isAuthenticated ? (
                 <div>
+                    <Navbar />
                     <SellerLogout/>
                  {   this.state.categories&&this.state.categories.length ? (
                         <form onSubmit={this.submitHandler}>
@@ -214,9 +215,6 @@ class ItemForm extends Component
                         <input type="submit" />
                     </form> ) : (<div>Sorry No vendor available</div>)
                 }
-                <div>
-                    <Link to={"/seller/soldItems"}>View All the sold items by you</Link>
-                </div>
             </div>
             ) : (
                 <h4>Please Login First!</h4>

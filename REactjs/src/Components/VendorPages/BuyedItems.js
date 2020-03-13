@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Link } from 'react-router-dom';
 import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class ViewBuyedItem extends Component {
 
@@ -141,6 +141,7 @@ class ViewBuyedItem extends Component {
                 ) : <div>
                 {this.props.isAuthenticated ? (
                     <div>
+                        <Navbar />
                         <VendorLogout/>
                         {
                             this.state.item?(
@@ -186,12 +187,6 @@ class ViewBuyedItem extends Component {
                                 </div>
                             )
                         }
-                        <div>
-                            <Link to="./newsfeed">Purchase new Item</Link>
-                        </div>
-                        <div>
-                                <Link to='/vendor/newWasteType'>Request for new category or sub-category</Link>
-                        </div>
                     </div>
                 ) : (
                   <h4>Please Login First!</h4>
