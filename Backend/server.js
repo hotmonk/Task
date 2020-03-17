@@ -5,19 +5,24 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const ejs=require('ejs');
 
+/// specify the post to connect to backend
 const PORT = 4000;
 
+// body parser files
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(cors());
 
+// connect to the database
 mongoose.connect('mongodb://127.0.0.1:27017/WasteManagement',{useNewUrlParser: true,  useUnifiedTopology: true, useCreateIndex: true});
 const connection=mongoose.connection;
+
 
 connection. once('open',function(){
   console.log("Mongoose database connected");
 });
 
+// routes to connect to
 app.use('/seller/login', require('./routes/sellerAuth.js'));
 app.use('/vendor/login', require('./routes/vendorAuth.js'));
 app.use('/seller',require('./routes/sellerRoutes.js'));
@@ -25,7 +30,7 @@ app.use('/vendor',require('./routes/vendorRoutes.js'));
 app.use('/categories',require('./routes/categoryRoutes.js'));
 app.use('/payment',require('./routes/paymentRoutes.js'));
 
-
+/// server port connection function
 app.listen(PORT, function(){
   console.log("Server is running on PORT: "+ PORT);
 });

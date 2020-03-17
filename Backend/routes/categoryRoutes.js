@@ -4,8 +4,21 @@ var Cat = require('../models/catModel.js');
 var Sub_cat = require('../models/sub_catModel.js');
 
 
-///GET ALL CATEGORIES
-///checked
+/*
+  @route : `GET` `/categories/`
+  @desc  : Get all the categories present in the database to all item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.get("/",function(req,res){
     Cat.find({},function(err, allCategories){
       if(err){

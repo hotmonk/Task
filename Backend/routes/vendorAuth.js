@@ -3,13 +3,26 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
-const auth = require('../middleware/vendorAuth');
+const vendorAuth = require('../middleware/vendorAuth');
 
 const Vendor = require('../models/vendorModel');
 
-// @route   POST api/auth
-// @desc    Auth user
-// @access  Public
+
+/*
+  @route : `POST` `/vendor/login`
+  @desc  : login to the website as vendor
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/', (req, res) => {
   const { email, password } = req.body;
 
@@ -49,10 +62,22 @@ router.post('/', (req, res) => {
     })
 });
 
-// @route   GET api/auth/user
-// @desc    Get user data
-// @access  Private
-router.get('/vendor', auth, (req, res) => {
+/*
+  @route : `GET` `/vendor/login/vendor`
+  @desc  : get vendor data of the current vendor
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+router.get('/vendor', vendorAuth, (req, res) => {
   Vendor.findById(req.vendor.id)
     .select('-password')
     .then(vendor => res.json(vendor));

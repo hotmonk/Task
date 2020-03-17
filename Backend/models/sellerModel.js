@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+/// MODEL TO STORE SELLER DATA TO THE DATABASE
 var Seller = new mongoose.Schema({
     //NAME OF VENDOR
     name: {

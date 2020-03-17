@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+//MODEL TO ADD QUOTATIONSOF EACH VENDOR FOR EACH ITEM 
 var SelectionHandler = new mongoose.Schema({
     ///HANDLER ID OF ASSOCIATED ITEM
     vendor_id:{

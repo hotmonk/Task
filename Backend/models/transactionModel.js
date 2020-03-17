@@ -11,22 +11,26 @@ var Transaction = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vendor"
     },
-    ///ITEM ID INVILVED IN DEAL
+    ///ITEM ID INVOLVED IN DEAL
     item: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Item"
     },
+    /// ORDER ID recieved during paytm callback
     order_id: String,
+    ///quantity of the item taken by the vendor
     quantity_taken: Number,
+    ///reason why less quantity of the item is taken by vendor
     reason:String,
     ///PRICE QUOTED BY VENDOR
     price: Number,
     rating:Number,
-    ///either COD or ONLINE
+    ///EITHER COD OR ONLINE
     method:String,
+    /// STATUS OF THE PAYMENT
     status:{
         type:Boolean,
-        Default: false
+        Default: true
     }
 });
 

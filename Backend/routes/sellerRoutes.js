@@ -17,6 +17,8 @@ var News_feed=require('../models/newsFeedModel.js');
 var Quote=require('../models/quoteModel.js');
 
 
+//function description- function to calculate distance between two given locations
+//                      provided latitude and longitude
 function distance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;    // Math.PI / 180
   var c = Math.cos;
@@ -28,6 +30,7 @@ function distance(lat1, lon1, lat2, lon2) {
   return dist;
 }
 
+// part of helper function for multer library to process images and save to public/uploads library
 const storage = multer.diskStorage({
   destination: "./public/uploads/",
   filename: function(req, file, cb){
@@ -35,6 +38,7 @@ const storage = multer.diskStorage({
   }
 });
 
+// part of helper function for multer library to process images and save to public/uploads library
 const uploadImage = multer({
   storage: storage,
   limits:{fileSize: 1000000},
@@ -43,6 +47,7 @@ const uploadImage = multer({
   }
 });
 
+// helper function for multer library to process images and save to public/uploads library
 function checkFileType(file, cb){
   // Allowed ext
   const filetypes = /jpeg|jpg|png|gif/;
@@ -58,6 +63,21 @@ function checkFileType(file, cb){
   }
 }
 
+/*
+  @route : `GET` `/seller/:seller_id/viewItem`
+  @desc  : get list of all the items added by the seller and whose vendor is still not selected
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.get('/:id/viewItem',sellerAuth,function(req,res){
     Seller.findById(req.params.id).populate({ 
       path: 'items',
@@ -85,6 +105,21 @@ router.get('/:id/viewItem',sellerAuth,function(req,res){
   });
 });
 
+/*
+  @route : `POST` `/seller/:seller_id/getVendors`
+  @desc  : get list of all the vendors interested for bidding on the item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/:id/getVendors',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
@@ -149,6 +184,21 @@ router.post('/:id/getVendors',sellerAuth,function(req,res){
   })
 })
 
+/*
+  @route : `POST` `/seller/:seller_id/vendorReject`
+  @desc  : reject a vendor from the bidding of the item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/:id/vendorReject',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
@@ -181,6 +231,7 @@ router.post('/:id/vendorReject',sellerAuth,function(req,res){
             if(err00){
               console.log(err00);
             }else{
+              ///previous function is called again. redundancy
               var itembid=res0;
               if(itembid.interested_vendor_id.length===0&&itembid.counter===itembid.vendor_id.length){
                 res.json({
@@ -221,6 +272,21 @@ router.post('/:id/vendorReject',sellerAuth,function(req,res){
   })
 })
 
+/*
+  @route : `POST` `/seller/:seller_id/vendorAccept`
+  @desc  : Accept a vendor who bidded for the item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/:id/vendorAccept',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
@@ -340,13 +406,33 @@ router.post('/:id/vendorAccept',sellerAuth,function(req,res){
   })
 })
 
-// route to remove current selected vendor and select another one
+/*
+  @route : `POST` `/seller/:seller_id/vendorReport`
+  @desc  : route to remove/report  current selected vendor and select another one
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+// to be checked
 router.post('/:id/vendorReport',sellerAuth,function(req,res){
   var item_id=req.body.item_id;
   var seller_id=req.params.id;
-  Item.findById(item_id).populate({
+  var reason=req.body.reason;
+  Item.findById(item_id).populate([{
         path:'item_bid',
-      }).exec(function(err1,res1){
+        model:'Item_bid'
+      },{
+        path:'transaction_id',
+        model:'Transaction'
+      }]).exec(function(err1,res1){
     if(err1){
       console.log(err1);
     }else{
@@ -357,22 +443,45 @@ router.post('/:id/vendorReport',sellerAuth,function(req,res){
         })
         return;
       }
-        res1.status='INBID';
-        res1.transaction_id=null;
-        res1.save(function(err1,res1){
-          if(err1){
-            console.log(err1);
-            return;
-          }
-        res.json({
-          msg:'please select the vendor again'
-        })
-      });
+      res1.transaction_id.status=false;
+      res1.transaction_id.reason=reason;
+      res1.transaction_id.save(function(err2,res2){
+        if(err2){
+          console.log(err2);
+        }else{
+            res1.status='INBID';
+            res1.transaction_id=null;
+            res1.save(function(err3,res3){
+              if(err3){
+                console.log(err3);
+                return;
+              }
+              res.json({
+                msg:'please select the vendor again'
+              })
+            });
+        }
+      })
+        
     }
   })
 })
   
-  ///checked
+/*
+  @route : `GET` `/seller/:seller_id/viewSelledItem`
+  @desc  : get list of all the items added by the seller and purchased by someone else
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
     Seller.findById(req.params.id).populate({ 
       path: 'items',
@@ -406,7 +515,23 @@ router.get('/:id/viewSelledItem',sellerAuth,function(req,res){
   });
 });
 
-///save rating by a seller for vendor
+
+/*
+  @route : `POST` `/seller/:seller_id/saveRating`
+  @desc  : rate a vendor by seller as per his behavior and experience
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+// check
 router.post('/:id/saveRating',sellerAuth,function(req,res){
   Transaction.findById(req.body.transaction_id,function(err,transaction){
     if(err){
@@ -438,8 +563,22 @@ router.post('/:id/saveRating',sellerAuth,function(req,res){
     }
   })
 });
-  
-///checked
+
+/*
+  @route : `POST` `/seller/signUp`
+  @desc  : register as seller on the website
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/signUp', function(req, res) {
   const { name, email, contact, address, password ,longitude,latitude} = req.body;
   
@@ -500,8 +639,21 @@ router.post('/signUp', function(req, res) {
     })
 });  
   
-  //seller profile
-  //checked
+ /*
+  @route : `GET` `/seller/:seller_id`
+  @desc  : get all the data of the seller
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.get('/:id', sellerAuth, function(req, res){
     Seller.findById(req.params.id).populate("items").exec(function(err, foundSeller){
       if(err)
@@ -515,8 +667,128 @@ router.post('/signUp', function(req, res) {
     })
   })
   
-  //upload new item by customer
-  ///checked
+
+   /*
+  @route : `POST` `/seller/:seller_id/cashRecieved`
+  @desc  : to handle cash recieved by the seller
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+router.post('/:seller_id/cashRecieved', sellerAuth, function(req, res){
+     var item_id=req.body.item_id;
+     Item.findById(item_id).populate([{
+        path:'item_bid',
+        model:'Item_bid',
+        populate:{
+          path:'interested_vendor_id',
+          model:'Quote'
+        }
+      },{
+        path:'transaction_id',
+        model:'Transaction',
+        populate:{
+          path:'vendor',
+          model:'Vendor'
+        }
+      }]).exec(function(err1,res1){
+          if(err1){
+            console.log(err1);
+          }else{
+            res1.status='RATING'
+        res1.save(function(err2,res2){
+          if(err2){
+            console.log(err2);
+          }else{
+              var vendor=res1.transaction_id.vendor;
+              vendor.defaulter=true;
+              vendor.defaulterAmount=res1.transaction_id.quantity_taken*res1.transaction_id.price*config.get('commissionPercentage')/100;
+              vendor.save(function(err3,res3){
+                if(err3){
+                  console.log(err3);
+                }else{
+                  var quote_ids=res1.item_bid.interested_vendor_id.map(quote=>{
+                      return quote._id;
+                  })
+                  var vendor_ids=res1.item_bid.interested_vendor_id.map(vendor=>{
+                    return quote.vendor_id;
+                  })
+                  var leftVendors = res1.item_bid.vendor_id.filter( function(el){
+                    return !vendor_ids.includes(el);
+                  });
+                  quote_ids.map(quote=>{
+                    Quote.findByIdAndDelete(quote,function(err6){
+                        if(err6){
+                          console.log(err6);
+                        }
+                      })
+                      return null;
+                  })
+                  leftVendors.map(leftVendor=>{
+                    Vendor.findById(leftVendor,function(err6,res6){
+                      if(err6){
+                        console.log(err6);
+                      }else{
+                        News_feed.findById(res6.newsFeed,function(err7,res7){
+                          if(err7){
+                            console.log(err7);
+                          }else{
+                              var arr1=res7.items.filter(item=>{
+                                return !item.equals(item_id);
+                              });
+                              res7.items=arr1;
+                              res7.save(function(err8){
+                                if(err8){
+                                  console.log(err8);
+                                }else{
+                                  return null;
+                                }
+                              });   
+                          }
+                        })
+                      }
+                    });
+                  })
+                  Item_bid.findByIdAndDelete(res1.item_bid._id,function(err6){
+                    if(err6){
+                      console.log(err6);
+                    }else{
+                      res.json({
+                        msg:"cash recieved recorded"
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          })
+          }
+      })
+})
+
+  /*
+  @route : `POST` `/seller/:seller_id/items`
+  @desc  : upload a new item added by the seller
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   ///change required
   router.post('/:id/items',[sellerAuth,uploadImage.single("imageFile")], function(req, res){
     let newItem = new Item(req.body);
@@ -525,7 +797,6 @@ router.post('/signUp', function(req, res) {
     if(req.file){
       newItem['image']=req.file.filename;
     }
-    
     newItem.save()
         .then(savedItem => {
           Seller.findById(req.params.id,function(err,response){

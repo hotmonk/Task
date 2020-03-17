@@ -18,8 +18,21 @@ const vendorAuth = require('../middleware/vendorAuth.js');
 var News_feed=require('../models/newsFeedModel.js');
 var Quote=require('../models/quoteModel.js');
 
-///VENDOR ROUTES
-///checked
+/*
+  @route : `POST` `/vendor/signUp`
+  @desc  : signup to the website as vendor
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/signUp', function(req, res) {
     const { name, email, contact, address, password ,longitude,latitude} = req.body;
   
@@ -99,8 +112,21 @@ router.post('/signUp', function(req, res) {
       })
   });  
 
-
-  ///delete any category preferance
+/*
+  @route : `DELETE` `/vendor/selections/:selectionHandlerid`
+  @desc  : delete any category preferance
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.delete('/selections/:selectionHandlerid',vendorAuth,function(req,res){
       SelectionHandler.findById(req.params.selectionHandlerid,function(err,selectionHandler){
         if(err){
@@ -171,7 +197,21 @@ router.post('/signUp', function(req, res) {
       })
   })
 
-  ///fetch all desired categories
+/*
+  @route : `GET` `/vendor/selections/:selectionid`
+  @desc  : fetch all desired categories PREFERENCES OF VENDOR
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.get('/selections/:selectionid',vendorAuth,function(req,res){
     Selection.findById(req.params.selectionid).populate({
       path:'intake',
@@ -193,41 +233,22 @@ router.post('/signUp', function(req, res) {
     })
   });
 
-  ///change price of items
-  router.put('/selections/:selectionid',vendorAuth,function(req,res){
-    Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
-      if(err2){
-        console.log("finding of selection failed" + err2);
-      }else{
-        var mapped=req.body.items.map((item,index)=>{
-          if(item.price!==selectionList.intake[index].price){
-            SelectionHandler.findById(item._id,function(err3,response){
-              if(err3){
-                console.log(err3);
-                return false;
-              }else{
-                response.price=item.price;
-                response.save(function(err4,saved){
-                  if(err4){
-                    console.log(err4);
-                  }else{
-                    return true;
-                  }
-                });
-              }
-            })
-          }else{
-            return false;
-          }
-        })
-        res.json({
-          msg:"saved all the changes made in prices"
-        })
-      }
-    })
-  })
 
-  ///Add new wanted category to selectionlist for preferance
+ /*
+  @route : `POST` `/vendor/selections/:selectionid`
+  @desc  : Add new wanted category to selectionlist for preferance
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.post('/selections/:selectionid',vendorAuth,function(req,res){
     Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
       if(err2){
@@ -311,6 +332,56 @@ router.post('/signUp', function(req, res) {
     }
     })
   })
+
+  /*
+  @route : `PUT` `/vendor/selections/:selectionid`
+  @desc  : change price of items
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+  router.put('/selections/:selectionid',vendorAuth,function(req,res){
+    Selection.findById(req.params.selectionid).populate('intake').exec(function(err2,selectionList){
+      if(err2){
+        console.log("finding of selection failed" + err2);
+      }else{
+        var mapped=req.body.items.map((item,index)=>{
+          if(item.price!==selectionList.intake[index].price){
+            SelectionHandler.findById(item._id,function(err3,response){
+              if(err3){
+                console.log(err3);
+                return false;
+              }else{
+                response.price=item.price;
+                response.save(function(err4,saved){
+                  if(err4){
+                    console.log(err4);
+                  }else{
+                    return true;
+                  }
+                });
+              }
+            })
+          }else{
+            return false;
+          }
+        })
+        res.json({
+          msg:"saved all the changes made in prices"
+        })
+      }
+    })
+  })
+
+ 
   // router.post(':id/selections',vendorAuth,function(req,res){
   //   Vendor.findById(req.params.id,function(err,vendor){
   //     if(err){
@@ -449,6 +520,21 @@ router.post('/signUp', function(req, res) {
   //   })
   // })
   
+  /*
+  @route : `POST` `/vendor/:vendor_id/acceptOffer`
+  @desc  : to bid for an item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.post('/:id/acceptOffer',vendorAuth,function(req,res){
       var vendor_id=req.params.id;
       var item_id=req.body.item_id;
@@ -463,6 +549,12 @@ router.post('/signUp', function(req, res) {
         if(err0){
           console.log(err0); 
         }else{
+          if(res0.status!=='INBID'&&res0.status!=='PAYMENT'){
+            res.json({
+              msg:'Item already sold'
+            })
+            return;
+          }
           var arr=res0.sub_cat_id.selectionHandle_id;
           arr=arr.filter(item=>{
             return item.vendor_id.equals(vendor_id);
@@ -523,6 +615,21 @@ router.post('/signUp', function(req, res) {
       })
   })
 
+  /*
+  @route : `POST` `/vendor/:vendor_id/rejectOffer`
+  @desc  : to reject the offer of the item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.post('/:id/rejectOffer',vendorAuth,function(req,res){
     var vendor_id=req.params.id;
     var item_id=req.body.item_id;
@@ -530,6 +637,12 @@ router.post('/signUp', function(req, res) {
       if(err1){
         console.log(err1); 
       }else{
+        if(res1.status!=='INBID'&&res1.status!=='PAYMENT'){
+          res.json({
+            msg:'Item already sold'
+          })
+          return;
+        }
         var res2=res1.item_bid;
         res2.counter=res2.counter+1;
         res2.save(function(err3,res3){
@@ -629,7 +742,21 @@ router.post('/signUp', function(req, res) {
   //   })
   // })
 
-  ///select payment method for an item
+  /*
+  @route : `POST` `/vendor/:vendor_id/paymentMethod`
+  @desc  : select payment method for an item
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   /// to be sent item_id and method
   router.post('/:id/paymentMethod',vendorAuth,function(req,res){
     var item_id=req.body.item_id;
@@ -665,7 +792,22 @@ router.post('/signUp', function(req, res) {
     })
   })
   
-  ///fetch all purchased items
+
+  /*
+  @route : `GET` `/vendor/:vendor_id/viewBuyedItem`
+  @desc  : fetch all purchased items
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.get('/:id/viewBuyedItem',vendorAuth,function(req,res){
     Vendor.findById(req.params.id).populate({ 
       path: 'transactions',
@@ -693,29 +835,61 @@ router.post('/signUp', function(req, res) {
         var filtered=response.transactions.map(trans=>{
           return trans.item
         })
+        filtered.reverse();
         res.json(filtered);
       }
     });
   });
 
-  ///to get item data by its id
-  router.get('/viewItem/:id',vendorAuth,function(req,res){
-    Item.findById(req.params.id).populate([{
-      path: 'cat_id',
-      model: 'Cat'
-    },{
-      path:'sub_cat_id',
-      model:'Sub_cat'
-    }])
-    .exec(function(err,viewItem){
-      if(err){
-        console.log(err);
-      }else{
-        res.json(viewItem);
-      }
-    })
-  })
   
+  /*
+  @route : `GET` `/vendor/viewItem/:item_id`
+  @desc  : to get item data by its id
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+router.get('/viewItem/:id',vendorAuth,function(req,res){
+  Item.findById(req.params.id).populate([{
+    path: 'cat_id',
+    model: 'Cat'
+  },{
+    path:'sub_cat_id',
+    model:'Sub_cat'
+  }])
+  .exec(function(err,viewItem){
+    if(err){
+      console.log(err);
+    }else{
+      res.json(viewItem);
+    }
+  })
+})
+  
+
+/*
+  @route : `GET` `/vendor/newsfeed/:vendor_id`
+  @desc  : fetch list of items for the vendor
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.get('/newsfeed/:id', vendorAuth, function(req, res){
     Vendor.findById(req.params.id).populate({
       path:'newsFeed',
@@ -777,6 +951,21 @@ router.post('/signUp', function(req, res) {
   //  });
   })
 
+/*
+  @route : `POST` `/vendor/:vendor_id/quantityTaken`
+  @desc  : vendor enters the quantity of item taken from seller
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.post('/:id/quantityTaken',vendorAuth,function(req,res){
     var item_id=req.body.item_id;
     Item.findById(item_id).populate([{
@@ -809,36 +998,30 @@ router.post('/signUp', function(req, res) {
       }
     })
   })
-
-  ///checked
-  ///probably not used anywhere
-  router.get('/:id', vendorAuth, function(req, res){
-    Vendor.findById(req.params.id, function(err, foundVendor){
-      if(err)
-      {
-        console.log(err);
-      }
-      else
-      {
-        res.json(foundVendor);
-      }
-    })
-  })
   
-  
-  ///new category request
+/*
+  @route : `POST` `/vendor/newWasteType`
+  @desc  : add a new category to the list of categories
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
   router.post('/newWasteType', vendorAuth, function(req, res){
     let request = new Cat_request(req.body);
     request.vendor_id =req.vendor.id;
     Cat.findOne({name:(req.body.cat_name.toLowerCase())},function(err,category){
-        if(err)
-        {
+        if(err){
           console.log(err);
-        }
-        else
-        {
-          if(category)
-          {
+        }else{
+          if(category){
             Sub_cat.findOne({name:(req.body.sub_cat_name.toLowerCase())},function(err2,subcategory){
               if(err2){
                 console.log(err2);
@@ -868,9 +1051,7 @@ router.post('/signUp', function(req, res) {
                 }
               }
             })
-          }
-          else
-          {
+          }else{
             let newCat = new Cat({name: req.body.cat_name});
             newCat.save()
               .then(newCat => {

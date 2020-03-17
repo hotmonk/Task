@@ -108,9 +108,8 @@ class ViewBuyedItem extends Component {
         })
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/paymentMethod',body,config)
             .then(response=>{
-                console.log(response.data);
                 this.setState({
-                    msg:response.data
+                    msg:response.data.msg
                 })
                 axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                     .then(response=>{
@@ -118,6 +117,7 @@ class ViewBuyedItem extends Component {
                             items:response.data,
                             item:null
                         })
+                        return;
                     })
                     .catch(error=>{
                         console.log(error);
@@ -185,7 +185,7 @@ class ViewBuyedItem extends Component {
 
     handleReason(e){
         this.setState({
-            reasondesc:e.target.value
+            reasonDesc:e.target.value
         })
     }
 
@@ -193,7 +193,7 @@ class ViewBuyedItem extends Component {
         return (
             <div>
                 {
-                    this.state.msg?(<h1>{this.state.msg}</h1>):null
+                    this.state.msg?(<div><p>{this.state.msg}</p></div>):null
                 }
                 { this.state.paymentInfo? (
                     <div>
@@ -219,8 +219,13 @@ class ViewBuyedItem extends Component {
                                 <h2> category: {this.state.item.cat_id.name}</h2> 
                                 <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                                 <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                                {   
-                                    this.state.item.status==='PAYMENT'? !this.state.item.transaction_id.quantity_taken?(
+                                {
+                                    this.state.item.transaction_id.status ?(<div>
+                                                <h1>the seller rejected the offer</h1>
+                                                <h2>Reason :</h2>
+                                                <p>{this.state.item.transaction_id.reason}</p>
+                                            </div>
+                                        ):this.state.item.status==='PAYMENT'? !this.state.item.transaction_id.quantity_taken?(
                                         <div>
                                             <input type='text' onChange={this.handleQuantityTaken} placeholder='quantity taken from seller' />
                                             <br/>

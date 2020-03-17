@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+/// mODELTO STORE VENDOR INFORMATION IN DATABASE
 var Vendor = new mongoose.Schema({
     ///name of vendor
     name: {

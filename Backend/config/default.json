@@ -1,5 +1,6 @@
 {
   "jwtSecretseller": "SecretSeller",
   "jwtSecretvendor": "SecretVendor",
-  "allowedRadius":50
+  "allowedRadius":50,
+  "commissionPercentage":10
 }
