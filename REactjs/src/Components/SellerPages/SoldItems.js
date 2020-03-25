@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import SellerLogout from './LogoutSeller';
 import StarRatingComponent from 'react-star-rating-component';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
@@ -232,7 +231,6 @@ class ViewSelledItem extends Component {
               {this.props.isAuthenticated ? (
             <div>
                 <Navbar />
-                <SellerLogout/>
                 {
                     this.state.item?(
                     <div>

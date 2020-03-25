@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import VendorLogout from './LogoutVendor';
 import Navbar from './Navbar';
 
 class vendorProfile extends Component {
@@ -32,7 +31,6 @@ class vendorProfile extends Component {
               {this.props.isAuthenticated ? (
             <div>
               <Navbar />
-              <VendorLogout/>
                 <h1>welcome {this.props.vendorData.name}</h1>
                 <p>Here are all the details you entered</p>
                 <h3>Name:{this.props.vendorData.name}</h3>
@@ -47,7 +45,7 @@ class vendorProfile extends Component {
               </div> */}
             </div>
             ) : (
-                <div class="alert alert-danger" role="alert">
+                <div className="alert alert-danger" role="alert">
                   Please Login First!
                 </div>
               )}

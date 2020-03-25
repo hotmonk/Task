@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import VendorLogout from './LogoutVendor';
 import axios from 'axios';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
@@ -193,7 +192,6 @@ class chooseCat extends Component {
                     {this.props.isAuthenticated ? (
                         <div>
                             <Navbar />
-                            <VendorLogout/>
                             {   this.state.categories&&this.state.categories.length ? (
                                 <form onSubmit={this.submitHandler}>
                                     <select onChange={this.handleCategory} value={this.state.cat_id} >

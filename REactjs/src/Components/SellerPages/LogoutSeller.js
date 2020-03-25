@@ -11,7 +11,7 @@ export class SellerLogout extends Component {
   render() {
     return (
       <Fragment>
-        <button onClick={this.props.sellerLogout}>
+        <button className="btn btn-outline-light my-2 my-sm-0" onClick={this.props.sellerLogout}>
           Logout Seller
         </button>
       </Fragment>

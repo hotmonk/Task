@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import SellerLogout from './LogoutSeller';
 import Navbar from './Navbar';
 
 class sellerProfile extends Component {
@@ -26,7 +25,6 @@ class sellerProfile extends Component {
               {this.props.isAuthenticated ? (
                 <div>
                   <Navbar />
-                  <SellerLogout />
                   <div>
                       <h1>Welcome {this.props.sellerData.name}</h1>
                       <p>Here are all your Details..</p>
@@ -38,7 +36,7 @@ class sellerProfile extends Component {
                   </div>
                 </div>
               ) : (
-                <div class="alert alert-danger" role="alert">
+                <div className="alert alert-danger" role="alert">
                   Please Login First!
                 </div>
               )}

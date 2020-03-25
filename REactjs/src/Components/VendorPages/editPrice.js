@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import VendorLogout from './LogoutVendor';
 import axios from 'axios';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
@@ -123,7 +121,6 @@ class editPrice extends Component {
               {this.props.isAuthenticated ? (
             <div>
               <Navbar />
-              <VendorLogout/>
               <div>
                     {
                       this.state.items&&this.state.items.length ?(

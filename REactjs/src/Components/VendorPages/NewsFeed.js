@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import {Link} from 'react-router-dom';
-import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
 
@@ -179,7 +177,6 @@ class NewsFeed extends Component {
               {this.props.isAuthenticated ? (
                 <div>
                     <Navbar />
-                    <VendorLogout/>
                     {
                         this.state.item? this.state.item.imageData? (
                         <div>

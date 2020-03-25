@@ -1,30 +1,31 @@
 import React from "react";
+import SellerLogout from "./LogoutSeller";
 
 export default function Navbar() {
 	return (
         <div>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">Seller</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a className="navbar-brand" href="#">Seller</a>
+                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/seller/profile">Profile</a>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul className="navbar-nav mr-auto">
+                        <li className="nav-item">
+                            <a className="nav-link" href="/seller/profile">Profile</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/seller/newItem">Add Item for sale</a>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/seller/newItem">Add Item for sale</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/seller/items">View all added items</a>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/seller/items">View all added items</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/seller/soldItems">View all sold items</a>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/seller/soldItems">View all sold items</a>
                         </li>
                     </ul>
-                    <button class="btn btn-outline-light my-2 my-sm-0"> Logout </button>
+                    <SellerLogout />
                 </div>
             </nav>
         </div>

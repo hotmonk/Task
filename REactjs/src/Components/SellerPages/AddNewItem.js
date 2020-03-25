@@ -2,7 +2,6 @@ import React,{Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
-import SellerLogout from './LogoutSeller';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
 
@@ -168,7 +167,6 @@ class ItemForm extends Component
               {this.props.isAuthenticated ? (
                 <div>
                     <Navbar />
-                    <SellerLogout/>
                  {   this.state.categories&&this.state.categories.length ? (
                         <form onSubmit={this.submitHandler}>
                             <select onChange={this.handleCategory} value={this.state.cat_id} >

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
 import Navbar from './Navbar';
 
@@ -211,7 +210,6 @@ class ViewBuyedItem extends Component {
                 {this.props.isAuthenticated ? (
                     <div>
                         <Navbar />
-                        <VendorLogout/>
                         {
                             this.state.item?(
                             <div>
