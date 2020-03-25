@@ -188,7 +188,7 @@ class NewsFeed extends Component {
                             <h2> category: {this.state.item._doc.cat_id.name}</h2> 
                             <h2> subcategory: {this.state.item._doc.sub_cat_id.name}</h2>
                             <h2> quantity: {this.state.item._doc.quantity}</h2>{this.state.item._doc.sub_cat_id.quantity_type}
-                             <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item image"></img>
+                             <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item"></img>
                              <br/>
 
                              <input type="date" onChange={this.handleDate} />

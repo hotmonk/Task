@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 
+
+//Model to store categories of items
 var Cat = new mongoose.Schema({
   ///NAME OF CATEGORY
     name:{

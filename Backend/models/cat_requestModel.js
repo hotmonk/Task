@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 
+
+//Model to store data of request of new category/subcategory to be added
 var Cat_request = new mongoose.Schema({
     ///stores vendor id who requested current addition
     vendor_id: { 

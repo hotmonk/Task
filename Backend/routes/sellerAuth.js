@@ -3,14 +3,26 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');
-const auth = require('../middleware/sellerAuth');
+const sellerAuth = require('../middleware/sellerAuth');
 
 const Seller = require('../models/sellerModel');
 
-// @route   POST api/auth
-// @desc    Auth user
-// @access  Public
-//checked
+
+/*
+  @route : `POST` `/seller/login`
+  @desc  : login to the account
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
 router.post('/', (req, res) => {
   const { email, password } = req.body;
 
@@ -48,10 +60,22 @@ router.post('/', (req, res) => {
     })
 });
 
-// @route   GET api/auth/user
-// @desc    Get user data
-// @access  Private
-router.get('/seller', auth, (req, res) => {
+/*
+  @route : `GET` `/seller/login/seller`
+  @desc  : get all the data about the seller
+  @response format: {
+      body: {
+          // Contains data or errors
+      }
+  }
+  @status codes:
+      200:OK
+      400:Bad Request
+      401:Unauthorized
+      404:Not Found
+      500:Internal Server Error
+*/
+router.get('/seller', sellerAuth, (req, res) => {
   Seller.findById(req.seller.id)
     .select('-password')
     .then(seller => res.json(seller));

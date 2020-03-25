@@ -1,9 +1,10 @@
 const config = require('config');
 const jwt = require('jsonwebtoken');
 
+/// FUNCTION TO CHECK IF THE USER IS STILL LOGGED IN OR NOT
 function vendorAuth(req, res, next) 
 {
-  const token = req.header('x-auth-vendor-token');;
+  const token = req.header('x-auth-vendor-token');                  // GET THE TOKEN SAVE IN USER LOCAL STORAGE
 
   // Check for token
   if (!token)

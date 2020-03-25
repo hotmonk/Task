@@ -14,9 +14,16 @@ class ViewSelledItem extends Component {
         this.state = {
             items:null,
             item:null,
-            rating:1
+            rating:1,
+            reason:false,
+            reasonDesc:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handleReason=this.handleReason.bind(this);
+        this.vendorReport=this.vendorReport.bind(this);
+        this.handleSaveBack=this.handleSaveBack.bind(this);
+        this.onStarClick=this.onStarClick.bind(this);
+        this.handleRecievedCash=this.handleRecievedCash.bind(this);
     }
 
     componentDidMount(){
@@ -61,16 +68,36 @@ class ViewSelledItem extends Component {
                     <h3>Data of the Vendor selected for the current bid is</h3>
                     <p><strong>Name</strong>{this.state.item.transaction_id.vendor.name}</p>
                     <p><strong>Phone no</strong>{this.state.item.transaction_id.vendor.contact}</p>
-                    <button onClick={ this.vendorReport.bind(this) }>Report the vendor for the item</button>
+                    {
+                        this.state.item.transaction_id.quantity_taken?(
+                            <p><strong>Quantity collected by vendor</strong>{this.state.item.transaction_id.quantity_taken}</p>
+                        ):( <p>quantity taken by vendor not yet updated</p>)
+                    }
+                    {
+                        this.state.item.transaction_id.method?this.state.item.transaction_id.method==='COD'?(
+                            <div>
+                                <p><strong>Method of payment selected</strong> Cash on delivery</p>
+                                <p><strong>Amount to be collected: </strong>{this.state.item.transaction_id.quantity_taken*this.state.item.transaction_id.price}</p>
+                                <button onClick={this.handleRecievedCash}>Recieved Cash</button>
+                            </div>
+                            
+                        ):(<p><strong>Method of payment selected</strong> Online</p>): (<p>method of payment not yet updated not yet updated</p>)
+                    }
+                    {
+                        this.state.reason?(<textarea onChange={this.handleReason} rows='25' cols='10' placeholder="state the reason for rejecting the vendor" >{this.state.reasonDesc}</textarea>):null
+                    }
+                    {
+                        <button onClick={ this.vendorReport }>Report the vendor for the item</button>
+                    }
                 </div>
             )
         }else if(this.state.item.status==="RATING"){
             return (
                     <div>
                         <StarRatingComponent 
-                            name="rate1"  starCount={5} value={this.state.rating} height='10px' onStarClick={this.onStarClick.bind(this)}
+                            name="rate1"  starCount={5} value={this.state.rating} height='10px' onStarClick={this.onStarClick}
                         />
-                        <button onClick={ this.handleSaveBack.bind(this) }>Save and Go Back</button>
+                        <button onClick={ this.handleSaveBack }>Save and Go Back</button>
                     </div>
                 )
         }else if(this.state.item.status==='DONE'){
@@ -78,7 +105,7 @@ class ViewSelledItem extends Component {
                     <div>
                         <StarRatingComponent 
                             name="rate2"  starCount={5} value={this.state.item.transaction_id.rating} height='10px' editing={false}
-                            onStarClick={this.onStarClick.bind(this)}
+                            onStarClick={this.onStarClick}
                         />
                     </div>
                 )
@@ -93,7 +120,22 @@ class ViewSelledItem extends Component {
         });
     }
 
+    handleReason(e){
+        this.setState({
+            reasonDesc:e.target.value
+        })
+    }
+
       vendorReport(){
+          if(!this.state.reason){
+              this.setState({
+                  reason:true
+              });
+              return;
+          }
+          if(this.state.reasonDesc===null||this.state.reasonDesc===''){
+              return;
+          }
         const config = {
             headers: {
             'Content-type': 'application/json'
@@ -160,6 +202,28 @@ class ViewSelledItem extends Component {
 
     onStarClick(nextValue, prevValue, name) {
         this.setState({rating: nextValue});
+    }
+
+    handleRecievedCash()
+    {
+        // Headers
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+
+        var body={
+            item_id:this.state.item._id
+        }
+
+        axios.post(baseURL+'/seller/'+this.props.seller._id+'/cashRecieved',body, config)
+            .then(response=>{
+                
+            })
+            .catch(error=>{
+                console.log(error);
+            })
     }
 
     render() {

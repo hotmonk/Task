@@ -14,11 +14,17 @@ class ViewBuyedItem extends Component {
             items:null,
             item:null,
             paymentInfo:null,
-            msg:null
+            msg:null,
+            quantity_taken:null,
+            reason:true,
+            reasonDesc:null,
         }
         this.handleBack=this.handleBack.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
         this.handlePaymentMethod=this.handlePaymentMethod.bind(this);
+        this.handleQuantityTaken=this.handleQuantityTaken.bind(this);
+        this.handleQuantityTakenSubmit=this.handleQuantityTakenSubmit.bind(this);
+        this.handleReason=this.handleReason.bind(this);
     }
 
     componentDidMount(){
@@ -102,9 +108,8 @@ class ViewBuyedItem extends Component {
         })
         axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/paymentMethod',body,config)
             .then(response=>{
-                console.log(response.data);
                 this.setState({
-                    msg:response.data
+                    msg:response.data.msg
                 })
                 axios.get(baseURL+'/vendor/'+this.props.vendor._id+'/viewBuyedItem', config)
                     .then(response=>{
@@ -112,6 +117,7 @@ class ViewBuyedItem extends Component {
                             items:response.data,
                             item:null
                         })
+                        return;
                     })
                     .catch(error=>{
                         console.log(error);
@@ -122,13 +128,75 @@ class ViewBuyedItem extends Component {
             })
     }
 
+    handleQuantityTaken(e){
+        this.setState({
+            quantity_taken:e.target.value
+        })
+        if(this.state.item.quantity!==parseInt(e.target.value,10)){
+            this.setState({
+                reason:true
+            })
+        }else{
+            this.setState({
+                reason:false
+            })
+        }
+    }
+
+    handleQuantityTakenSubmit(){
+        var quantity_taken=parseInt(this.state.quantity_taken,10);
+        if(quantity_taken===null){
+            return;
+        }
+        if(quantity_taken>this.state.item.quantity){
+            return;
+        }
+        if(quantity_taken!==this.state.item.quantity&&(this.state.reasonDesc===null||this.state.reasonDesc==='')){
+            return;
+        }
+        const config = {
+            headers: {
+            'Content-type': 'application/json'
+            }
+        };
+        var body;
+        if(this.state.reason){
+            body=JSON.stringify({
+                quantity_taken:quantity_taken,
+                reason:this.state.reasonDesc,
+                item_id:this.state.item._id
+            })
+        }else{
+            body=JSON.stringify({
+                quantity_taken:quantity_taken,
+                item_id:this.state.item._id
+            })
+        }
+        axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/quantityTaken',body,config)
+            .then(response=>{
+                this.setState({
+                    item:response.data
+                })
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+    }
+
+    handleReason(e){
+        this.setState({
+            reasonDesc:e.target.value
+        })
+    }
+
     render() {
         return (
             <div>
                 {
-                    this.state.msg?(<h1>{this.state.msg}</h1>):null
+                    this.state.msg?(<div><p>{this.state.msg}</p></div>):null
                 }
                 { this.state.paymentInfo? (
+                    <div>
                     <form ref={el=>{this.instance=el } } method='POST' action={this.state.paymentInfo.TXN_URL}>
                         {
                             //this.findFields()
@@ -137,7 +205,8 @@ class ViewBuyedItem extends Component {
                             })
                         }
                     </form>
-
+                    <div><h1>Do not refresh. redirecting you to payment page</h1></div>
+                    </div>
                 ) : <div>
                 {this.props.isAuthenticated ? (
                     <div>
@@ -151,8 +220,22 @@ class ViewBuyedItem extends Component {
                                 <h2> category: {this.state.item.cat_id.name}</h2> 
                                 <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
                                 <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
-                                {   
-                                    this.state.item.status==='PAYMENT'? !this.state.item.transaction_id.method?(
+                                {
+                                    this.state.item.transaction_id.status ?(<div>
+                                                <h1>the seller rejected the offer</h1>
+                                                <h2>Reason :</h2>
+                                                <p>{this.state.item.transaction_id.reason}</p>
+                                            </div>
+                                        ):this.state.item.status==='PAYMENT'? !this.state.item.transaction_id.quantity_taken?(
+                                        <div>
+                                            <input type='text' onChange={this.handleQuantityTaken} placeholder='quantity taken from seller' />
+                                            <br/>
+                                            {
+                                                this.state.reason?(<textarea onChange={this.handleReason} rows='25' cols='10' placeholder="If not taking full quantity, state the proper reason" >{this.state.reasonDesc}</textarea>):null
+                                            }
+                                            <button onClick={this.handleQuantityTakenSubmit}>Submit</button>
+                                        </div>
+                                    ): !this.state.item.transaction_id.method?(
                                         <div>
                                             <h5>Choose a payment Method</h5>
                                             <button onClick={()=>{this.handlePaymentMethod('COD')}}>Cash On Delivery</button>
