@@ -15,9 +15,17 @@ class NewsFeed extends Component {
         this.state = {
             items:null,
             item:null,
+            base64Flag : 'data:image/png/jpeg/jpg;base64,',
+            date:null,
+            time:null,
+            error:null
             //paymentInfo:null
         }
         this.handleBack=this.handleBack.bind(this);
+        // this.handleDate=this.handleDate.bind(this);
+        // this.handleTime=this.handleTime.bind(this);
+        this.handleAcceptance=this.handleAcceptance.bind(this);
+        this.handleRejection=this.handleRejection.bind(this);
         this.handlePurchase=this.handlePurchase.bind(this);
     }
 
@@ -59,7 +67,31 @@ class NewsFeed extends Component {
         //     this.instance.submit();
         // }
     }
+    // handleDate(event){
+    //     this.setState({
+    //         date:event.target.value
+    //         date: date
+    //     });
+    // }
+    handleTime = (time) => {  
+        this.setState({ time }) 
+        console.log(this.state.time) 
+      } 
+    handleDate = (date) => {  
+        this.setState({date}) 
+        console.log(this.state.date) 
+      } 
 
+
+
+
+    // handleTime(event){
+    //     this.setState({
+    //         time:event.target.value
+            
+    //         this.setState({ time })
+    //     });
+    // }
     handleBack(){
         this.setState({
             item:null
@@ -67,11 +99,99 @@ class NewsFeed extends Component {
     }
 
     handleList(item){
+        if(item.imageData){
+            var binary = '';
+            var bytes = [].slice.call(new Uint8Array(item.imageData.data));
+            bytes.forEach((b) => binary += String.fromCharCode(b));
+            item.imageData.data= window.btoa(binary);
+        }
       this.setState({
           item
       });
   }
-    
+
+  handleAcceptance(item_id){
+
+    console.log("startedsubmit")
+    if(this.state.date===""||this.state.time===""||this.state.time===null||this.state.date===null){
+        this.setState({
+            error:"enter valid date as well as time"
+        })
+        return;
+    }
+
+    const config = {
+        headers: {
+        'Content-type': 'application/json'
+        }
+    };
+    const body=JSON.stringify({
+        item_id,
+        date:this.state.date,
+        time:this.state.time
+    })
+
+    console.log("submit")
+
+    axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/acceptOffer', body ,config)
+        .then(response=>{
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
+                .then(response=>{
+                    this.setState({
+                        items:response.data,
+                        item:null
+                    });
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+
+        console.log("submitted")
+}
+
+
+handleRejection(item_id){
+    const config = {
+        headers: {
+        'Content-type': 'application/json'
+        }
+    };
+
+    const body=JSON.stringify({
+        item_id
+    })
+
+    axios.post(baseURL+'/vendor/'+this.props.vendor._id+'/rejectOffer', body ,config)
+        .then(response=>{
+            const config = {
+                headers: {
+                'Content-type': 'application/json'
+                }
+            };
+            axios.get(baseURL+'/vendor/newsfeed/'+this.props.vendor._id, config)
+                .then(response=>{
+                    this.setState({
+                        items:response.data,
+                        item:null
+                    });
+                })
+                .catch(error=>{
+                    console.log(error);
+                })
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+}
     handlePurchase(){
 
         // const config = {
@@ -128,9 +248,10 @@ class NewsFeed extends Component {
     render() {
         return(
             <View>
-            { this.state.paymentInfo? (
+                <Text/><Text/><Text/><Text/>
+            {/* { this.state.paymentInfo? (
                    <View>
-                    {/* <Form 
+                    <Form 
                     ref={el=>{this.instance=el } } method='POST' 
                     action={this.state.paymentInfo.TXN_URL}>
                       </Form> 
@@ -139,7 +260,7 @@ class NewsFeed extends Component {
                             Object.keys(this.state.paymentInfo).map(key=>{
                                 return <Text name={key}>{this.state.paymentInfo[key]}</Text>
                             })
-                        } */}
+                        }
                       {
                         Object.keys(this.state.paymentInfo).map(key=>{
                             return(
@@ -151,29 +272,52 @@ class NewsFeed extends Component {
                       }
                     <Text onPress={()=>this.handleclick(this.state.paymentInfo)}>click</Text>
                    </View>
-                ) : <View>
+                ) : <View> */}
                 {this.props.isAuthenticated ? (
             <View>
-            {
-                this.state.item?(
+            {this.state.item?(
+                 this.state.item.imageData ? (
                 <View>
                    <Text onPress={this.handleBack}>Go Back</Text>
                    <Text> Item Details:</Text>
-                   <Text> category: {this.state.item.cat.name}</Text>
-                   <Text> subcategory: {this.state.item.subcat.name}</Text>
+                   <Text> category: {this.state.item.cat_id.name}</Text>
+                   <Text> subcategory: {this.state.item.sub_cat_id.name}</Text>
                    <Text> quantity: {this.state.item.quantity}
-                   {this.state.item.subcat.quantity_type}</Text>
-                  <Text onPress={this.handlePurchase}>Purchase it</Text>
+                   {this.state.item.sub_cat_id.quantity_type}</Text>
+                   <Text>Date</Text>
+                   <TextInput type="date" onChangeText={this.handleDate} />
+                   <Text>Time</Text>
+                    <TextInput type="time" onChangeText={this.handleTime} />
+                    <Text>{console.log(this.state.item._doc._id)}</Text>
+                    <Button title="Bid for it" onPress={()=>{this.handleAcceptance(this.state.item._doc._id)}}></Button>
+                    <Button title="Reject it"onPress={()=>{this.handleRejection(this.state.item._doc._id)}}></Button>
                 </View>
+            ):(
+                <View>
+                <Text onPress={this.handleBack}>Go Back</Text>
+                <Text> Item Details:</Text>
+                <Text> category: {this.state.item.cat_id.name}</Text>
+                <Text> subcategory: {this.state.item.sub_cat_id.name}</Text>
+                <Text> quantity: {this.state.item.quantity}
+                {this.state.item.sub_cat_id.quantity_type}</Text>
+                <Text>Date</Text>
+                <TextInput type="date" onChangeText={this.handleDate} />
+                <Text>Time</Text>
+                 <TextInput type="time" onChangeText={this.handleTime} />
+                 <Text>{console.log(this.state.item)}</Text>
+                 <Button title="Bid for it" onPress={()=>{this.handleAcceptance(this.state.item._id)}}></Button>
+                 <Button title="Reject it" onPress={()=>{this.handleRejection(this.state.item._id)}}></Button>
+             </View>
+            )
             ):(
                 <View>
                 <Text>Here are all the items for sale</Text>
                   {
                       this.state.items? this.state.items.map(item=>{
                               return (<View key={item.id}>
-                              <Text>category:{item.cat.name}</Text>
-                              <Text> subcategory:{item.subcat.name}</Text>
-                              <Text>quantity:{item.quantity}{item.subcat.quantity_type}{"\n"}</Text>
+                              <Text>category:{item.cat_id.name}</Text>
+                              <Text> subcategory:{item.sub_cat_id.name}</Text>
+                              <Text>quantity:{item.quantity}{item.sub_cat_id.quantity_type}{"\n"}</Text>
                               <Text  onPress={()=>this.handleList(item)}>Click</Text>
                               </View>)
                           }) : (<Text>No Items to display</Text>)
@@ -186,11 +330,11 @@ class NewsFeed extends Component {
             ) : (
                 <Text>Please Login First!</Text>
               )}
-            </View>}
             </View>
         )
     }
 }
+
 
 const mapStateToProps = state => ({
     token:state.vendorAuth.token,

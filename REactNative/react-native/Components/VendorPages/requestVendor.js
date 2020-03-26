@@ -76,6 +76,8 @@ class vendorRequest extends Component {
     render() {
         return (
             <View>
+                                <Text/><Text/><Text/><Text/>
+
                 <Text>Request for a new Category of Waste!</Text>
                 <View>
                     <View>

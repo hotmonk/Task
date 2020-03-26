@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { signupVendor } from '../../actions/vendorAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import { Actions } from 'react-native-router-flux';
-import { StyleSheet, Text, View,TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import FetchLocation from '../commonComponents/FetchLocation';
 
 class SignUpVendor extends Component {
@@ -20,7 +20,11 @@ class SignUpVendor extends Component {
             contact: '',
             address: '',
             password: '',
-            msg: null
+            place: null,
+            msg: null,
+            latitude:null,
+            longitude:null,
+            locationEnabled:false
         }
     }
 
@@ -61,7 +65,7 @@ class SignUpVendor extends Component {
         console.log(`Contact: ${this.state.contact}`);
         console.log(`Address: ${this.state.address}`);
 
-        const { name, email, contact, address, password } = this.state;
+        const { name, email, contact, address, password, latitude, longitude } = this.state;
 
         // Create user object
         const newVendor = {
@@ -69,15 +73,25 @@ class SignUpVendor extends Component {
         email,
         contact,
         address,
-        password
+        password,
+        latitude,
+        longitude
         };
 
         this.props.signupVendor(newVendor);
     }
 
+    setCoord(long,lat){
+      this.setState({
+          longitude:long,
+          latitude:lat
+      });
+  }
+
     render() {
         return (
             <View>
+              <Text/><Text/><Text/><Text/>
                 { this.redirectit() }
                 <Text>Register Yourself as Vendor!</Text>
                 {this.state.msg ? (
@@ -120,7 +134,8 @@ class SignUpVendor extends Component {
                               />
                     </View>
                     <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
-                    <Text onPress={this.onSubmit}>Register Vendor</Text>
+                    <Text>{this.state.latitude}</Text>
+                    <Button title="Register" onPress={this.onSubmit}/>
                 </View>
                 <Text>Already a user?</Text>
                 <Text onPress={() => Actions.vendorLogin()}>Login!</Text>

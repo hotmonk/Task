@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View,TextInput } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import VendorLogout from './LogoutVendor';
 
 class vendorProfile extends Component {
 
@@ -10,16 +11,24 @@ class vendorProfile extends Component {
         const { error } = this.props;
         if (error !== prevProps.error) {
           // Check for register error
-          if (error.id === 'VENDOR_REGISTER_FAIL') {
+          if (error.id === 'VENDOR_REGISTER_FAIL' || error.id === 'VENDOR_LOGIN_FAIL') {
             this.setState({ msg: error.msg.msg });
           } else {
             this.setState({ msg: null });
           }
-        }           
+        }   
+        if(!this.props.isAuthenticated){
+          Actions.vendorLogin();
+        }        
       }
 
       render(){
           return (
+            <View>
+                {this.props.isAuthenticated ? (
+              <View>
+                <Text/><Text/><Text/><Text/>
+                <VendorLogout/>
             <View>
                 <Text>welcome {this.props.vendorData.name}</Text>
                 <Text>Here are all the details you entered</Text>
@@ -43,7 +52,14 @@ class vendorProfile extends Component {
                 <View>
                       <Text onPress={() => Actions.vendorEditPrice()}>edit quoted price for items</Text>
                 </View>
+                
             </View>
+            </View>
+            ) : (
+              <Text>Please Login First!</Text>
+            )}
+            </View>
+
           );
       }
 }

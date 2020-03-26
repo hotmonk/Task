@@ -24,7 +24,6 @@ class LoginSeller extends Component {
         sellerLogin: PropTypes.func.isRequired,
         clearErrors: PropTypes.func.isRequired
       };
-   
       componentDidUpdate(prevProps) {
         const { error } = this.props;
         if (error !== prevProps.error) {
@@ -58,6 +57,7 @@ class LoginSeller extends Component {
     render() {
         return (
             <View>
+                <Text/><Text/><Text/><Text/>
                 <Text>NOT A SELLER?</Text>
                 <Text onPress={() => Actions.vendorLogin()}>Login as vendor!</Text>
                 <Text>Login as Seller!</Text>

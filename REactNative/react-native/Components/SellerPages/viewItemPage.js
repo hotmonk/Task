@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { clearErrors } from '../../actions/errorActions';
-import { Text, FlatList, StyleSheet,View } from 'react-native';
+import { Text, FlatList, StyleSheet,View, Button } from 'react-native';
 import SellerLogout from './LogoutSeller';
 import {baseURL} from '../../config/constants.js';
 import { Actions } from 'react-native-router-flux';
@@ -18,6 +18,8 @@ class ViewItem extends Component {
             msg:null
         }
         this.handleBack=this.handleBack.bind(this);
+        this.handleAccept=this.handleAccept.bind(this);
+        this.handleReject=this.handleReject.bind(this);
     }
 
     componentDidMount(){
@@ -44,7 +46,7 @@ class ViewItem extends Component {
     componentDidUpdate(prevProps,prevState)
     {
         if(!this.props.isLoading&&!this.props.isAuthenticated){
-            Actions.sellerLogin();
+            this.props.history.push('/seller/login');
         }
         if(prevState.item!==this.state.item&&this.state.item!==null){
             const config = {
@@ -55,7 +57,7 @@ class ViewItem extends Component {
             const body=JSON.stringify({
                 item_id:this.state.item._id
             })
-            axios.post(baseURL+'/seller/'+this.props.seller._id+'/getVendor',body, config)
+            axios.post(baseURL+'/seller/'+this.props.seller._id+'/getVendors',body, config)
                 .then(response=>{
                     var body=response.data;
                     if(body.status&&body.status==='fail'){
@@ -65,7 +67,7 @@ class ViewItem extends Component {
                         })
                     }else{
                         this.setState({
-                            vendor:body,
+                            vendors:body,
                             msg:null
                         })
                     }
@@ -76,36 +78,45 @@ class ViewItem extends Component {
         }
     }
 
-    handleAccept(){
+    handleAccept(quote_id){
+        console.log('hrer');
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
         const body=JSON.stringify({
-            item_id:this.state.item._id
+            item_id:this.state.item._id,
+            quote_id
         })
         axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorAccept',body, config)
             .then(response=>{
-                var body=response.data;
-                this.setState({
-                    msg:body.msg,
-                    vendor:null
-                })
+                axios.get(baseURL+'/seller/'+this.props.seller._id+'/viewItem', config)
+                    .then(response2=>{
+                        this.setState({
+                            items:response2.data,
+                            item:null,
+                            vendor:null
+                        })
+                    })
+                    .catch(error=>{
+                        console.log(error);
+                    })
             })
             .catch(error=>{
                 console.log(error);
             })
     }
 
-    handleReject(){
+    handleReject(quote_id){
         const config = {
             headers: {
             'Content-type': 'application/json'
             }
         };
         const body=JSON.stringify({
-            item_id:this.state.item._id
+            item_id:this.state.item._id,
+            quote_id
         })
         axios.post(baseURL+'/seller/'+this.props.seller._id+'/vendorReject',body, config)
             .then(response=>{
@@ -113,11 +124,11 @@ class ViewItem extends Component {
                 if(body.status&&body.status==='fail'){
                     this.setState({
                         msg:body.msg,
-                        vendor:null
+                        vendors:null
                     })
                 }else{
                     this.setState({
-                        vendor:body,
+                        vendors:body,
                         msg:null
                     })
                 }
@@ -140,6 +151,7 @@ class ViewItem extends Component {
     }
 
     render() {
+        // {console.log(this.state.msg)}
         return(
             <View>
                  {this.props.isAuthenticated ? (
@@ -148,33 +160,54 @@ class ViewItem extends Component {
             {
                 this.state.item?(
                 <View>
+                     <Text/><Text/><Text/><Text/>
                    <Text onPress={this.handleBack}>Go Back</Text>
                    <Text> Item Details:</Text>
                    <Text> category: {this.state.item.cat_id.name}</Text>
                    <Text> subcategory: {this.state.item.sub_cat_id.name}</Text>
-                   <Text> quantity: {this.state.item.quantity}</Text>{this.state.item.sub_cat_id.quantity_type}
+                   <Text> quantity: {this.state.item.quantity} {this.state.item.sub_cat_id.quantity_type}</Text>
                    {
-                        this.state.vendor?(
+                        this.state.vendors?(
                             <View>
-                                <Text>Name :{this.state.vendor.name}</Text>
-                                <Text>Quoted price :{this.state.vendor.price} {this.state.item.sub_cat_id.quantity_type}</Text>
-                                <Text>Distance :{this.state.vendor.distance}</Text>
-                                <Text onPress={this.handleAccept.bind(this)}>Accept</Text>
-                                <Text onPress={this.handleReject.bind(this)}>Reject</Text>
+                            <View>
+                                <Text>hello?</Text>
                             </View>
+                            {
+            
+                                this.state.vendors.map(vendor=>{
+                                    return(
+                                    <View key={vendor.quote_id}>
+                                        {console.log(vendor.name)}
+                                    <Text>vendor</Text>
+                                    <Text>Name :{vendor.name}</Text>
+                                    <Text>Quoted price :{vendor.price} {this.state.item.sub_cat_id.quantity_type}</Text>
+                                    <Text>Distance :{vendor.distance}</Text>
+                                    <Text>Date of arrival :{vendor.date}</Text>
+                                    <Text>Time of arrival :{vendor.time}</Text>
+                                    <Text onPress={()=>{this.handleAccept(vendor.quote_id)}}>Accept</Text>
+                                    <Text onPress={()=>{this.handleReject(vendor.quote_id)}}>Reject</Text>
+                                    </View>
+                                    )
+                                })
+                            }
+                            </View>
+
                         ):(
-                            <Text>{this.state.msg}</Text>
+                            <Text>msg:{this.state.msg}</Text>
                         )
                     }
                 </View>
             ):(
             <View>
+                
+                 <Text/><Text/><Text/><Text/>
                 <Text>Here are all the items for sale</Text>
                {this.state.items? this.state.items.map(item=>{
-                                return (<View key={item._id} onPress={()=>this.handleList(item)}>
+                                return (<View key={item._id} >
                                     <Text>category:{item.cat_id.name}</Text>
                                     <Text> subcategory:{item.sub_cat_id.name}</Text>
                                     <Text>quantity:{item.quantity}{item.sub_cat_id.quantity_type} {"\n"}</Text>
+                                    <Button title="details" onPress={()=>{this.handleList(item)}}/>
                                 </View>)
                             }) : (<Text>No Items to display</Text>)}
             </View>

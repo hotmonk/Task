@@ -150,6 +150,7 @@ class ViewItem extends Component {
     }
 
     render() {
+        {console.log(this.state.msg)}
         return(
             
             <div>

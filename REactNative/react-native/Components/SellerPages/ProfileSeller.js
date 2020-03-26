@@ -26,6 +26,7 @@ class sellerProfile extends Component {
         <View>
             {this.props.isAuthenticated ? (
               <View>
+                <Text/><Text/><Text/><Text/>
                 <SellerLogout />
             <View>
                 <Text>welcome {this.props.sellerData.name}</Text>
@@ -53,6 +54,7 @@ class sellerProfile extends Component {
           );
       }
 }
+
 
 const mapStateToProps = state => ({
     sellerData:state.sellerAuth.seller,

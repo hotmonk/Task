@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View,TextInput } from 'react-native';
+import { StyleSheet, Text, View,TextInput, Button } from 'react-native';
 import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import { Actions } from 'react-native-router-flux';
@@ -83,6 +83,7 @@ class SignUpSeller extends Component {
     render() {
         return (
             <View>
+              <Text/><Text/><Text/><Text/>
               {this.redirectit()}
                 <Text>Register Yourself as Seller!</Text>
                 <View>
@@ -92,6 +93,7 @@ class SignUpSeller extends Component {
                               value={this.state.name}
                               onChangeText={(name) => this.setState({ name })}
                               />
+                              
                     </View>
                     <View>
                       <Text>Email: </Text>
@@ -122,7 +124,8 @@ class SignUpSeller extends Component {
                               />
                     </View>
                     <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
-                    <Text onPress={this.onSubmit}>Register</Text>
+                    <Text>{this.state.latitude}</Text>
+                    <Button title="Register" onPress={this.onSubmit}/>
                     <Text>Already have an account?</Text>
                     <Text onPress={() => Actions.sellerLogin()}>Login!</Text>
                 </View>

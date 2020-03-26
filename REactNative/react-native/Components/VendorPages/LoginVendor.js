@@ -27,6 +27,7 @@ class LoginVendor extends Component {
         clearErrors: PropTypes.func.isRequired
       };
 
+
       componentDidUpdate(prevProps) {
         const { error, isAuthenticated } = this.props;
         if (error !== prevProps.error) {
@@ -38,6 +39,7 @@ class LoginVendor extends Component {
         }
       }
 
+      
     redirectit = () => {
         if(this.props.isAuthenticated)
         {
@@ -67,6 +69,10 @@ class LoginVendor extends Component {
     render() {
         return (
           <View>
+            <Text/><Text/><Text/><Text/>
+            <Text>NOT A VENDOR?</Text>
+                {/* <Link to='/seller/login'>Login as seller!</Link> */}
+                <Text onPress={() => Actions.sellerLogin()}>Login as seller!</Text>
               {this.redirectit()}
               <Text>Login as Vendor!</Text>
               <View >
@@ -89,6 +95,9 @@ class LoginVendor extends Component {
                   </View>
 
                   <Text onPress={this.onSubmit} >Login Vendor</Text>
+
+                  <Text>Don't have an account?</Text>
+                    <Text onPress={() => Actions.vendorSignUp()}>Sign Up!</Text>
               </View>
           </View>
         )

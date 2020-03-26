@@ -119,6 +119,8 @@ class editPrice extends Component {
       render(){
           return (
             <View>
+            <Text/><Text/><Text/><Text/>
+
               {this.props.isAuthenticated ? (
             <View>
               <VendorLogout/>

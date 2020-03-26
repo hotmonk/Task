@@ -121,10 +121,12 @@ class ItemForm extends Component
           }
     }
 
+    
     render()
     {
         return (
             <View>
+                <Text/><Text/><Text/><Text/>
               {this.props.isAuthenticated ? (
                 <View>
                     <SellerLogout/>
@@ -165,11 +167,11 @@ class ItemForm extends Component
                               />
                     </View>
 
-                    <Text onPress={this.submitHandler}>Add new item</Text>
+                    <Text onPress={this.submitHandler} >Add new item</Text>
                 </View> ) : (<Text>Sorry No vendor available</Text>)
             }
                 <View>
-                    <Text onPress={() => Actions.sellerSoldItems()}>View All the sold items by you</Text>
+                    <Text onPress={() => Actions.sellerItems()}>View All the sold items by you</Text>
                 </View>
             </View>
             ) : (
@@ -179,6 +181,7 @@ class ItemForm extends Component
         );
     }
 };
+
 const mapStateToProps = state => ({
     token:state.sellerAuth.token,
     seller:state.sellerAuth.seller,
