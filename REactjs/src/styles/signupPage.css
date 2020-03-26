@@ -1,0 +1,15 @@
+.outerBox{
+    margin-top: 10px;
+    margin-right: 400px;
+    margin-left: 400px;
+}
+
+.header{
+    font-weight: bold;
+    text-decoration-line: underline;
+}
+
+.box{
+    border: 2px solid gray;
+    padding: 10px;
+}

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { sellerLogin } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import {Redirect,Link} from 'react-router-dom';
+import '../../styles/loginPage.css';
 
 class LoginSeller extends Component {
 
@@ -78,34 +79,36 @@ class LoginSeller extends Component {
 
     render() {
         return (
-            <div>
-                <h2>NOT A SELLER?</h2>
+            <div className="outerBox">
+                <h4>NOT A SELLER?</h4>
                 <Link to='/vendor/login'>Login as vendor!</Link>
-                { this.redirectit() }
-                <h3>Login as Seller!</h3>
-                <form onSubmit={this.onSubmit}>
-                {this.state.msg ? (
-                    console.log(this.state.msg)
-                    ) : null}
-                    <div>
-                      <label>Email: </label>
-                      <input  type="email"
-                              value={this.state.email}
-                              onChange={this.onChangeemail}
-                              />
-                    </div>
-                    <div>
-                      <label>Password: </label>
-                      <input  type="password"
-                              value={this.state.password}
-                              onChange={this.onChangepassword}
-                              />
-                    </div>
+                <br />
+                <br />
+                {this.redirectit()}
+                <div className="box">
+                    <h2 className="header">Login as Seller!</h2>
+                    <form onSubmit={this.onSubmit}>
+                        {this.state.msg ? (
+                        console.log(this.state.msg)
+                        ) : null}
+                        <div className="form-group">
+                            <label htmlFor="exampleInputEmail1">Email address</label>
+                            <input type="email" value={this.state.email} onChange={this.onChangeemail} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                            <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                        </div>
 
-                    <input type="submit" value="Login Seller" />
-                    <h3>Don't have an account?</h3>
-                    <Link to='/seller/signUp'>Sign Up!</Link>
-                </form>
+                        <div className="form-group">
+                            <label htmlFor="exampleInputPassword1">Password</label>
+                            <input type="password" value={this.state.password} onChange={this.onChangepassword} className="form-control" id="exampleInputPassword1" />
+                        </div>
+
+                        <input className="btn btn-info" type="submit" value="Login Seller" />
+                    </form>
+                </div>
+                <br />
+                <br />
+                <h3>New user?</h3>
+                <Link to='/seller/signUp'>Sign Up!</Link>
             </div>
         )
     }

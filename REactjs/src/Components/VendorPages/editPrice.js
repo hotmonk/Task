@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import VendorLogout from './LogoutVendor';
 import axios from 'axios';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class editPrice extends Component {
     constructor(props)
@@ -121,7 +120,7 @@ class editPrice extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
-              <VendorLogout/>
+              <Navbar />
               <div>
                     {
                       this.state.items&&this.state.items.length ?(
@@ -143,7 +142,6 @@ class editPrice extends Component {
                     }
                 </div>
                 <button onClick={(event)=>this.submitForm(event)}>save changes</button>
-                <Link to='/vendor/profile'>Go to profile page!</Link>
             </div>
             ) : (
                 <h4>Please Login First!</h4>

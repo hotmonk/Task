@@ -911,7 +911,7 @@ router.get('/viewItem/:id',vendorAuth,function(req,res){
           if(item.image){
               return{
               ...item,
-              imageData:fs.readFileSync('C:/Users/sambh/Desktop/webdev/Task/Backend/public/uploads/'+item.image)
+              imageData:fs.readFileSync('C:/Users/Pratik/Desktop/GitHub Projects/Task/Backend/public/uploads/'+item.image)
             }
           }else{
             return item;

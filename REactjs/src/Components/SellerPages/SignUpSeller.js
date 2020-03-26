@@ -5,6 +5,7 @@ import { signupSeller } from '../../actions/sellerAuthActions';
 import { clearErrors } from '../../actions/errorActions';
 import {Redirect,Link} from 'react-router-dom';
 import FetchLocation from '../commonComponents/FetchLocation';
+import '../../styles/signupPage.css';
 
 class SignUpSeller extends Component {
 
@@ -119,53 +120,45 @@ class SignUpSeller extends Component {
 
     render() {
         return (
-            <div>
+            <div className="outerBox">
                 {this.redirectit()}
-                <h3>Register Yourself as Seller!</h3>
-                {this.state.msg ? (
-                console.log(this.state.msg)
-                ) : null}
-                <form onSubmit={this.onSubmit}>
-                    <div>
-                      <label>Name: </label>
-                      <input  type="text"
-                              value={this.state.name}
-                              onChange={this.onChangename}
-                              />
+                <div className="box">
+                    <h2 className="header">Register Yourself as Seller!</h2>
+                    {this.state.msg ? (
+                    console.log(this.state.msg)
+                    ) : null}
+                    <form onSubmit={this.onSubmit}>
+                        <div className="form-group">
+                        <label>Name: </label>
+                        <input className="form-control" type="text" value={this.state.name} onChange={this.onChangename} />
+                        </div>
+
+                        <div className="form-group">
+                                <label htmlFor="exampleInputEmail1">Email address</label>
+                                <input type="email" value={this.state.email} onChange={this.onChangeemail} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                                <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                        </div>
+
+                        <div className="form-group">
+                        <label>Contact </label>
+                        <input className="form-control" type="number" value={this.state.contact} onChange={this.onChangecontact} />
+                        </div>
+
+                        <div className="form-group">
+                        <label>Address: </label>
+                        <input className="form-control" type="text" value={this.state.address} onChange={this.onChangeaddress} />
+                        </div>
+
+                        <div className="form-group">
+                                <label htmlFor="exampleInputPassword1">Password</label>
+                                <input type="password" value={this.state.password} onChange={this.onChangepassword} className="form-control" id="exampleInputPassword1" />
+                        </div>
+                        <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
+                        <input className="btn btn-info" type="submit" value="Register Seller" />
+                        </form>
                     </div>
-                    <div>
-                      <label>Email: </label>
-                      <input  type="email"
-                              value={this.state.email}
-                              onChange={this.onChangeemail}
-                              />
-                    </div>
-                    <div>
-                      <label>Contact </label>
-                      <input  type="number"
-                              value={this.state.contact}
-                              onChange={this.onChangecontact}
-                              />
-                    </div>
-                    <div>
-                      <label>Address: </label>
-                      <input  type="text"
-                              value={this.state.address}
-                              onChange={this.onChangeaddress}
-                              />
-                    </div>
-                    <div>
-                      <label>Password: </label>
-                      <input  type="password"
-                              value={this.state.password}
-                              onChange={this.onChangepassword}
-                              />
-                    </div>
-                    <FetchLocation setCoords={(long,lat)=>{this.setCoord(long,lat)}} />
-                    <input type="submit" value="Register Seller" />
                     <h3>Already have an account?</h3>
                     <Link to='/seller/login'>Login!</Link>
-                </form>
             </div>
         )
     }

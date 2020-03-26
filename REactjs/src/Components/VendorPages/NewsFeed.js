@@ -1,11 +1,10 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import axios from "axios";
-import { clearErrors } from "../../actions/errorActions";
-import { Link } from "react-router-dom";
-import VendorLogout from "./LogoutVendor";
-import { baseURL } from "../../../config/constants.js";
+import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import { clearErrors } from '../../actions/errorActions';
+import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class NewsFeed extends Component {
   constructor(props) {
@@ -186,130 +185,75 @@ class NewsFeed extends Component {
         console.log(error);
       });
   }
-
   render() {
     return (
-      <div>
-        {this.props.isAuthenticated ? (
-          <div>
-            <VendorLogout />
-            {this.state.item ? (
-              this.state.item.imageData ? (
-                <div>
-                  <button onClick={this.handleBack}>Go Back</button>
-                  <h1> Item Details:</h1>
-                  <h2> category: {this.state.item._doc.cat_id.name}</h2>
-                  <h2> subcategory: {this.state.item._doc.sub_cat_id.name}</h2>
-                  <h2> quantity: {this.state.item._doc.quantity}</h2>
-                  {this.state.item._doc.sub_cat_id.quantity_type}
-                  <img
-                    src={this.state.base64Flag + this.state.item.imageData.data}
-                    alt="item"
-                  ></img>
-                  <br />
+        <div>
+          {this.props.isAuthenticated ? (
+            <div>
+                <Navbar />
+                {
+                    this.state.item? this.state.item.imageData? (
+                    <div>
+                        <button onClick={this.handleBack}>Go Back</button>
+                        <h1> Item Details:</h1>
+                        <h2> category: {this.state.item._doc.cat_id.name}</h2> 
+                        <h2> subcategory: {this.state.item._doc.sub_cat_id.name}</h2>
+                        <h2> quantity: {this.state.item._doc.quantity}</h2>{this.state.item._doc.sub_cat_id.quantity_type}
+                         <img src={this.state.base64Flag+this.state.item.imageData.data} alt="item"></img>
+                         <br/>
 
-                  <input type="date" onChange={this.handleDate} />
-                  <input type="time" onChange={this.handleTime} />
-                  <button
-                    onClick={() => {
-                      this.handleAcceptance(this.state.item._doc._id);
-                    }}
-                  >
-                    Bid for it
-                  </button>
-                  <button
-                    onClick={() => {
-                      this.handleRejection(this.state.item._doc._id);
-                    }}
-                  >
-                    Reject it
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <button onClick={this.handleBack}>Go Back</button>
-                  <h1> Item Details:</h1>
-                  <h2> category: {this.state.item.cat_id.name}</h2>
-                  <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
-                  <h2> quantity: {this.state.item.quantity}</h2>
-                  {this.state.item.sub_cat_id.quantity_type}
-                  <br />
-                  <input type="date" onChange={this.handleDate} />
-                  <input type="time" onChange={this.handleTime} />
-                  <button
-                    onClick={() => {
-                      this.handleAcceptance(this.state.item._id);
-                    }}
-                  >
-                    Bid for it
-                  </button>
-                  <button
-                    onClick={() => {
-                      this.handleRejection(this.state.item._id);
-                    }}
-                  >
-                    Reject it
-                  </button>
-                </div>
-              )
-            ) : (
-              <div>
-                <h1>Here are all the items for offer</h1>
-                <ul>
-                  {this.state.items ? (
-                    this.state.items.map(item => {
-                      if (!item.imageData) {
-                        return (
-                          <li
-                            key={item._id}
-                            onClick={() => this.handleList(item)}
-                          >
-                            <div>category:{item.cat_id.name}</div>
-                            <div> subcategory:{item.sub_cat_id.name}</div>
-                            <div>
-                              quantity:{item.quantity}
-                              {item.sub_cat_id.quantity_type}
-                            </div>
-                          </li>
-                        );
-                      } else {
-                        return (
-                          <li
-                            key={item._doc._id}
-                            onClick={() => this.handleList(item)}
-                          >
-                            <div>category:{item._doc.cat_id.name}</div>
-                            <div> subcategory:{item._doc.sub_cat_id.name}</div>
-                            <div>
-                              quantity:{item._doc.quantity}
-                              {item._doc.sub_cat_id.quantity_type}
-                            </div>
-                          </li>
-                        );
-                      }
-                    })
-                  ) : (
-                    <h1>No Items to display</h1>
-                  )}
-                </ul>
-              </div>
-            )}
-            <div>
-              <Link to="/vendor/viewBuyedItems">View all purchased items</Link>
+                         <input type="date" onChange={this.handleDate} />
+                         <input type="time" onChange={this.handleTime} />
+                        <button onClick={()=>{this.handleAcceptance(this.state.item._doc._id)}}>Bid for it</button>
+                        <button onClick={()=>{this.handleRejection(this.state.item._doc._id)}}>Reject it</button>
+                    </div>
+                ) : (
+                    <div>
+                        <button onClick={this.handleBack}>Go Back</button>
+                        <h1> Item Details:</h1>
+                        <h2> category: {this.state.item.cat_id.name}</h2> 
+                        <h2> subcategory: {this.state.item.sub_cat_id.name}</h2>
+                        <h2> quantity: {this.state.item.quantity}</h2>{this.state.item.sub_cat_id.quantity_type}
+                        <br/>
+                        <input type="date" onChange={this.handleDate} />
+                         <input type="time" onChange={this.handleTime} />
+                        <button onClick={()=>{this.handleAcceptance(this.state.item._id)}}>Bid for it</button>
+                        <button onClick={()=>{this.handleRejection(this.state.item._id)}}>Reject it</button>
+                    </div>
+                )
+                :(
+                    <div>
+                        <h1>Here are all the items for offer</h1>
+                        <ul>
+                        {
+                            this.state.items? this.state.items.map(item=>{
+                                if(!item.imageData){
+                                    return (<li key={item._id} onClick={()=>this.handleList(item)}>
+                                        <div>category:{item.cat_id.name}</div><div> subcategory:{item.sub_cat_id.name}</div>
+                                        <div>quantity:{item.quantity}{item.sub_cat_id.quantity_type}</div>
+                                    </li>)
+                                }else{
+                                    return (<li key={item._doc._id} onClick={()=>this.handleList(item)}>
+                                        <div>category:{item._doc.cat_id.name}</div><div> subcategory:{item._doc.sub_cat_id.name}</div>
+                                        <div>quantity:{item._doc.quantity}{item._doc.sub_cat_id.quantity_type}</div>
+                                    </li>)
+                                }
+                            }) : (<h1>No Items to display</h1>)
+                            
+                        }
+                        </ul>
+                    </div>
+                )
+                }
             </div>
-            <div>
-              <Link to="/vendor/newWasteType">
-                Request for new category or sub-category
-              </Link>
-            </div>
-          </div>
         ) : (
-          <h4>Please Login First!</h4>
-        )}
-      </div>
-    );
-  }
+            <h4>Please Login First!</h4>
+          )}
+        </div>
+    )
 }
+}
+
 
 const mapStateToProps = state => ({
   isLoading: state.vendorAuth.isLoading,

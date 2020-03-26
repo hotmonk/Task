@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import VendorLogout from './LogoutVendor';
 import axios from 'axios';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class chooseCat extends Component {
     constructor(props){
@@ -192,8 +191,7 @@ class chooseCat extends Component {
                 <div>
                     {this.props.isAuthenticated ? (
                         <div>
-                            <VendorLogout/>
-                            <Link to='/vendor/profile'>Done Adding!</Link>
+                            <Navbar />
                             {   this.state.categories&&this.state.categories.length ? (
                                 <form onSubmit={this.submitHandler}>
                                     <select onChange={this.handleCategory} value={this.state.cat_id} >
@@ -262,7 +260,6 @@ class chooseCat extends Component {
                                 ):null
                             }
                         </div>
-                        <Link to='/vendor/profile'>Done!</Link>
                     </div>
                     ) : (
                         <h4>Please Login First!</h4>

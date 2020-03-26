@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { clearErrors } from '../../actions/errorActions';
-import VendorLogout from './LogoutVendor';
 import {baseURL} from '../../../config/constants.js';
+import Navbar from './Navbar';
 
 class vendorRequest extends Component {
 
@@ -76,7 +76,7 @@ class vendorRequest extends Component {
             <div>
               {this.props.isAuthenticated ? (
             <div>
-                <VendorLogout/>
+                <Navbar />
                 <h3>Request for a new Category of Waste!</h3>
                 <form onSubmit={this.onSubmit}>
                     <div>

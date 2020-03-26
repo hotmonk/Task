@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import { loadSeller } from './actions/sellerAuthActions';
 import { loadVendor } from './actions/vendorAuthActions';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends Component {
   componentDidMount() {
